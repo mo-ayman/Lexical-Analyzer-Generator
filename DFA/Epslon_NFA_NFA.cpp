@@ -6,18 +6,11 @@
 #include <queue>
 #include <set>
 #include <algorithm>
-
+#include "HelpingMethods.h"
+#include "Epslon_NFA_NFA.h"
 using namespace std;
 
-class Epslon_NFA_NFA {
-private:
-    vector<map<char, set<int>>> TransitionTable;
-    vector<int> finalStates;
-    int initialState;
-    vector<map<char, int>> DFA_States;
-
-public:
-    Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial) {
+Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial) {
         int indx = 0;
         for (map<char, vector<int>> TransitionMap : table)
         {
@@ -29,111 +22,124 @@ public:
             }
             TransitionTable.push_back(map);
         }
-        finalStates = finals;
+        for (int final : finals) {
+            finalStates.insert(pair<int, bool>(final, true));
+            finalStateV.push_back(final);
+        }
         initialState = initial;
-
     };
+   vector<int> Epslon_NFA_NFA::get_Final_States()
+    {
+        return finalStateV;
+    }
 
-    vector<map<char, set<int>>> get_NFA()
+    vector<map<char, set<int>>> Epslon_NFA_NFA::get_NFA()
     {
         int indx = 0;
         for (map<char, set<int>> TransitionMap : TransitionTable) {
             Handle_Epslon(TransitionMap, indx);
-            
-            //  if(indx ==0){
-            //    cout<<"beof"<<endl;
-            //    if (TransitionMap.find('0') != TransitionMap.end()){
-            //         printSet(TransitionMap.find('0')->second);
-                    
-            //    }
-            //    cout<<"beof   e"<<endl;
-            //    if (TransitionMap.find('e') != TransitionMap.end()){
-            //         printSet(TransitionMap.find('e')->second);
-                    
-            //    }
-            //  }
-            //Replace_state_Returned(TransitionMap, indx);
-            
-            //  if(indx ==0){
-            //     cout<<"Affff"<<endl;
-            //    if (TransitionMap.find('0') != TransitionMap.end()){
-            //         printSet(TransitionMap.find('0')->second);
-                    
-            //    }
-            //  }
             indx++;
         }
         indx = 0;
         for (map<char, set<int>>& TransitionMap : TransitionTable) {
             Replace_state_Returned(TransitionMap, indx);
+            indx++;
+        }
+        indx = 0;
+        for (map<char, set<int>>& TransitionMap : TransitionTable)
+        {
+            for (auto& pair : TransitionMap) {
+                set<int> Combined_State = Return_Epslon_loop(pair.second);
+                (pair.second).insert(Combined_State.begin(), Combined_State.end());
+            }
+
             auto& mapToModify = TransitionTable[indx]; // Access the second map
-            // Find the element and remove it
+           // Find the element and remove it
             auto it = mapToModify.find('e');
             if (it != mapToModify.end()) {
+                UpdateFinalStates(TransitionMap, indx);
                 mapToModify.erase(it);
             }
             indx++;
         }
 
-        //cout << "fffffff  " << std::endl;
         return TransitionTable;
     };
-    void Replace_state_Returned(map<char, set<int>>& TransitionMap, int indx) {
+    void Epslon_NFA_NFA::UpdateFinalStates(map<char, set<int>>& TransMap, int indx_final)
+    {
+        auto it = TransMap.find('e');
+        if (it != TransMap.end()) {
+            for (int statElem : it->second)
+            {
+                auto check = finalStates.find(statElem);
+                if (check != finalStates.end()) {
+                    finalStateV.push_back(indx_final);
+                    break;
+                }
+            }
+
+        }
+    }
+    set<int>  Epslon_NFA_NFA::Return_Epslon_loop(set<int> setOfelem)
+    {
+        set<int> Combined_State;
+        for (int elem : setOfelem)
+        {
+            if (TransitionTable[elem].find('e') != TransitionTable[elem].end()) {
+                set<int> forwardSet = TransitionTable[elem].find('e')->second;
+                Combined_State.insert(forwardSet.begin(), forwardSet.end());
+            }
+        }
+        return Combined_State;
+
+    }
+    void Epslon_NFA_NFA::Replace_state_Returned(map<char, set<int>>& TransitionMap, int indx) {
         for (auto& pair : TransitionMap) {
             for (int elem : pair.second) {
                 if (elem == indx)
                 {
                     auto it = TransitionMap.find('e');
                     if (it != TransitionMap.end()) {
-
-                        cout << "before :  " << pair.first << " : " << endl;
-                        printSet(pair.second);
                         set<int>& set1 = pair.second;
                         set1.insert(it->second.begin(), it->second.end());
-                        printSet(pair.second);
+
                     }
                 }
             }
 
         }
-        //cout << "wwwwww  " << std::endl;
+
     }
-    
-    void Handle_Epslon(map<char, set<int>>& TransitionMap, int indx) {
+
+    void Epslon_NFA_NFA::Handle_Epslon(map<char, set<int>>& TransitionMap, int indx) {
         auto stateEpslon = TransitionMap.find('e');
         if (stateEpslon != TransitionMap.end()) {
-            //set<int> epslon_Vec = TransitionMap.find('e')->second;
             std::queue<int> EpslonQueue;/////////////////////////////////
             for (int element : TransitionMap.find('e')->second) {
-               EpslonQueue.push(element);
+                EpslonQueue.push(element);
             }
             map<int, bool> checkVisited;
             while (!EpslonQueue.empty())
             {
-                int state =EpslonQueue.front();
+                int state = EpslonQueue.front();
                 EpslonQueue.pop();
                 auto it = checkVisited.find(state);
                 if (state == indx || it != checkVisited.end()) { continue; }
-                
+
                 UpdateCurrent_st(state, indx);
-                
+
                 for (int element : TransitionMap.find('e')->second) {
                     EpslonQueue.push(element);
-                 }
-               // epslon_Vec = TransitionMap.find('e')->second;
+                }
                 checkVisited.insert(std::pair<int, bool>(state, true));
             }
-            // cout<<"hmmmmmoooo  "<<endl;
-            //     if(indx==0){
-            //        printSet(TransitionMap.find('e')->second);
-            //     }
-            // cout<<"hmmmmmoooo  "<<endl;
+
         }
 
     }
-    void UpdateCurrent_st(int forwardState, int currentIndx)
+    void Epslon_NFA_NFA::UpdateCurrent_st(int forwardState, int currentIndx)
     {
-       // cout << "wwwwww  " << std::endl;
+
         map<char, set<int>>& currentMap = TransitionTable[currentIndx];
         map<char, set<int>>& forwardMap = TransitionTable[forwardState];
         for (const auto& pair : forwardMap) {
@@ -147,19 +153,11 @@ public:
 
         }
     }
-    
-    void printSet(const std::set<int>& mySet) {
-        //std::cout << "ABBBBooo : ";
-        for (const auto& element : mySet) {
-            std::cout << element << " ";
-        }
-        std::cout << std::endl;
-    }
 
-};
-
+/*
 int main() {
     // Example transition table as an unordered map
+    HelpingMethods usefulMethods;
     vector<map<char, vector<int>>> Ttable;
     map<char, vector<int>> myMap{
     {'0',{0}},
@@ -176,31 +174,23 @@ int main() {
     Ttable.push_back(myMap);
     Ttable.push_back(myMap2);
     Ttable.push_back(myMap3);
-    vector<int> finalStates;
+    vector<int> finalStates = { 2 };
     int initialState = 0;
 
     Epslon_NFA_NFA obj(Ttable, finalStates, initialState);
-    vector<map<char, set<int>>> dfa = obj.get_NFA();
-
+    vector<map<char, set<int>>> nfa = obj.get_NFA();
+    vector<int> finals = obj.get_Final_States();
 
     std::cout << "Elements in the map:" << std::endl;
+
+    usefulMethods.printvecMapSet(nfa);
+
+    std::cout << "Element final States:" << std::endl;
     // Loop through the vector of maps
-    int indx = 0;
-    for (const auto& myMap : dfa) {
-        std::cout << "Elements in the map:" << std::endl;
-        // Loop through each map and print its key-value pairs
-        for (const auto& pair : myMap) {
-            std::cout << indx << ": " << pair.first<<" -> " ;
-            for (int elem : pair.second)
-            {
-                std::cout << " " << elem;
-            }
-            std::cout << std::endl;
-        }
-        std::cout << std::endl;
-        indx++;
-    }
+    usefulMethods.printVector(finals);
+
 
 
     return 0;
 }
+*/
