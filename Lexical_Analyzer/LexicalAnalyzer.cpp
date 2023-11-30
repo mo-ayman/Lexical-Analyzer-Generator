@@ -29,6 +29,7 @@ while true:
             maximal_munch_end = len(lexeme)
 
 */
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -39,10 +40,13 @@ using namespace std;
 
 class Token {
 public:
+    // size_t filePos;
     string type;
     string value;
+    string error;
     Token(){}
-    Token(string t, const std::string& v) : type(t), value(v) {}
+    Token(string t, const string& v) : type(t), value(v), error("") {}
+    Token(string t, const string& v, const string& e) : type(t), value(v), error(e) {}
 };
 
 class LexicalAnalyzer {
@@ -51,11 +55,25 @@ private:
     ifstream file;
     vector<char> buffer;
     size_t bufferPos;
+    size_t filePos; // just for reporting the tokens' positions
 
     // Dfa
     vector<map<char, int>> dfa;
     int start_state;
     map<int, string> final_states;
+
+    void panicModeRecovery(string* error, string* lexeme, int* state){
+        // Panic Mode Recovery
+        *error += lexeme[0]; 
+        // discard first character of lexeme
+        vector<char> new_buffer = vector<char>(lexeme->begin() + 1, lexeme->end()); 
+        new_buffer.insert(new_buffer.end(), buffer.begin() + bufferPos, buffer.end()); 
+        buffer = new_buffer;
+        bufferPos = 0;
+        // reset maximal munch variables for the retry.
+        *lexeme = "";
+        *state = start_state;
+    }
 
 public:
     LexicalAnalyzer(const string& input_path, size_t buffer_size, const std::string& DFA_path)
@@ -65,7 +83,10 @@ public:
         //...
 
         // Read the initial chunk into the buffer
-        file.read(buffer.data(), buffer.size());
+        file.read(buffer.data(), buffer_size);
+        // Resize the buffer to the actual number of bytes read
+        std::streamsize bytesRead = file.gcount();
+        buffer.resize(bytesRead);
 
         // Import the DFA
         if (import_DFA(dfa, start_state, final_states, DFA_path) == -1){
@@ -77,48 +98,60 @@ public:
     Token getNextToken() {
         string lexeme = "";
         int maximalMunchType = -1;
-        int maximalMunchEnd = 0; // an index within lexeme that marks the end of the maximal munch (not inclusive)
+        int maximalMunchEnd = 0; // an index within {lexeme} that marks the end of the maximal munch (not inclusive)
         int state = start_state; // current state
-
+        string error = "";
         while (true) {
             // If the buffer is fully processed
             if (bufferPos >= buffer.size()) {
                 // If the file has no more characters (EOF)
                 if (file.eof()) {
                     if (maximalMunchType != -1) {
-                        Token maximalMunchToken(final_states[maximalMunchType], lexeme.substr(0, maximalMunchEnd));
-                        buffer = vector<char>(lexeme.begin() + maximalMunchEnd, lexeme.end()); // put the rest of lexeme back into the buffer
+                        Token maximalMunchToken(final_states[maximalMunchType], lexeme.substr(0, maximalMunchEnd), error);
+                        vector<char> new_buffer;
+                        if(!lexeme.empty()){
+                            new_buffer.insert(new_buffer.end(), lexeme.begin() + maximalMunchEnd, lexeme.end()); // put the rest of lexeme back into the buffer (from the front)
+                        }
+                        buffer = new_buffer;
                         bufferPos = 0;
                         return maximalMunchToken;
                     }
                     if(lexeme.empty()){
-                        // Return an EOF token
                         return Token("EOF", "");
                     }
-                    // Handle unmatched lexeme error (return Error Token for now)
-                    return Token("Error", "");
+                    // Panic Mode Recovery & retry
+                    panicModeRecovery(&error, &lexeme, &state);
+                    continue; 
                 }
                 // Load the next chunk from the file into the buffer and set the position to the start of the buffer
+                // Read the initial chunk into the buffer
                 file.read(buffer.data(), buffer.size());
+                // Resize the buffer to the actual number of bytes read
+                std::streamsize bytesRead = file.gcount();
+                buffer.resize(bytesRead);
                 bufferPos = 0;
             }
 
             char c = buffer[bufferPos];
-
             if (dfa[state].find(c) == dfa[state].end()) {
                 // Character not found in the DFA
                 if (maximalMunchType == -1) {
-                    // Handle unmatched lexeme error (return Error Token for now)
-                    return Token("Error", "");
+                    // Panic Mode Recovery & retry
+                    panicModeRecovery(&error, &lexeme, &state);
+                    continue; 
                 } else {
                     // Maximal munch found
-                    Token maximalMunchToken(final_states[maximalMunchType], lexeme.substr(0, maximalMunchEnd));
+                    Token maximalMunchToken(final_states[maximalMunchType], lexeme.substr(0, maximalMunchEnd), error);
                     // Update buffer and reset maximal munch variables
-                    vector<char> new_buffer = vector<char>(lexeme.begin() + maximalMunchEnd, lexeme.end()); // put the rest of lexeme back into the buffer (from the front)
-                    new_buffer.insert(new_buffer.end(), buffer.begin() + bufferPos, buffer.end()); 
+                    vector<char> new_buffer;
+                    if(!lexeme.empty()){
+                        new_buffer.insert(new_buffer.end(), lexeme.begin() + maximalMunchEnd, lexeme.end()); // put the rest of lexeme back into the buffer (from the front)
+                    }
+                    if(bufferPos < buffer.size()){
+                        new_buffer.insert(new_buffer.end(), buffer.begin() + bufferPos, buffer.end()); 
+                    }
                     buffer = new_buffer;
                     bufferPos = 0;
-                    maximalMunchType = -1;
                     return maximalMunchToken;
                 }
             } else {
@@ -134,14 +167,6 @@ public:
                 }
             }
         }
-
-        // If there's a valid token at the end of the file
-        if (maximalMunchType != -1) {
-            return Token(final_states[maximalMunchType], lexeme.substr(0, maximalMunchEnd));
-        }
-
-        // Return an EOF token
-        return Token("EOF", "");
     }
 };
 
@@ -156,7 +181,7 @@ int main() {
         {{'a', 3}, {'b', 2}}, // z 1
         {{'a', 4}, {'b', 5}}, // w 2
         {{'a', 4}, {'b', 6}}, // u 3
-        {{'a', 4}},           // y,T 4
+        {{'a', 4}},           // yT 4
         {{'a', 4}, {'b', 5}}, // k 5
         {}                    // M 6
     };
@@ -169,14 +194,17 @@ int main() {
     };
     export_DFA(v,x,f,"2018_q2.dat");
 
-    LexicalAnalyzer lexer("2018_q2.txt", 1024, "2018_q2.dat");
+    LexicalAnalyzer lexer("2018_q2.txt", 2, "2018_q2.dat");
 
     Token token;
     do {
         token = lexer.getNextToken();
-        std::cout << "Type: " << token.type << ", Value: " << token.value << std::endl;
+        if(!token.error.empty()){
+            cout << "Error, Panic removed '" << token.error << "'" <<endl;
+        }
+        cout << "Type: " << token.type << ", Value: '" << token.value << "'" << endl;
     }
-    while (token.type != "EOF" && token.type != "Error");
+    while (token.type != "EOF");
 
     return 0;
 }
