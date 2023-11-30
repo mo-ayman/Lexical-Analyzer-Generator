@@ -13,7 +13,7 @@ public:
     void printSet(const std::set<int>& mySet);
     void printVector(const std::vector<int>& myvec);
     void printvecMapSet(std::vector<map<char, set<int>>>& vec);
- 
+    void finalMap(map<int, string>& map);
 };
 
 #endif

@@ -39,6 +39,18 @@ void HelpingMethods::printvecMapSet(vector<map<char, set<int>>>& vec) {
         indx++;
     }
 }
+void HelpingMethods::finalMap(map<int, string>& map) {
+    std::cout << "Elements in the map:" << std::endl;
+
+        // Loop through each map and print its key-value pairs
+        for (const auto& pair : map) {
+            std::cout  << ": " << pair.first << " -> "<<pair.second<<endl;
+            
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+   
+}
 // void HelpingMethods::printvecMapVec(vector<map<char, vector<int>>>& vec){
 
 // }

@@ -10,7 +10,7 @@
 #include "Epslon_NFA_NFA.h"
 using namespace std;
 
-Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial) {
+Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
         int indx = 0;
         for (map<char, vector<int>> TransitionMap : table)
         {
@@ -22,13 +22,10 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
             }
             TransitionTable.push_back(map);
         }
-        for (int final : finals) {
-            finalStates.insert(pair<int, bool>(final, true));
-            finalStateV.push_back(final);
-        }
+        finalStateV = finals;
         initialState = initial;
     };
-   vector<int> Epslon_NFA_NFA::get_Final_States()
+  map<int, string> Epslon_NFA_NFA::get_Final_States()
     {
         return finalStateV;
     }
@@ -55,7 +52,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
 
             auto& mapToModify = TransitionTable[indx]; // Access the second map
            // Find the element and remove it
-            auto it = mapToModify.find('e');
+            auto it = mapToModify.find('\0');
             if (it != mapToModify.end()) {
                 UpdateFinalStates(TransitionMap, indx);
                 mapToModify.erase(it);
@@ -67,13 +64,13 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
     };
     void Epslon_NFA_NFA::UpdateFinalStates(map<char, set<int>>& TransMap, int indx_final)
     {
-        auto it = TransMap.find('e');
+        auto it = TransMap.find('\0');
         if (it != TransMap.end()) {
             for (int statElem : it->second)
             {
-                auto check = finalStates.find(statElem);
-                if (check != finalStates.end()) {
-                    finalStateV.push_back(indx_final);
+                auto check = finalStateV.find(statElem);
+                if (check != finalStateV.end()) {
+                    finalStateV.insert(std::pair<int, string>(indx_final, check->second));   
                     break;
                 }
             }
@@ -85,8 +82,8 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
         set<int> Combined_State;
         for (int elem : setOfelem)
         {
-            if (TransitionTable[elem].find('e') != TransitionTable[elem].end()) {
-                set<int> forwardSet = TransitionTable[elem].find('e')->second;
+            if (TransitionTable[elem].find('\0') != TransitionTable[elem].end()) {
+                set<int> forwardSet = TransitionTable[elem].find('\0')->second;
                 Combined_State.insert(forwardSet.begin(), forwardSet.end());
             }
         }
@@ -98,7 +95,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
             for (int elem : pair.second) {
                 if (elem == indx)
                 {
-                    auto it = TransitionMap.find('e');
+                    auto it = TransitionMap.find('\0');
                     if (it != TransitionMap.end()) {
                         set<int>& set1 = pair.second;
                         set1.insert(it->second.begin(), it->second.end());
@@ -112,10 +109,10 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
     }
 
     void Epslon_NFA_NFA::Handle_Epslon(map<char, set<int>>& TransitionMap, int indx) {
-        auto stateEpslon = TransitionMap.find('e');
+        auto stateEpslon = TransitionMap.find('\0');
         if (stateEpslon != TransitionMap.end()) {
             std::queue<int> EpslonQueue;/////////////////////////////////
-            for (int element : TransitionMap.find('e')->second) {
+            for (int element : TransitionMap.find('\0')->second) {
                 EpslonQueue.push(element);
             }
             map<int, bool> checkVisited;
@@ -128,7 +125,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, vector<int
 
                 UpdateCurrent_st(state, indx);
 
-                for (int element : TransitionMap.find('e')->second) {
+                for (int element : TransitionMap.find('\0')->second) {
                     EpslonQueue.push(element);
                 }
                 checkVisited.insert(std::pair<int, bool>(state, true));

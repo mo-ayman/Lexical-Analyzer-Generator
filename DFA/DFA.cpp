@@ -5,13 +5,15 @@
 #include <queue>
 #include <set>
 #include "DFA.h"
-
+#include "Epslon_NFA_NFA.h"
+#include "HelpingMethods.h"
 using namespace std;
 
 
-DFA::DFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial) {
-        TransitionTable = table;
-        finalStates = finals;
+DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
+        Epslon_NFA_NFA obj(table, finals, initial);
+        TransitionTable = obj.get_NFA();
+        finalStates = obj.get_Final_States();
         initialState = initial;
 
     };
@@ -32,31 +34,32 @@ DFA::DFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial
         return DFA_States;
     }
     void DFA::fillDFA() {
-        map<vector<int>, int> stateIndx = makeEachStateIndx();
+        map<set<int>, int> stateIndx = makeEachStateIndx();
 
         for (const auto& pair : stateMap) {
+            /////////////////////////////////////////////////
             map<char, int> eachStateMap;
             int indx = 0;
             for (const auto& set : pair.second)
             {
-                std::vector<int> vecMap(set.begin(), set.end());
+
                 auto it = InputMap.find(pair.first);
                 auto item = it->second.begin();
                 std::advance(item, indx); // Move the iterator to the desired index
                 cout << *item << std::endl;
-                auto stateNum = stateIndx.find(vecMap);
+                auto stateNum = stateIndx.find(set);
                 eachStateMap.insert(std::pair<char, int>(*item, stateNum->second));
                 indx++;
             }
             DFA_States.push_back(eachStateMap);
         }
     }
-    map<vector<int>, int> DFA::makeEachStateIndx() {
-        map<vector<int>, int> stateIndx;
+    map<set<int>, int> DFA::makeEachStateIndx() {
+        map<set<int>, int> stateIndx;
         int indx = 0;
         for (const auto& pair : stateMap) {
-
-            stateIndx.insert(std::pair<vector<int>, int>(pair.first, indx));
+            UpdateFinalStates(indx, pair.first);
+            stateIndx.insert(std::pair<set<int>, int>(pair.first, indx));
             indx++;
         }
 
@@ -64,8 +67,7 @@ DFA::DFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial
     }
     void DFA::HandleState(set<int>& states)
     {
-        std::vector<int> checkVec(states.begin(), states.end());
-        auto it = stateMap.find(checkVec);
+        auto it = stateMap.find(states);
         if (it != stateMap.end()) {
             return;
         }
@@ -74,36 +76,52 @@ DFA::DFA(vector<map<char, vector<int>>>& table, vector<int>& finals, int initial
         vector<set<int>> transitionStates;
         int index = 0;
         for (int state : states) {
-            // std::cout << "hamada " << state<< std::endl;
             for (const auto& pair : TransitionTable.at(state)) {
                 // Convert the vector to a set
-                std::set<int> mySet(pair.second.begin(), pair.second.end());
-
                 auto it = stringIndexMap.find(pair.first);
                 if (it != stringIndexMap.end()) {
                     auto it = stringIndexMap.find(pair.first);
-                    std::set<int> mySet2(pair.second.begin(), pair.second.end());
-                    transitionStates[it->second].insert(mySet2.begin(), mySet2.end());
+                    transitionStates[it->second].insert((pair.second).begin(), (pair.second).end());
                 }
                 else {
                     stringIndexMap.insert(std::pair<char, int>(pair.first, index));
                     index++;
-                    transitionStates.push_back(mySet);
+                    transitionStates.push_back(pair.second);
                     inputTransition.insert(pair.first);
                 }
             }
         }
-        std::vector<int> mVector(states.begin(), states.end());
-        stateMap.insert(std::pair<vector<int>, vector<set<int>>>(mVector, transitionStates));
-        InputMap.insert(std::pair<vector<int>, set<char>>(mVector, inputTransition));
+
+        stateMap.insert(std::pair<set<int>, vector<set<int>>>(states, transitionStates));
+        InputMap.insert(std::pair<set<int>, set<char>>(states, inputTransition));
         for (const auto& set : transitionStates) {
             QueueStates.push(set);
         }
 
     }
 
+    map<int, string> DFA::get_finalStates() {
+        return New_finalStates;
 
+    }
+    void DFA::UpdateFinalStates(int indx, set<int> OldState)
+    {
+        HelpingMethods HM;
+        for (int elem : OldState)
+        {
+            cout << "stte:::  " << endl;
+            HM.printSet(OldState);
+            auto it = finalStates.find(elem);
+            if (it != finalStates.end()) {
+                New_finalStates.insert(std::pair<int, string>(indx, it->second));
+                break;
+            }
+        }
+        
+    }
+  /*
 int main() {
+    HelpingMethods HM;
     // Example transition table as an unordered map
     vector<map<char, vector<int>>> transitionTable;
     map<char, vector<int>> myMap{
@@ -120,7 +138,7 @@ int main() {
     transitionTable.push_back(myMap);
     transitionTable.push_back(myMap2);
     transitionTable.push_back(myMap3);
-    vector<int> finalStates;
+    map<int, string> finalStates{ {2,"id"} };
     int initialState = 0;
     DFA obj(transitionTable, finalStates, initialState);
     vector<map<char, int>> dfa = obj.getDFA();
@@ -138,7 +156,10 @@ int main() {
         std::cout << std::endl;
         indx++;
     }
-
+    cout << "Final States :  " << endl;
+    map<int, string> mapFinal = obj.get_finalStates();
+    HM.finalMap(mapFinal);
 
     return 0;
 }
+*/
