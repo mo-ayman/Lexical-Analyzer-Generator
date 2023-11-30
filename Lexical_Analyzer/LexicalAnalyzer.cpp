@@ -32,6 +32,7 @@ while true:
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <cctype>
 #include <vector>
 #include <map>
 #include "../DFA_Serialization/DFA_serialization.cpp"
@@ -61,13 +62,32 @@ private:
     vector<map<char, int>> dfa;
     int start_state;
     map<int, string> final_states;
+    
+    bool isWhitespace(char c) {
+        // Use the isspace function from the cctype header
+        return std::isspace(static_cast<unsigned char>(c)) != 0;
+    }
+
 
     void panicModeRecovery(string* error, string* lexeme, int* state){
         // Panic Mode Recovery
-        *error += lexeme[0]; 
-        // discard first character of lexeme
-        vector<char> new_buffer = vector<char>(lexeme->begin() + 1, lexeme->end()); 
-        new_buffer.insert(new_buffer.end(), buffer.begin() + bufferPos, buffer.end()); 
+        vector<char> new_buffer;
+        if(lexeme->size()>1){
+            if(!isWhitespace((*lexeme)[0])){
+                *error += (*lexeme)[0]; 
+            }
+            // discard first character of lexeme
+            new_buffer.insert(new_buffer.end(), lexeme->begin() + 1, lexeme->end());
+        }
+        else{
+            if(!isWhitespace(buffer[bufferPos])){
+                *error += buffer[bufferPos];
+            }
+            bufferPos ++;
+        }
+        if(bufferPos < buffer.size()){
+            new_buffer.insert(new_buffer.end(), buffer.begin() + bufferPos, buffer.end()); 
+        }
         buffer = new_buffer;
         bufferPos = 0;
         // reset maximal munch variables for the retry.
@@ -119,12 +139,11 @@ public:
                     if(lexeme.empty()){
                         return Token("EOF", "");
                     }
-                    // Panic Mode Recovery & retry
+                    // Panic Mode Recovery 
                     panicModeRecovery(&error, &lexeme, &state);
                     continue; 
                 }
                 // Load the next chunk from the file into the buffer and set the position to the start of the buffer
-                // Read the initial chunk into the buffer
                 file.read(buffer.data(), buffer.size());
                 // Resize the buffer to the actual number of bytes read
                 std::streamsize bytesRead = file.gcount();
@@ -133,10 +152,10 @@ public:
             }
 
             char c = buffer[bufferPos];
-            if (dfa[state].find(c) == dfa[state].end()) {
+            if (dfa[state].find(c) == dfa[state].end() || isWhitespace(c)) {
                 // Character not found in the DFA
                 if (maximalMunchType == -1) {
-                    // Panic Mode Recovery & retry
+                    // Panic Mode Recovery 
                     panicModeRecovery(&error, &lexeme, &state);
                     continue; 
                 } else {
@@ -194,15 +213,15 @@ int main() {
     };
     export_DFA(v,x,f,"2018_q2.dat");
 
-    LexicalAnalyzer lexer("2018_q2.txt", 2, "2018_q2.dat");
+    LexicalAnalyzer lexer("2018_q2.txt", 1024, "2018_q2.dat");
 
     Token token;
     do {
         token = lexer.getNextToken();
         if(!token.error.empty()){
-            cout << "Error, Panic removed '" << token.error << "'" <<endl;
+            cout << "Error, removing \"" << token.error << "\"" <<endl;
         }
-        cout << "Type: " << token.type << ", Value: '" << token.value << "'" << endl;
+        cout << "Type: " << token.type << ", Value: \"" << token.value << "\"" << endl;
     }
     while (token.type != "EOF");
 
