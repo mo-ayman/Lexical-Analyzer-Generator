@@ -9,6 +9,7 @@ enum Operator {
     PLUS,
     OR,
     QUESTION,
+    EPSILON,
     LEAF_NODE,
     NONE
 };

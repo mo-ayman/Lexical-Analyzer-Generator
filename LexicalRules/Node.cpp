@@ -23,7 +23,7 @@ Node::Node(const Operator op, std::vector<Node *> children) {
 
 Node::Node(const char terminal) {
     this->terminal = terminal;
-    this->op = LEAF_NODE;
+    this->op = terminal == '\0' ? EPSILON : LEAF_NODE;
     this->children = std::vector<Node *>();
 }
 
