@@ -35,8 +35,8 @@ class DFA_minimizer{
         vector<map<char, int>> table;
         int start;
         map<int, string> fstates;
-        
-        void minimize(vector<map<char, int>> dfa, int start_state, map<int, string> final_states) {
+
+        void minimize(vector<map<char, int>> dfa, int start_state, map<int, string> final_states){
             const int MOD = 1000000007;
             int num_of_classes;
 
@@ -69,7 +69,7 @@ class DFA_minimizer{
                         }
                     }
                     next[i] = hash;
-                    S[hash] = i; // Add (hash -> i) to S
+                    S[hash] = i;
                 }
 
                 // check for convergence
@@ -125,25 +125,41 @@ int main() {
 
     // Define the DFA transition table
     vector<map<char, int>> dfa = {
-        {{'a', 0}, {'b', 1}},
-        {{'a', 1}, {'b', 2}},
-        {{'a', 3}, {'b', 3}},
-        {{'a', 4}, {'b', 5}},
-        {{'a', 6}, {'b', 7}},
-        {{'a', 6}, {'b', 7}},
-        {{'a', 5}, {'b', 5}},
-        {{'a', 8}, {'b', 9}},
-        {{'a', 8}, {'b', 9}},
-        {{'a', 9}, {'b', 9}}
+        {{'1', 2}, {'0', 1}},
+        {{'0', 2}, {'1', 3}},
+        {{'1', 4}, {'0', 2}},
+        {{'0', 3}, {'1', 3}},
+        {{'1', 4}, {'0', 4}},
+
+        // {{'a', 6}, {'b', 7}},
+        // {{'a', 5}, {'b', 5}},
+        // {{'a', 8}, {'b', 9}},
+        // {{'a', 8}, {'b', 9}},
+        // {{'a', 9}, {'b', 9}}
     };
 
+
+    cout << "Original DFA Transition Table:" << endl;
+    for (int i = 0; i < dfa.size(); ++i) {
+        cout << "State " << i << ": ";
+        for (auto const& entry : dfa[i]) {
+            cout << entry.first << " -> " << entry.second << " | ";
+        }
+        cout << endl;
+    }
     // Define the start state and final states
     int startState = 0;
     map<int, string> finalStates = {
-        {3, "A"},
-        {6, "A"},
-        {9, "A"}
+        {4, "f"},
+        {3, "f"},
+        // {6, "A"},
+        // {9, "A"}
     };
+
+    cout << "Original DFA Final States:" << endl;
+    for (auto const& entry : finalStates) {
+        cout << "State " << entry.first << ": " << entry.second << endl;
+    }
 
     // Minimize the DFA
     dfaMinimizer.minimize(dfa, startState, finalStates);
