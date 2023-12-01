@@ -44,6 +44,7 @@ RuleTree::RuleTree() {
 void RuleTree::print() {
     std::cout << "RuleTree: " << name << std::endl;
     root->print();
+    std::cout << std::endl;
 }
 
 

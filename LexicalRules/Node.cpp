@@ -2,6 +2,7 @@
 // Created by rusev on 11/26/23.
 //
 
+#include <map>
 #include "Node.h"
 
 Node::Node() {
@@ -58,10 +59,22 @@ void Node::add_children(std::vector<Node *> children) {
     this->children.insert(this->children.end(), children.begin(), children.end());
 }
 
+std::map<Operator, std::string> opToString = {
+        {CONCAT, "CONCAT"},
+        {STAR, "STAR"},
+        {PLUS, "PLUS"},
+        {OR, "OR"},
+        {QUESTION, "QUESTION"},
+        {LEAF_NODE, "LEAF_NODE"},
+        {NONE, "NONE"},
+        {EPSILON, "EPSILON"}
+};
 void Node::print() {
     if (op == LEAF_NODE) {
-        std::cout << terminal;
+        std::cout << terminal << " ";
         return;
+    } else {
+        std::cout << opToString[op] << " ";
     }
     for (auto child : children) {
         child->print();

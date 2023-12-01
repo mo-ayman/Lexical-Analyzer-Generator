@@ -9,7 +9,7 @@
 #define SRC_NODE_H
 
 enum Operator {
-    CONCAT, STAR, PLUS, OR, QUESTION, LEAF_NODE, NONE
+    CONCAT, STAR, PLUS, OR, QUESTION, LEAF_NODE, NONE, EPSILON
 };
 
 class Node {
