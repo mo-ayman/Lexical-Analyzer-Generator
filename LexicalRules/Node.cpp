@@ -100,11 +100,9 @@ void Node::print() const {
         children[0]->print();
         std::cout << ")?";
     } else if (op == LEAF_NODE) {
-        if (terminal == '\0') {
-            std::cout << "ε";
-        } else {
-            std::cout << terminal;
-        }
+        std::cout << terminal;
+    } else if (op == EPSILON) {
+        std::cout << "ε";
     }
 }
 
