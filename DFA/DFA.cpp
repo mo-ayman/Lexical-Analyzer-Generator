@@ -9,6 +9,10 @@
 #include "HelpingMethods.h"
 using namespace std;
 
+/*
+  In this constructor first calling Epslon_NFA_NFA class to convert epslon_NFA states
+  to it's equivalent nfa
+*/
 
 DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
         Epslon_NFA_NFA obj(table, finals, initial);
@@ -17,11 +21,19 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
         initialState = initial;
 
     };
+/*
+  this method first push into stack the states and calling method HandleState for each state which
+  in turn (This function i fill stateMap that map each state to it's transition state that state map to them
+  and fill InputMap which map each state with it's input chars thers functions help me in fillDFA func).
+  finall it call fillDFA func(This method fill DFA_States vector of each map by getting each state indx and replace it with set of states 
+      corressponding) 
+
+*/
     vector<map<char, int>> DFA::getDFA()
     {
         QueueStates.push({ initialState });
-        std::set<int> myVector = { initialState };
-        HandleState(myVector);
+        std::set<int> myset = { initialState };
+        HandleState(myset);
         QueueStates.pop();
         while (!QueueStates.empty())
         {
@@ -33,20 +45,23 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
         fillDFA();
         return DFA_States;
     }
+    /*
+      This method fill DFA_States vector of each map by getting each state indx and replace it with set of states 
+      corressponding
+    */
     void DFA::fillDFA() {
         map<set<int>, int> stateIndx = makeEachStateIndx();
 
         for (const auto& pair : stateMap) {
-            /////////////////////////////////////////////////
+      
             map<char, int> eachStateMap;
             int indx = 0;
             for (const auto& set : pair.second)
             {
-
                 auto it = InputMap.find(pair.first);
                 auto item = it->second.begin();
                 std::advance(item, indx); // Move the iterator to the desired index
-                cout << *item << std::endl;
+                //cout << *item << std::endl;
                 auto stateNum = stateIndx.find(set);
                 eachStateMap.insert(std::pair<char, int>(*item, stateNum->second));
                 indx++;
@@ -54,6 +69,10 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
             DFA_States.push_back(eachStateMap);
         }
     }
+    /*
+     This method used to map each set to it's indx in Transition table to used in  fillDFA() func
+     when update DFA_states
+    */
     map<set<int>, int> DFA::makeEachStateIndx() {
         map<set<int>, int> stateIndx;
         int indx = 0;
@@ -65,19 +84,26 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
 
         return stateIndx;
     }
+    
+    /*
+      This function i fill stateMap that map each state to it's transition state that state map to them
+      and fill InputMap which map each state with it's input chars thers functions help me in fillDFA func
+    */
     void DFA::HandleState(set<int>& states)
     {
+        map<char, int> stringIndexMap;
+        set<char> inputTransition;
+        vector<set<int>> transitionStates;
+
+        //first check if state is handled before
         auto it = stateMap.find(states);
         if (it != stateMap.end()) {
             return;
         }
-        map<char, int> stringIndexMap;
-        set<char> inputTransition;
-        vector<set<int>> transitionStates;
+    
         int index = 0;
         for (int state : states) {
             for (const auto& pair : TransitionTable.at(state)) {
-                // Convert the vector to a set
                 auto it = stringIndexMap.find(pair.first);
                 if (it != stringIndexMap.end()) {
                     auto it = stringIndexMap.find(pair.first);
@@ -104,13 +130,15 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
         return New_finalStates;
 
     }
+    /*
+       This method make new final states by applying if any
+       state of old ones contain one of final state then take that one as final state
+    */
     void DFA::UpdateFinalStates(int indx, set<int> OldState)
     {
         HelpingMethods HM;
         for (int elem : OldState)
         {
-            cout << "stte:::  " << endl;
-            HM.printSet(OldState);
             auto it = finalStates.find(elem);
             if (it != finalStates.end()) {
                 New_finalStates.insert(std::pair<int, string>(indx, it->second));
