@@ -43,3 +43,11 @@ void RuleTree::print() const {
     root->print();
     std::cout << std::endl;
 }
+
+Priority RuleTree::getPriority() const {
+    return priority;
+}
+
+void RuleTree::setPriority(const Priority priority) {
+    RuleTree::priority = priority;
+}
