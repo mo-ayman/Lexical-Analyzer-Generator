@@ -37,6 +37,10 @@ public:
 
     void setRoot(Node* root);
 
+    [[nodiscard]] Priority getPriority() const;
+
+    void setPriority(Priority priority);
+
     void print() const;
 };
 

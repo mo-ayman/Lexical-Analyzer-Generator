@@ -6,6 +6,7 @@
 #define LEXICAL_ANALYZER_GENERATOR_NFACONSTRUCTION_H
 #include <vector>
 #include <map>
+#include <unordered_map>
 #include "../LexicalRules/RuleTree.h"
 
 class NFAConstruction {
@@ -13,14 +14,14 @@ public:
     NFAConstruction();
     void constructNFA(std::vector<RuleTree*> rules);
     [[nodiscard]] std::vector< std::map<char, std::vector<int>> > getNfs() const;
-    [[nodiscard]] std::map< int, std::string > getFinalStates() const;
+    [[nodiscard]] std::unordered_map<int, std::tuple<std::string, Priority, int>> getFinalStates() const;
     [[nodiscard]] int getStartStateIndex() const;
     void print();
 
 private:
     int stateCount;
     std::vector< std::map<char, std::vector<int>> > nfs;
-    std::map< int, std::string > finalStates;
+    std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates;
     const char EPS = '\0';
     int startStateIndex;
     std::pair< char, std::array<int,2> > performOperation(Node *node);

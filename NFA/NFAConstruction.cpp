@@ -9,14 +9,14 @@
 NFAConstruction::NFAConstruction() {
     stateCount = 0;
     nfs = std::vector< std::map<char, std::vector<int>> >();
-    finalStates = std::map< int, std::string >();
+    finalStates = std::unordered_map<int, std::tuple<std::string, Priority, int>>();
 }
 
 // CONCAT, STAR, PLUS, OR, QUESTION, LEAF_NODE, NONE, EPSILON
 
 // ------------------ public methods ------------------
 
-std::map<int, std::string> NFAConstruction::getFinalStates() const {
+ std::unordered_map<int, std::tuple<std::string, Priority, int>> NFAConstruction::getFinalStates() const {
     return finalStates;
 }
 
@@ -32,6 +32,7 @@ std::vector<std::map<char, std::vector<int>>> NFAConstruction::getNfs() const {
 
 void NFAConstruction::constructNFA(std::vector<RuleTree *> rules) {
     startStateIndex = addState();
+    int ruleIndex = 0;
     for (auto rule : rules) {
         std::pair< char, std::array<int,2> > curr = performOperation(rule->getRoot());
 //        char transChar = curr.first;
@@ -39,8 +40,10 @@ void NFAConstruction::constructNFA(std::vector<RuleTree *> rules) {
         int lastStateIndex = curr.second[1];
 
         nfs[startStateIndex][EPS].push_back(firstStateIndex);
-        finalStates[lastStateIndex] = rule->getName();
+        finalStates[lastStateIndex] = {rule->getName(), rule->getPriority(), ruleIndex++};
     }
+
+
 
 }
 
