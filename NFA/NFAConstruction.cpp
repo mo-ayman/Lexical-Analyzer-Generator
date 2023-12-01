@@ -79,7 +79,7 @@ std::pair< char, std::array<int,2> > NFAConstruction::starOp(std::vector<Node *>
     int firstStateIndex = curr.second[0];
     int lastStateIndex = curr.second[1];
     // epsilon transition from first state to last state (different from plus)
-    nfs[firstStateIndex]['\0'].push_back(lastStateIndex);
+    nfs[firstStateIndex][EPS].push_back(lastStateIndex);
 
     return {transChar, {firstStateIndex, lastStateIndex}};
 }
@@ -98,14 +98,14 @@ std::pair< char, std::array<int,2> > NFAConstruction::plusOp(std::vector<Node *>
     int lastCurrState = curr.second[1];
 
     // backward epsilon transition from last state to first state
-    nfs[lastCurrState]['\0'].push_back(firstCurrState);
+    nfs[lastCurrState][EPS].push_back(firstCurrState);
 
     // epsilon transition from first state to first state of middle states
     nfs[firstStateIndex][transChar].push_back(firstCurrState);
     // epsilon transition from last state of middle states to last state
-    nfs[lastCurrState]['\0'].push_back(lastStateIndex);
+    nfs[lastCurrState][EPS].push_back(lastStateIndex);
 
-    return {'\0', {firstStateIndex, lastStateIndex}};
+    return {EPS, {firstStateIndex, lastStateIndex}};
 }
 
 std::pair< char, std::array<int,2> > NFAConstruction::orOp(std::vector<Node *> nodes) {
@@ -119,7 +119,7 @@ std::pair< char, std::array<int,2> > NFAConstruction::orOp(std::vector<Node *> n
         int lastCurrState = curr.second[1];
 
         nfs[firstStateIndex][transChar].push_back(firstCurrState);
-        nfs[lastCurrState]['\0'].push_back(lastStateIndex);
+        nfs[lastCurrState][EPS].push_back(lastStateIndex);
     }
 
     return {EPS, {firstStateIndex, lastStateIndex}};
