@@ -21,10 +21,22 @@ Node::Node(const Operator op, std::vector<Node *> children) {
     this->children = std::move(children);
 }
 
+Node::Node(char terminal, Operator op) {
+    this->terminal = terminal;
+    this->op = op;
+    this->children = std::vector<Node *>();
+}
+
 Node::Node(const char terminal) {
     this->terminal = terminal;
     this->op = terminal == '\0' ? EPSILON : LEAF_NODE;
     this->children = std::vector<Node *>();
+}
+
+Node::Node(char terminal, Operator op, std::vector<Node *> children) {
+    this->terminal = terminal;
+    this->op = op;
+    this->children = children;
 }
 
 Node::~Node() {
@@ -39,6 +51,39 @@ Node::Node(const Node& other) {
     this->terminal = other.terminal;
     this->op = other.op;
     this->children = other.children;
+
+}
+
+std::map<Operator, std::string> opToString = {
+        {CONCAT, "CONCAT"},
+        {STAR, "STAR"},
+        {PLUS, "PLUS"},
+        {OR, "OR"},
+        {QUESTION, "QUESTION"},
+        {LEAF_NODE, "LEAF_NODE"},
+        {NONE, "NONE"},
+        {EPSILON, "EPSILON"}
+};
+void Node::print2() {
+    static std::map<Operator, std::string> opToString = {
+            {CONCAT, "CONCAT"},
+            {STAR, "STAR"},
+            {PLUS, "PLUS"},
+            {OR, "OR"},
+            {QUESTION, "QUESTION"},
+            {LEAF_NODE, "LEAF_NODE"},
+            {NONE, "NONE"},
+            {EPSILON, "EPSILON"}
+    };
+    if (op == LEAF_NODE) {
+        std::cout << terminal << " ";
+        return;
+    } else {
+        std::cout << opToString[op] << " ";
+    }
+    for (auto child : children) {
+        child->print();
+    }
 }
 
 char Node::getTerminal() const {
@@ -120,3 +165,4 @@ void Node::replaceLastN(const int n, Node* node) {
     }
     children.push_back(node);
 }
+
