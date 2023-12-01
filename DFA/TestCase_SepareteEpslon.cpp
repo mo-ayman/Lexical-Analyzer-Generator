@@ -7,13 +7,13 @@
 #include "DFA.h"
 #include "Epslon_NFA_NFA.h"
 #include "HelpingMethods.h"
-/*
+
 int main() {
     HelpingMethods HM;
     // Example transition table as an unordered map
     vector<map<char, vector<int>>> transitionTable;
     map<char, vector<int>> myMap{
-    {'\0',{1,2,4,7}}
+    {'\0',{1,7}}
     };
     map<char, vector<int>> myMap1{
     {'\0',{2,4}}
@@ -22,16 +22,16 @@ int main() {
     {'a',{3}}
     };
     map<char, vector<int>> myMap3{
-    {'\0',{6,1,2,4,7}}
+    {'\0',{6}}
     };
     map<char, vector<int>> myMap4{
     {'b',{5}}
     };
     map<char, vector<int>> myMap5{
-    {'\0',{6,1,2,4,7}}
+    {'\0',{6}}
     };
     map<char, vector<int>> myMap6{
-    {'\0',{1,2,4,7}}
+    {'\0',{1,7}}
     };
     map<char, vector<int>> myMap7{
     {'a',{8}}
@@ -43,7 +43,7 @@ int main() {
     {'b',{10}}
     };
     map<char, vector<int>> myMap10{
-    
+
     };
     transitionTable.push_back(myMap);
     transitionTable.push_back(myMap1);
@@ -80,4 +80,3 @@ int main() {
 
     return 0;
 }
-*/

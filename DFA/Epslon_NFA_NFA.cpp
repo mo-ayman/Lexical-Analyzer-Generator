@@ -9,8 +9,12 @@
 #include "HelpingMethods.h"
 #include "Epslon_NFA_NFA.h"
 using namespace std;
-
+/*
+This is the constructor of NFA first for loop to convert vextor im map of transition table to set to ease some 
+functions in future
+*/
 Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
+        
         int indx = 0;
         for (map<char, vector<int>> TransitionMap : table)
         {
@@ -22,14 +26,43 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
             }
             TransitionTable.push_back(map);
         }
-        finalStateV = finals;
+        Update_Epslon_iteration(TransitionTable);
+        finalStateMap = finals;
         initialState = initial;
     };
-  map<int, string> Epslon_NFA_NFA::get_Final_States()
-    {
-        return finalStateV;
-    }
+   void Epslon_NFA_NFA::Update_Epslon_iteration(vector<map<char, set<int>>>& T_table) {
+       for (map<char, set<int>>& TransitionMap : T_table)
+       {
+           for (auto& pair : TransitionMap) {
+               if (pair.first == '\0') {
+                   for (int elem : pair.second) {
+                       const set<int>& Epslon_state= get_epslon_states(elem);
+                       (pair.second).insert(Epslon_state.begin(), Epslon_state.end());
+                   }
+               }
+           }
+       }
+   }
+   set<int> Epslon_NFA_NFA::get_epslon_states(int indx_TT)
+   {
+       auto it = TransitionTable[indx_TT].find('\0');
+       if (it != TransitionTable[indx_TT].end())
+       {
+           return it->second;
+       }
+       return set<int>{};
+   }
+   map<int, string> Epslon_NFA_NFA::get_Final_States()
+     {
+        return finalStateMap;
+     }
+   /*
+     first we loop in TransitionTable and call Handle_Epslon which in turns
+     we push epslon states in queue and loop through it to add it's reach state int queue and int set vector of
+     Current map indx.
+     second update final states map after ending epslon transition and delete all epslons states.
 
+   */
     vector<map<char, set<int>>> Epslon_NFA_NFA::get_NFA()
     {
         int indx = 0;
@@ -37,19 +70,11 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
             Handle_Epslon(TransitionMap, indx);
             indx++;
         }
-        indx = 0;
-        for (map<char, set<int>>& TransitionMap : TransitionTable) {
-            Replace_state_Returned(TransitionMap, indx);
-            indx++;
-        }
+
         indx = 0;
         for (map<char, set<int>>& TransitionMap : TransitionTable)
         {
-            for (auto& pair : TransitionMap) {
-                set<int> Combined_State = Return_Epslon_loop(pair.second);
-                (pair.second).insert(Combined_State.begin(), Combined_State.end());
-            }
-
+          
             auto& mapToModify = TransitionTable[indx]; // Access the second map
            // Find the element and remove it
             auto it = mapToModify.find('\0');
@@ -62,52 +87,30 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
 
         return TransitionTable;
     };
+    /*
+     This function used to update final state to include all 
+     states that their epslon transition go to final state.
+    */
     void Epslon_NFA_NFA::UpdateFinalStates(map<char, set<int>>& TransMap, int indx_final)
     {
         auto it = TransMap.find('\0');
         if (it != TransMap.end()) {
             for (int statElem : it->second)
             {
-                auto check = finalStateV.find(statElem);
-                if (check != finalStateV.end()) {
-                    finalStateV.insert(std::pair<int, string>(indx_final, check->second));   
+                auto check = finalStateMap.find(statElem);
+                if (check != finalStateMap.end()) {
+                    finalStateMap.insert(std::pair<int, string>(indx_final, check->second));
                     break;
                 }
             }
 
         }
     }
-    set<int>  Epslon_NFA_NFA::Return_Epslon_loop(set<int> setOfelem)
-    {
-        set<int> Combined_State;
-        for (int elem : setOfelem)
-        {
-            if (TransitionTable[elem].find('\0') != TransitionTable[elem].end()) {
-                set<int> forwardSet = TransitionTable[elem].find('\0')->second;
-                Combined_State.insert(forwardSet.begin(), forwardSet.end());
-            }
-        }
-        return Combined_State;
 
-    }
-    void Epslon_NFA_NFA::Replace_state_Returned(map<char, set<int>>& TransitionMap, int indx) {
-        for (auto& pair : TransitionMap) {
-            for (int elem : pair.second) {
-                if (elem == indx)
-                {
-                    auto it = TransitionMap.find('\0');
-                    if (it != TransitionMap.end()) {
-                        set<int>& set1 = pair.second;
-                        set1.insert(it->second.begin(), it->second.end());
-
-                    }
-                }
-            }
-
-        }
-
-    }
-
+    /*
+     First we push epslon states in queue and loop through it to add it's reach state int queue and int set vector of
+     Current map indx
+    */
     void Epslon_NFA_NFA::Handle_Epslon(map<char, set<int>>& TransitionMap, int indx) {
         auto stateEpslon = TransitionMap.find('\0');
         if (stateEpslon != TransitionMap.end()) {
@@ -134,6 +137,10 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
         }
 
     }
+    /*
+    This method used to update current state according if
+    it has in epsoln states for forwarding one
+    */
     void Epslon_NFA_NFA::UpdateCurrent_st(int forwardState, int currentIndx)
     {
 
