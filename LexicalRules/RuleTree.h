@@ -1,40 +1,43 @@
-
-//
-// Created by rusev on 11/26/23.
-//
 #ifndef SRC_RULETREE_H
 #define SRC_RULETREE_H
 
+#include <iostream>
+
 #include "Node.h"
 
-class RuleTree {
+enum Priority {
+    PUNCTUATION,
+    RESERVED,
+    NORMAL
+};
 
-private:
+class RuleTree {
     std::string name;
-    Node *root;
+    Priority priority;
+    Node* root;
 
 public:
     // Constructor
     RuleTree();
 
-    RuleTree(std::string name, Node *root);
+    RuleTree(std::string name, Node* root, Priority priority = NORMAL);
+
     // Destructor
     ~RuleTree();
 
     // Copy Constructor
-    RuleTree(const RuleTree &other);
+    RuleTree(const RuleTree& other);
 
     // Getters and Setters
-    const std::string &getName() const;
+    [[nodiscard]] const std::string& getName() const;
 
-    void setName(const std::string &name);
+    void setName(const std::string& name);
 
-    Node *getRoot() const;
+    [[nodiscard]] Node* getRoot() const;
 
-    void setRoot(Node *root);
+    void setRoot(Node* root);
 
-    void print();
+    void print() const;
 };
-
 
 #endif //SRC_RULETREE_H
