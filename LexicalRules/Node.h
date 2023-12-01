@@ -1,56 +1,57 @@
-//
-// Created by rusev on 11/26/23.
-//
-#include <vector>
-#include <string>
-#include <iostream>
-
 #ifndef SRC_NODE_H
 #define SRC_NODE_H
 
+#include <vector>
+
 enum Operator {
-    CONCAT, STAR, PLUS, OR, QUESTION, LEAF_NODE, NONE
+    CONCAT,
+    STAR,
+    PLUS,
+    OR,
+    QUESTION,
+    LEAF_NODE,
+    NONE
 };
 
 class Node {
-private:
     char terminal;
     Operator op;
     std::vector<Node *> children;
+
 public:
     Node();
 
-    Node(Operator op);
-
-    Node(char terminal, Operator op);
+    explicit Node(Operator op);
 
     Node(Operator op, std::vector<Node *> children);
 
-    Node(char terminal, Operator op, std::vector<Node *> children);
+    explicit Node(char terminal);
 
     ~Node();
 
-    Node(const Node &other);
+    Node(const Node& other);
 
-    char getTerminal() const;
-
-    void setTerminal(char terminal);
-
-    Operator getOp() const;
+    [[nodiscard]] Operator getOp() const;
 
     void setOp(Operator op);
 
-    std::vector<Node *> getChildren() const;
+    [[nodiscard]] char getTerminal() const;
 
-    void setChildren(const std::vector<Node *> &children);
+    void setTerminal(char terminal);
 
-    void add_child(Node *child);
+    [[nodiscard]] std::vector<Node *> getChildren() const;
+
+    void setChildren(const std::vector<Node *>& children);
+
+    void add_child(Node* child);
 
     void add_children(std::vector<Node *> children);
 
-    void print();
+    void wrapLast(Operator op);
 
+    void replaceLastN(int n, Node* node);
+
+    void print() const;
 };
-
 
 #endif //SRC_NODE_H
