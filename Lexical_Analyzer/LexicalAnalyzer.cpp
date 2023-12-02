@@ -43,11 +43,17 @@ class Token
 public:
     size_t filePos;
     string type;
-    string value;
+    
+    string lexeme;
+    int rule_index;
+    Priority rule_priority;
+
     string error;
     Token() {}
-    Token(size_t fp, string t, const string &v) : filePos(fp), type(t), value(v), error("") {}
-    Token(size_t fp, string t, const string &v, const string &e) :filePos(fp), type(t), value(v), error(e) {}
+    Token(size_t fp, const tuple<string, Priority, int> t,  string l) : filePos(fp), type(get<0>(t)), rule_priority(get<1>(t)), rule_index(get<2>(t)), lexeme(l), error("") {}
+    Token(size_t fp, const tuple<string, Priority, int> t,  string l, const string& e) : filePos(fp), type(get<0>(t)), rule_priority(get<1>(t)), rule_index(get<2>(t)), lexeme(l), error(e) {}
+    Token(size_t fp, string t, const string &l) : filePos(fp), type(t), lexeme(l), error("") {}
+    Token(size_t fp, string t, const string &l, const string &e) :filePos(fp), type(t), lexeme(l), error(e) {}
 };
 
 class LexicalAnalyzer
@@ -62,7 +68,7 @@ private:
     // Dfa
     vector<map<char, int>> dfa;
     int start_state;
-    map<int, string> final_states;
+    unordered_map <int, tuple<string, Priority, int>> final_states;
 
     bool isWhitespace(char c)
     {
@@ -131,7 +137,7 @@ public:
         
         int maximalMunchType = -1; 
         int maximalMunchEnd = 0; // an index within {lexeme} that marks the end of the maximal munch (not inclusive)
-        int maximalMunchFilePos = 0; // the position of the first char of the maximal munch lexeme in the input file
+        size_t maximalMunchFilePos = 0; // the position of the first char of the maximal munch lexeme in the input file
         
         int state = start_state; // current state
         string error = "";
@@ -236,11 +242,12 @@ int main()
         {}                    // M 6
     };
     int x = 0;
-    map<int, string> f = {
-        {3, "P3"},
-        {6, "P2"},
-        {2, "p1"},
-        {4, "p3"}};
+    unordered_map<int, tuple<string, Priority, int>> f = {
+        {3, make_tuple("P3", Priority(2), 2)},
+        {6, make_tuple("P2", Priority(2), 5)},
+        {2, make_tuple("p1", Priority(2), 1)},
+        {4, make_tuple("p3", Priority(2), 3)}
+        };
     export_DFA(v, x, f, "2018_q2.dat");
 
     LexicalAnalyzer lexer("2018_q2.txt", 1024, "2018_q2.dat");
@@ -253,8 +260,7 @@ int main()
         {
             cout << "Error, removing \"" << token.error << "\"" << endl;
         }
-        cout << "Pos: "<< token.filePos << ", Type: " << token.type << ", Value: \"" << token.value << "\"" << endl;
+        cout << "Pos: "<< token.filePos << ", Type: " << token.type << ", Lexeme: \"" << token.lexeme << "\"" << endl;
     } while (token.type != "EOF");
-
     return 0;
 }
