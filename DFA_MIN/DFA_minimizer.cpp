@@ -1,15 +1,17 @@
+#include <iomanip>
 #include <iostream>
 #include <vector>
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
+#include "../LexicalRules/RuleTree.h"
 
 using namespace std;
 
 class DFA_minimizer{
     private:
-        std::vector<int> assignNumbers(int num_of_states, map<int, string> final_states, int* num_of_classes) {
+        std::vector<int> assignNumbers(int num_of_states, unordered_map<int, tuple<string, Priority, int>> final_states, int* num_of_classes) {
             std::unordered_map<std::string, int> stringToNumber;
             std::vector<int> resultVector;
 
@@ -20,7 +22,7 @@ class DFA_minimizer{
                     resultVector.push_back(0);
                 }
                 else{
-                    string str = final_states[i];
+                    string str = get<0>(final_states[i]);
                     if (stringToNumber.find(str) == stringToNumber.end()) {
                         stringToNumber[str] = currentNumber++;
                     }
@@ -34,9 +36,9 @@ class DFA_minimizer{
     public:
         vector<map<char, int>> table;
         int start;
-        map<int, string> fstates;
+        unordered_map<int, tuple<string, Priority, int>> fstates;
 
-        void minimize(vector<map<char, int>> dfa, int start_state, map<int, string> final_states){
+        void minimize(vector<map<char, int>> dfa, int start_state, unordered_map<int, tuple<string, Priority, int>> final_states){
             const int MOD = 1000000007;
             int num_of_classes;
 
@@ -116,6 +118,23 @@ class DFA_minimizer{
                 if (fstates.find(new_fstate_idx) == fstates.end()) {
                     fstates[new_fstate_idx] = final_entry.second;
                 }
+                else{
+                    Priority prev =  get<1>(fstates[new_fstate_idx]);
+                    Priority challenging =  get<1>(final_entry.second);
+                    if(challenging < prev){
+                        fstates[new_fstate_idx] = final_entry.second;
+                    }
+                    else if(challenging == prev){
+                        int prev_ord = get<2>(fstates[new_fstate_idx]);
+                        int challenging_ord = get<2>(final_entry.second);
+                        if(challenging_ord < prev_ord){
+                            fstates[new_fstate_idx] = final_entry.second;
+                        }
+                        else if(challenging_ord == prev_ord){
+                            throw std::runtime_error("Final states priority conflict (same class, same value)");
+                        }
+                    } 
+                }
             }
             table = min_dfa;
         }
@@ -125,11 +144,11 @@ int main() {
 
     // Define the DFA transition table
     vector<map<char, int>> dfa = {
-        {{'1', 2}, {'0', 1}},
-        {{'0', 2}, {'1', 3}},
-        {{'1', 4}, {'0', 2}},
-        {{'0', 3}, {'1', 3}},
-        {{'1', 4}, {'0', 4}},
+        {{'b', 2}, {'a', 1}},
+        {{'a', 2}, {'b', 3}},
+        {{'b', 4}, {'a', 2}},
+        {{'a', 3}, {'b', 3}},
+        {{'b', 4}, {'a', 4}},
 
         // {{'a', 6}, {'b', 7}},
         // {{'a', 5}, {'b', 5}},
@@ -149,39 +168,38 @@ int main() {
     }
     // Define the start state and final states
     int startState = 0;
-    map<int, string> finalStates = {
-        {4, "f"},
-        {3, "f"},
-        // {6, "A"},
-        // {9, "A"}
+    unordered_map<int, tuple<string, Priority, int>> final_states = {
+        {3, {"f", RESERVED, 2}},
+        {4, {"f", NORMAL, 3}}
     };
 
-    cout << "Original DFA Final States:" << endl;
-    for (auto const& entry : finalStates) {
-        cout << "State " << entry.first << ": " << entry.second << endl;
-    }
-
     // Minimize the DFA
-    dfaMinimizer.minimize(dfa, startState, finalStates);
-
-    // Output the minimized DFA Transition Table
-    cout << "Minimized DFA Transition Table:" << endl;
-    for (int i = 0; i < dfaMinimizer.table.size(); ++i) {
-        cout << "State " << i << ": ";
-        for (auto const& entry : dfaMinimizer.table[i]) {
-            cout << entry.first << " -> " << entry.second << " | ";
-        }
-        cout << endl;
-    }
+    dfaMinimizer.minimize(dfa, startState, final_states);
 
     // Output the minimized DFA start state
     cout << "Minimized DFA Start State: " << dfaMinimizer.start << endl;
 
-    // Output the minimized DFA final states
-    cout << "Minimized DFA Final States:" << endl;
-    for (auto const& entry : dfaMinimizer.fstates) {
-        cout << "State " << entry.first << ": " << entry.second << endl;
+    // Display the minimized final states
+    cout << "Minimized Final States:\n";
+    for (const auto& entry : dfaMinimizer.fstates) {
+        cout << "State " << entry.first << ": " << get<0>(entry.second) << ", Priority: " << get<1>(entry.second) << ", Order: " << get<2>(entry.second) << endl;
     }
+    cout << endl;
 
+    // Print header with input symbols
+    cout << setw(10) << "State";
+    for (const auto& entry : dfaMinimizer.table[0]) {
+        cout << setw(10) << entry.first;
+    }
+    cout << endl;
+
+    // Print transitions for each state
+    for (int i = 0; i < dfaMinimizer.table.size(); ++i) {
+        cout << setw(10) << i;
+        for (const auto& entry : dfaMinimizer.table[i]) {
+            cout << setw(10) << entry.second;
+        }
+        cout << endl;
+    }
     return 0;
 }
