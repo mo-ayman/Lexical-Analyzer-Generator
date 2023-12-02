@@ -3,7 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <map>
-
+#include <unordered_map>
+#include "../LexicalRules/RuleTree.h"
 using namespace std;
 
 // Serialization for vector<map<char, int>>
@@ -44,19 +45,22 @@ void deserialize(vector<map<char, int>>& v, istream& is) {
 }
 
 // Serialization for map<int, string>
-void serialize(const map<int, string>& m, ostream& os) {
+void serialize(const unordered_map<int, tuple<string, Priority, int>>& m, ostream& os) {
     size_t mapSize = m.size();
     os.write(reinterpret_cast<const char*>(&mapSize), sizeof(mapSize));
     for (const auto& entry : m) {
         os.write(reinterpret_cast<const char*>(&entry.first), sizeof(entry.first));
 
-        size_t strSize = entry.second.size();
+        size_t strSize = get<0>(entry.second).size();
         os.write(reinterpret_cast<const char*>(&strSize), sizeof(strSize));
-        os.write(entry.second.c_str(), strSize);    }
+        os.write(get<0>(entry.second).c_str(), strSize);
+        os.write(reinterpret_cast<const char*>(&get<1>(entry.second)), sizeof(get<1>(entry.second)));
+        os.write(reinterpret_cast<const char*>(&get<2>(entry.second)), sizeof(get<2>(entry.second)));
+    }
 }
 
 // Deserialization for map<int, string>
-void deserialize(map<int, std::string>& m, istream& is) {
+void deserialize(unordered_map <int, tuple<string, Priority, int>>& m, istream& is) {
     size_t size;
     is.read(reinterpret_cast<char*>(&size), sizeof(size));
 
@@ -66,15 +70,21 @@ void deserialize(map<int, std::string>& m, istream& is) {
 
         size_t strSize;
         is.read(reinterpret_cast<char*>(&strSize), sizeof(strSize));
-        string value(strSize, '\0');
-        is.read(&value[0], strSize);
+        string str(strSize, '\0');
+        is.read(&str[0], strSize);
+        
+        Priority p;
+        is.read(reinterpret_cast<char*>(&p), sizeof(p));
+        
+        int idx;
+        is.read(reinterpret_cast<char*>(&idx), sizeof(idx));
 
-        m[key] = value;
+        m[key] = make_tuple(str, p, idx) ;
     }
 }
 
 // DFA Serialization
-int export_DFA(vector<map<char, int>>& table, int& start, map<int, string>& final_states, string file_path){
+int export_DFA(vector<map<char, int>>& table, int& start, unordered_map<int, tuple<string, Priority, int>>& final_states, string file_path){
     ofstream outFile(file_path, ios::binary);
     if (outFile.is_open()) {
         serialize(table, outFile);
@@ -89,7 +99,7 @@ int export_DFA(vector<map<char, int>>& table, int& start, map<int, string>& fina
 }
 
 // DFA Deserialization
-int import_DFA(vector<map<char, int>>& loaded_table, int& loaded_start, map<int, string>& loaded_final_states, string file_path){
+int import_DFA(vector<map<char, int>>& loaded_table, int& loaded_start, unordered_map<int, tuple<string, Priority, int>>& loaded_final_states, string file_path){
     ifstream inFile(file_path, ios::binary);
     if (inFile.is_open()) {
         deserialize(loaded_table, inFile);
@@ -103,42 +113,47 @@ int import_DFA(vector<map<char, int>>& loaded_table, int& loaded_start, map<int,
     }
 }
 
-int main() {
-    // Sample DFA {v,x,f}
-    vector<map<char, int>> v = {
-        {{'a', 1}, {'b', 2}},
-        {{'c', 3}, {'d', 4}},
-        {{'e', 5}, {'f', 6}}
-    };
-    int x = 42;
-    map<int, string> f = {
-        {1, "one"},
-        {2, "two"},
-        {3, "three"}
-    };
+// int main() {
+//     // Sample DFA {v,x,f}
+//     vector<map<char, int>> v = {
+//         {{'a', 4}, {'b', 1}}, // x 0
+//         {{'a', 3}, {'b', 2}}, // z 1
+//         {{'a', 4}, {'b', 5}}, // w 2
+//         {{'a', 4}, {'b', 6}}, // u 3
+//         {{'a', 4}},           // y,T 4
+//         {{'a', 4}, {'b', 5}}, // k 5
+//         {}, // M 6
+//     };
+//     int x = 0;
+//     map<int, string> f = {
+//         {3, "P3"},
+//         {6, "P2"},
+//         {2, "p1"},
+//         {4, "p3"}
+//     };
 
-    // Exporting
-    export_DFA(v,x,f,"huh.dat");
+//     // Exporting
+//     export_DFA(v,x,f,"2018_q2.dat");
 
-    // Importing
-    vector<map<char, int>> loadedV;
-    int loadedX;
-    map<int, string> loadedF;
-    import_DFA(loadedV , loadedX , loadedF , "huh.dat");
+//     // Importing
+//     vector<map<char, int>> loadedV;
+//     int loadedX;
+//     map<int, string> loadedF;
+//     import_DFA(loadedV , loadedX , loadedF , "huh.dat");
     
-    // Displaying imported DFA
-    cout << "Loaded table:" << endl;
-    for (const auto& m : loadedV) {
-        for (const auto& entry : m) {
-            cout << entry.first << ": " << entry.second << " ";
-        }
-        cout << endl;
-    }
-    cout << "Loaded start: " << loadedX << endl;
-    cout << "Loaded final states:" << endl;
-    for (const auto& entry : loadedF) {
-        cout << entry.first << ": " << entry.second << endl;
-    }
+//     // Displaying imported DFA
+//     cout << "Loaded table:" << endl;
+//     for (const auto& m : loadedV) {
+//         for (const auto& entry : m) {
+//             cout << entry.first << ": " << entry.second << " ";
+//         }
+//         cout << endl;
+//     }
+//     cout << "Loaded start: " << loadedX << endl;
+//     cout << "Loaded final states:" << endl;
+//     for (const auto& entry : loadedF) {
+//         cout << entry.first << ": " << entry.second << endl;
+//     }
 
-    return 0;
-}
+//     return 0;
+// }
