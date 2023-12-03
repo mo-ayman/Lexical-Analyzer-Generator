@@ -4,9 +4,9 @@ digraph DFA {
   hidden_node -> 0;
   0 [shape=circle, color=red];
   1 [shape=circle];
-  2 [shape=doublecircle, label="x", color=blue];
-  3 [shape=doublecircle, label="y", color=blue];
-  4 [shape=doublecircle, label="z", color=blue];
+  2 [shape=doublecircle, label="2\n'x'", color=blue];
+  3 [shape=doublecircle, label="3\n'y'", color=blue];
+  4 [shape=doublecircle, label="4\n'z'", color=blue];
   0 -> 1 [label="a"];
   0 -> 2 [label="b"];
   1 -> 1 [label="a"];

@@ -25,14 +25,22 @@ void exportDfaTable(const vector<map<char, int>>& dfaTable, int startState, cons
     }
 
     // 2. Write the DFA table to the file
-    outFile << setw(5) << "State";
+    outFile << setw(5) << "State" << " ";
     for (const auto& input : allInputs) {
         outFile << setw(5) << input;
     }
     outFile << "\n";
 
     for (int i = 0; i < dfaTable.size(); ++i) {
-        outFile << setw(5) << i;
+        
+        // Mark final states with an asterisk
+        if (finalStates.find(i) != finalStates.end()) {
+            outFile << setw(5) << i << "*";
+
+        }
+        else{
+            outFile << setw(5) << i << " ";
+        }
         for (const auto& input : allInputs) {
             outFile << setw(5);
             auto transition = dfaTable[i].find(input);
@@ -71,7 +79,7 @@ void exportDfaGraph(const vector<map<char, int>>& dfaTable, int startState, cons
         if (i == startState) {
             outFile << " [shape=circle, color=red]";
         } else if (finalStates.find(i) != finalStates.end()) {
-            outFile << " [shape=doublecircle, label=\"" << get<0>(finalStates.at(i)) << "\", color=blue]";
+            outFile << " [shape=doublecircle, label=\"" << i << "\\n'" << get<0>(finalStates.at(i)) <<"'\", color=blue]";
         } else {
             outFile << " [shape=circle]";
         }
