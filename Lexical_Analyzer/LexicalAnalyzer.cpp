@@ -82,13 +82,13 @@ private:
     {
         // Panic Mode Recovery
         vector<char> new_buffer;
-        if (lexeme->size() > 1)
+        if (lexeme->size() >= 1)
         {
+            // discard first character of lexeme
             if (!isWhitespace((*lexeme)[0]))
             {
                 *error += (*lexeme)[0];
-            }
-            // discard first character of lexeme
+            }            
             new_buffer.insert(new_buffer.end(), lexeme->begin() + 1, lexeme->end());
         }
         else
@@ -106,6 +106,7 @@ private:
         }
         buffer = new_buffer;
         bufferPos = 0;
+        
         // reset maximal munch variables for the retry.
         *lexeme = "";
         *state = start_state;
@@ -236,20 +237,21 @@ int main()
     https://drive.google.com/file/d/1e3cLv4e8OTNEiOp_TFDnFI853S1RElFh
     */
     vector<map<char, int>> v = {
-        {{'a', 4}, {'b', 1}}, // x 0
+        {{'a', 4}, {'b', 1}, {'c', 7}}, // x 0
         {{'a', 3}, {'b', 2}}, // z 1
         {{'a', 4}, {'b', 5}}, // w 2
         {{'a', 4}, {'b', 6}}, // u 3
         {{'a', 4}},           // yT 4
         {{'a', 4}, {'b', 5}}, // k 5
-        {}                    // M 6
+        {},                    // M 6
+        {}
     };
     int x = 0;
     unordered_map<int, tuple<string, Priority, int>> f = {
-        {3, make_tuple("P3", Priority(2), 2)},
-        {6, make_tuple("P2", Priority(2), 5)},
-        {2, make_tuple("p1", Priority(2), 1)},
-        {4, make_tuple("p3", Priority(2), 3)}
+        {2, make_tuple("p1", Priority(2), 2)},
+        {3, make_tuple("P3", Priority(2), 3)},
+        {4, make_tuple("p3", Priority(2), 4)},
+        {6, make_tuple("P2", Priority(2), 6)},
         };
     export_DFA(v, x, f, "2018_q2.dat");
 
