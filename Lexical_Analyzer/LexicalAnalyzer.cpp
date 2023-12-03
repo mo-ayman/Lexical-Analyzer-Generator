@@ -41,14 +41,15 @@ using namespace std;
 class Token
 {
 public:
-    size_t filePos;
-    string type;
-    
-    string lexeme;
-    int rule_index;
-    Priority rule_priority;
+    string lexeme;  // the sequence of characters making the token
+    size_t filePos; // the position of the start of the lexeme within the input file
+    string type;    // the name of the corresponding final state in the minimal DFA
 
-    string error;
+    string error;   // the sequence of characters that got removed by PMR before this token
+
+    int rule_index; // the index of the corresponding lexical rule
+    Priority rule_priority; // the priority class of the corresponding lexical rule
+
     Token() {}
     Token(size_t fp, const tuple<string, Priority, int> t,  string l) : filePos(fp), type(get<0>(t)), rule_priority(get<1>(t)), rule_index(get<2>(t)), lexeme(l), error("") {}
     Token(size_t fp, const tuple<string, Priority, int> t,  string l, const string& e) : filePos(fp), type(get<0>(t)), rule_priority(get<1>(t)), rule_index(get<2>(t)), lexeme(l), error(e) {}
@@ -64,7 +65,8 @@ private:
     vector<char> buffer;
     size_t bufferPos;
     size_t lexemePosInFile = 0; // the position of the last character of lexeme within the input file
-
+    bool isEOF = false;
+    
     // Dfa
     vector<map<char, int>> dfa;
     int start_state;
@@ -113,9 +115,9 @@ public:
     LexicalAnalyzer(const string &input_path, size_t buffer_size, const std::string &DFA_path)
         : file(input_path), buffer(buffer_size), bufferPos(0)
     {
-
-        // TODO: handle when file doesn't exist
-        //...
+        if (!file.is_open()) {
+            throw std::runtime_error("Error: Unable to open file: " + input_path);
+        }
 
         // Read the initial chunk into the buffer
         file.read(buffer.data(), buffer_size);
@@ -127,7 +129,7 @@ public:
         if (import_DFA(dfa, start_state, final_states, DFA_path) == -1)
         {
             // TODO: handle importing DFA error (DFA_path doesn't exist)
-            //...
+            throw std::runtime_error("Error: Unable to import DFA from file: " + DFA_path);
         }
     }
 
@@ -163,6 +165,7 @@ public:
                     }
                     if (lexeme.empty())
                     {
+                        isEOF = true;
                         return Token(lexemePosInFile, "EOF", "");
                     }
                     // Panic Mode Recovery
