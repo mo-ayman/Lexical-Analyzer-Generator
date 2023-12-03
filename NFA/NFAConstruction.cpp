@@ -1,14 +1,12 @@
-//
-// Created by rusev on 11/26/23.
-//
-
 #include "NFAConstruction.h"
 
 #include <utility>
+#include <array>
 
 NFAConstruction::NFAConstruction() {
     stateCount = 0;
-    nfs = std::vector< std::map<char, std::vector<int>> >();
+    startStateIndex = 0;
+    nfs = std::vector<std::map<char, std::vector<int>>>();
     finalStates = std::unordered_map<int, std::tuple<std::string, Priority, int>>();
 }
 
@@ -16,7 +14,7 @@ NFAConstruction::NFAConstruction() {
 
 // ------------------ public methods ------------------
 
- std::unordered_map<int, std::tuple<std::string, Priority, int>> NFAConstruction::getFinalStates() const {
+std::unordered_map<int, std::tuple<std::string, Priority, int>> NFAConstruction::getFinalStates() const {
     return finalStates;
 }
 
@@ -30,34 +28,30 @@ std::vector<std::map<char, std::vector<int>>> NFAConstruction::getNfs() const {
 
 // ------------------ private methods ------------------
 
-void NFAConstruction::constructNFA(std::vector<RuleTree *> rules) {
+void NFAConstruction::constructNFA(const std::vector<RuleTree *>& rules) {
     startStateIndex = addState();
     int ruleIndex = 0;
-    for (auto rule : rules) {
-        std::pair< char, std::array<int,2> > curr = performOperation(rule->getRoot());
-//        char transChar = curr.first;
+    for (const auto rule: rules) {
+        std::pair<char, std::array<int, 2>> curr = performOperation(rule->getRoot());
         int firstStateIndex = curr.second[0];
         int lastStateIndex = curr.second[1];
 
         nfs[startStateIndex][EPS].push_back(firstStateIndex);
         finalStates[lastStateIndex] = {rule->getName(), rule->getPriority(), ruleIndex++};
     }
-
-
-
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::leafOp(Node* node) {
-    int stateIndex = addState();
+std::pair<char, std::array<int, 2>> NFAConstruction::leafOp(Node* node) {
+    const int stateIndex = addState();
     return {node->getTerminal(), {stateIndex, stateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::concatOp(std::vector<Node *> nodes) {
+std::pair<char, std::array<int, 2>> NFAConstruction::concatOp(std::vector<Node *> nodes) {
     // first state of the first node
-    auto firstState = performOperation(nodes[0]);
+    const auto firstState = performOperation(nodes[0]);
     char firstTransChar = firstState.first;
     // first state and last state of the chain
-    int firstStateIndex = firstState.second[0];
+    const int firstStateIndex = firstState.second[0];
     int lastStateIndex = firstState.second[1];
 
     for (int nodeIndex = 1; nodeIndex < nodes.size(); nodeIndex++) {
@@ -65,40 +59,39 @@ std::pair< char, std::array<int,2> > NFAConstruction::concatOp(std::vector<Node 
         auto nextState = performOperation(nodes[nodeIndex]);
         char nextTransChar = nextState.first;
         int nextFirstStateIndex = nextState.second[0];
-        int nextLastStateIndex = nextState.second[1];
+        const int nextLastStateIndex = nextState.second[1];
 
         nfs[lastStateIndex][nextTransChar].push_back(nextFirstStateIndex);
         // update the last state of the chain
         lastStateIndex = nextLastStateIndex;
-
     }
     // return the first and last state of the chain
     return {firstTransChar, {firstStateIndex, lastStateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::starOp(std::vector<Node *> nodes) {
-    std::pair< char, std::array<int,2> > curr = plusOp(std::move(nodes));
+std::pair<char, std::array<int, 2>> NFAConstruction::starOp(std::vector<Node *> nodes) {
+    const std::pair<char, std::array<int, 2>> curr = plusOp(std::move(nodes));
     char transChar = curr.first;
-    int firstStateIndex = curr.second[0];
-    int lastStateIndex = curr.second[1];
+    const int firstStateIndex = curr.second[0];
+    const int lastStateIndex = curr.second[1];
     // epsilon transition from first state to last state (different from plus)
     nfs[firstStateIndex][EPS].push_back(lastStateIndex);
 
     return {transChar, {firstStateIndex, lastStateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::plusOp(std::vector<Node *> nodes) {
-    int firstStateIndex = addState(); // epsilon transition from it
-    int lastStateIndex = addState(); // epsilon transition to it
+std::pair<char, std::array<int, 2>> NFAConstruction::plusOp(std::vector<Node *> nodes) {
+    const int firstStateIndex = addState(); // epsilon transition from it
+    const int lastStateIndex = addState(); // epsilon transition to it
     if (nodes.size() != 1) {
         // Handle the error as needed
         throw std::runtime_error("Plus or Star operator must have only one child");
     }
     // middle states
-    std::pair< char, std::array<int,2> > curr = performOperation(nodes[0]);
-    char transChar = curr.first;
-    int firstCurrState = curr.second[0];
-    int lastCurrState = curr.second[1];
+    const std::pair<char, std::array<int, 2>> curr = performOperation(nodes[0]);
+    const char transChar = curr.first;
+    const int firstCurrState = curr.second[0];
+    const int lastCurrState = curr.second[1];
 
     // backward epsilon transition from last state to first state
     nfs[lastCurrState][EPS].push_back(firstCurrState);
@@ -111,15 +104,15 @@ std::pair< char, std::array<int,2> > NFAConstruction::plusOp(std::vector<Node *>
     return {EPS, {firstStateIndex, lastStateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::orOp(std::vector<Node *> nodes) {
-    int firstStateIndex = addState(); // epsilon transition from it
-    int lastStateIndex = addState(); // epsilon transition
+std::pair<char, std::array<int, 2>> NFAConstruction::orOp(std::vector<Node *> nodes) {
+    const int firstStateIndex = addState(); // epsilon transition from it
+    const int lastStateIndex = addState(); // epsilon transition
 
-    for(auto node : nodes) {
-        std::pair< char, std::array<int,2> > curr = performOperation(node);
+    for (const auto node: nodes) {
+        std::pair<char, std::array<int, 2>> curr = performOperation(node);
         char transChar = curr.first;
         int firstCurrState = curr.second[0];
-        int lastCurrState = curr.second[1];
+        const int lastCurrState = curr.second[1];
 
         nfs[firstStateIndex][transChar].push_back(firstCurrState);
         nfs[lastCurrState][EPS].push_back(lastStateIndex);
@@ -128,19 +121,19 @@ std::pair< char, std::array<int,2> > NFAConstruction::orOp(std::vector<Node *> n
     return {EPS, {firstStateIndex, lastStateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::questionOp(std::vector<Node *> nodes) {
-    int firstStateIndex = addState(); // epsilon transition from it
-    int lastStateIndex = addState(); // epsilon transition to it
+std::pair<char, std::array<int, 2>> NFAConstruction::questionOp(std::vector<Node *> nodes) {
+    const int firstStateIndex = addState(); // epsilon transition from it
+    const int lastStateIndex = addState(); // epsilon transition to it
 
     if (nodes.size() != 1) {
         // Handle the error as needed
         throw std::runtime_error("Question operator must have only one child");
     }
     // middle states
-    std::pair< char, std::array<int,2> > curr = performOperation(nodes[0]);
-    char transChar = curr.first;
-    int firstCurrState = curr.second[0];
-    int lastCurrState = curr.second[1];
+    const std::pair<char, std::array<int, 2>> curr = performOperation(nodes[0]);
+    const char transChar = curr.first;
+    const int firstCurrState = curr.second[0];
+    const int lastCurrState = curr.second[1];
 
     // char transition from first state to first state of middle states
     nfs[firstStateIndex][transChar].push_back(firstCurrState);
@@ -154,11 +147,11 @@ std::pair< char, std::array<int,2> > NFAConstruction::questionOp(std::vector<Nod
     return {EPS, {firstStateIndex, lastStateIndex}};
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::noneOp(std::vector<Node *> nodes) {
+std::pair<char, std::array<int, 2>> NFAConstruction::noneOp(const std::vector<Node *>& nodes) {
     throw std::runtime_error("None operator");
 }
 
-std::pair< char, std::array<int,2> > NFAConstruction::performOperation(Node *node) {
+std::pair<char, std::array<int, 2>> NFAConstruction::performOperation(Node* node) {
     switch (node->getOp()) {
         case CONCAT:
             return concatOp(node->getChildren());
@@ -187,41 +180,33 @@ int NFAConstruction::addState() {
     return stateCount - 1;
 }
 
-void NFAConstruction::print() {
+void NFAConstruction::print() const {
     std::cout << "NFA Construction" << std::endl;
     std::cout << "Start state: " << startStateIndex << std::endl;
     std::cout << "Final states: ";
-    for (auto finalState : finalStates) {
+    for (const auto& finalState: finalStates) {
         std::cout << finalState.first << " ";
     }
     std::cout << std::endl;
     std::cout << "States: " << std::endl;
     for (int i = 0; i < nfs.size(); i++) {
         std::cout << i << ": ";
-        for (auto transition : nfs[i]) {
+        for (const auto& transition: nfs[i]) {
             if (transition.first == EPS) {
                 std::cout << "EPSILON -> ";
             } else {
                 std::cout << transition.first << " -> ";
             }
-            for (auto state : transition.second) {
+            for (const auto state: transition.second) {
                 std::cout << state << " ";
             }
             std::cout << ", ";
         }
         std::cout << std::endl;
     }
-
 }
 
-std::pair<char, std::array<int, 2> > NFAConstruction::epsilonOp(Node *node) {
-    int stateIndex = addState();
+std::pair<char, std::array<int, 2>> NFAConstruction::epsilonOp(Node* node) {
+    const int stateIndex = addState();
     return {EPS, {stateIndex, stateIndex}};
 }
-
-
-
-
-
-
-

@@ -17,11 +17,15 @@ int main() {
     std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates = nfaConstruction->getFinalStates();
     int startStateIndex = nfaConstruction->getStartStateIndex();
 
-//    nfaConstruction->print();
-    // print all rules
+
+    // Print all rules
     for (const auto& rule: rules) {
         rule->print();
     }
+
+    // Print the NFA table
+    std::cout << "NFA table:" << std::endl;
+    nfaConstruction->print();
 
     std::cout << std::endl;
 
