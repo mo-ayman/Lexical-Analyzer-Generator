@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include "../LexicalRules/RuleTree.h"
+#include <set>
 using namespace std;
 
 void exportDfaTable(const vector<map<char, int>>& dfaTable, int startState, const unordered_map<int, tuple<string, Priority, int>>& finalStates, const string& filePath) {
@@ -15,19 +16,28 @@ void exportDfaTable(const vector<map<char, int>>& dfaTable, int startState, cons
         return;
     }
 
-    // Write the DFA table to the file
+    // 1. Obtain all input characters in an ordered set
+    set<char> allInputs;
+    for (const auto& state : dfaTable) {
+        for (const auto& entry : state) {
+            allInputs.insert(entry.first);
+        }
+    }
+
+    // 2. Write the DFA table to the file
     outFile << setw(5) << "State";
-    for (const auto& entry : dfaTable[0]) {
-        outFile << setw(5) << entry.first;
+    for (const auto& input : allInputs) {
+        outFile << setw(5) << input;
     }
     outFile << "\n";
 
     for (int i = 0; i < dfaTable.size(); ++i) {
         outFile << setw(5) << i;
-        for (const auto& entry : dfaTable[i]) {
+        for (const auto& input : allInputs) {
             outFile << setw(5);
-            if (entry.second >= 0) {
-                outFile << entry.second;
+            auto transition = dfaTable[i].find(input);
+            if (transition != dfaTable[i].end()) {
+                outFile << transition->second;
             } else {
                 outFile << "";
             }
@@ -94,7 +104,7 @@ int main() {
     vector<map<char, int>> dfaTable = {
         {{'a', 1}, {'b', 2}},
         {{'a', 1}, {'b', 3}},
-        {{'a', 1}, {'b', 2}},
+        {{'b', 2}},
         {{'a', 4}, {'b', 3}},
         {{'a', 4}, {'b', 2}}
     };
