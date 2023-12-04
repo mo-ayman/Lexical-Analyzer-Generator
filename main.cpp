@@ -35,7 +35,7 @@ int main() {
     nfaConstruction->print();
     std::cout << std::endl;
 
-
+    
     // Print DFA table and final state
     std::cout << "DFA Taple:" << std::endl;
     // Loop through the vector of maps
@@ -43,7 +43,7 @@ int main() {
       
     for (const auto& myMap : dfa) {
         std::cout << indx;
-        std::cout << "Elements in the map:" << std::endl;
+        std::cout << "  Elements in the map:" << std::endl;
         // Loop through each map and print its key-value pairs
         for (const auto& pair : myMap) {
             std::cout << ": " << pair.first << " -> " << pair.second ;
@@ -61,7 +61,7 @@ int main() {
     // -------------------------------------------------
     // Minimize the obtained DFA
     DFA_minimizer minimizer;
-    minimizer.minimize(dfa, dfa_start_state, mapFinal);
+    minimizer.minimize(dfa, dfa_start_state, obj.get_finalStates());
     auto min_dfa = minimizer.table;
     auto min_dfa_start = minimizer.start;
     auto min_dfa_fstates = minimizer.fstates;
