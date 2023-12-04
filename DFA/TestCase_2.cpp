@@ -73,6 +73,7 @@ int main() {
         }
         std::cout << std::endl;
         indx++;
+        
     }
     
     cout << "Final States :  " << endl;
