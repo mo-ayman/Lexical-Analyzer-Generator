@@ -4,17 +4,19 @@
 #include <map>
 #include <queue>
 #include <set>
+#include <tuple>
 #include "DFA.h"
-#include "Epslon_NFA_NFA.h"
-#include "HelpingMethods.h"
+#include "Epslon_NFA_NFA.cpp"
+#include "../LexicalRules/RuleTree.h"
+#include <unordered_map>
 using namespace std;
-
+HelpingMethods HM;
 /*
   In this constructor first calling Epslon_NFA_NFA class to convert epslon_NFA states
   to it's equivalent nfa
 */
 
-DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
+DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string, Priority,int>>& finals, int initial) {
         Epslon_NFA_NFA obj(table, finals, initial);
         TransitionTable = obj.get_NFA();
         finalStates = obj.get_Final_States();
@@ -92,7 +94,7 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
     void DFA::HandleState(set<int>& states)
     {
         map<char, int> stringIndexMap;
-        set<char> inputTransition;
+        vector<char> inputTransition;
         vector<set<int>> transitionStates;
 
         //first check if state is handled before
@@ -103,30 +105,46 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
     
         int index = 0;
         for (int state : states) {
+            
             for (const auto& pair : TransitionTable.at(state)) {
                 auto it = stringIndexMap.find(pair.first);
                 if (it != stringIndexMap.end()) {
+                    //cout<<state<<" : "<<TransitionTable.at(state).find(pair.first)->first<<"  nnn ";
+                    //HM.printSet(TransitionTable.at(state).find(pair.first)->second);
+                    //cout<<endl;
                     auto it = stringIndexMap.find(pair.first);
                     transitionStates[it->second].insert((pair.second).begin(), (pair.second).end());
                 }
                 else {
+                    if(TransitionTable.at(state).find(pair.first) != TransitionTable.at(state).end()){
+                   //cout<<"oooo"<<state<<" : "<<TransitionTable.at(state).find(pair.first)->first;
+                   // HM.printSet(TransitionTable.at(state).find(pair.first)->second);
+                    //cout<<endl;
                     stringIndexMap.insert(std::pair<char, int>(pair.first, index));
                     index++;
                     transitionStates.push_back(pair.second);
-                    inputTransition.insert(pair.first);
+                    inputTransition.push_back(pair.first);
+                    }
                 }
             }
         }
-
+        // cout<<"cpcoo"<<endl;
+        // HM.printSet(states);
+        // for(set<int> elem:transitionStates)
+        // {
+        //     HM.printSet(elem);
+        // }
+        // cout<<endl;
+        // cout<<"dendding"<<endl;
         stateMap.insert(std::pair<set<int>, vector<set<int>>>(states, transitionStates));
-        InputMap.insert(std::pair<set<int>, set<char>>(states, inputTransition));
+        InputMap.insert(std::pair<set<int>, vector<char>>(states, inputTransition));
         for (const auto& set : transitionStates) {
             QueueStates.push(set);
         }
 
     }
 
-    map<int, string> DFA::get_finalStates() {
+    unordered_map<int, tuple<string,Priority , int>> DFA::get_finalStates() {
         return New_finalStates;
 
     }
@@ -136,58 +154,42 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int in
     */
     void DFA::UpdateFinalStates(int indx, set<int> OldState)
     {
-        HelpingMethods HM;
+        // this temp set used to store all final states that current state map to
+       // to compare between them
+        
+        vector< tuple<string, Priority, int>> temp_final_states;
+        bool flag = false;
+        
         for (int elem : OldState)
         {
             auto it = finalStates.find(elem);
             if (it != finalStates.end()) {
-                New_finalStates.insert(std::pair<int, string>(indx, it->second));
-                break;
+                temp_final_states.push_back(it->second);
+                flag = true;
+                //New_finalStates.insert(std::pair<int,tuple<string, Priority, int>>(indx, it->second));
+                //break;
             }
+        }
+        if (flag) {
+           // cout<<"Hammoda  "<<endl;
+            //HM.printSet(OldState);
+            New_finalStates.insert(std::pair<int, tuple<string, Priority, int>>(indx, BestFinal(temp_final_states)));
+           // cout<<"Hammoda2  "<<endl;
         }
         
     }
-  /*
-int main() {
-    HelpingMethods HM;
-    // Example transition table as an unordered map
-    vector<map<char, vector<int>>> transitionTable;
-    map<char, vector<int>> myMap{
-    {'a',{0,1}},
-    {'b',{2}}
-    };
-    map<char, vector<int>> myMap2{
-    {'a',{0}},
-    {'b',{1}}
-    };
-    map<char, vector<int>> myMap3{
-    {'b',{0,1}}
-    };
-    transitionTable.push_back(myMap);
-    transitionTable.push_back(myMap2);
-    transitionTable.push_back(myMap3);
-    map<int, string> finalStates{ {2,"id"} };
-    int initialState = 0;
-    DFA obj(transitionTable, finalStates, initialState);
-    vector<map<char, int>> dfa = obj.getDFA();
 
+    tuple<string, Priority, int> DFA::BestFinal(vector< tuple<string, Priority, int>>& temp_final_states) {
 
-    std::cout << "Elements in the map:" << std::endl;
-    // Loop through the vector of maps
-    int indx = 0;
-    for (const auto& myMap : dfa) {
-        std::cout << "Elements in the map:" << std::endl;
-        // Loop through each map and print its key-value pairs
-        for (const auto& pair : myMap) {
-            std::cout << indx << ": " << pair.first << " " << pair.second << std::endl;
-        }
-        std::cout << std::endl;
-        indx++;
+        // Sort the vector based on the double value in the tuple (at index 1,2)
+        std::sort(temp_final_states.begin(), temp_final_states.end(), [](const auto& a, const auto& b) {
+            if (std::get<1>(a) != std::get<1>(b)) {
+                return std::get<1>(a) < std::get<1>(b); // Sort based on the string value (at index 1)
+            }
+            else {
+                return std::get<2>(a) < std::get<2>(b); // If string values are equal, sort based on double value (at index 2)
+            }
+            });
+        return temp_final_states[0];
     }
-    cout << "Final States :  " << endl;
-    map<int, string> mapFinal = obj.get_finalStates();
-    HM.finalMap(mapFinal);
 
-    return 0;
-}
-*/

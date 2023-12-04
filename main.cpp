@@ -4,6 +4,8 @@
 #include "LexicalRules/RuleParser.h"
 #include "LexicalRules/RuleTree.h"
 #include "NFA/NFAConstruction.h"
+#include "DFA/DFA.h"
+#include "DFA/HelpingMethods.h"
 
 int main() {
     // get dir path of the source code and concatenate with the file name
@@ -16,7 +18,8 @@ int main() {
     std::vector<std::map<char, std::vector<int>>> nfs = nfaConstruction->getNfs();
     std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates = nfaConstruction->getFinalStates();
     int startStateIndex = nfaConstruction->getStartStateIndex();
-
+    DFA obj(nfs, finalStates, startStateIndex);
+    vector<map<char, int>> dfa = obj.getDFA();
 
     // Print all rules
     for (const auto& rule: rules) {
@@ -28,6 +31,28 @@ int main() {
     nfaConstruction->print();
 
     std::cout << std::endl;
+
+
+    // Print DFA table and final state
+     std::cout << "DFA Taple:" << std::endl;
+    // Loop through the vector of maps
+    int indx = 0;
+    for (const auto& myMap : dfa) {
+        std::cout << "Elements in the map:" << std::endl;
+        // Loop through each map and print its key-value pairs
+        for (const auto& pair : myMap) {
+            std::cout << indx << ": " << pair.first << " " << pair.second << std::endl;
+        }
+        std::cout << std::endl;
+        indx++;
+    }
+    HelpingMethods HM;
+    cout << "Final States :  " << endl;
+    unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
+    HM.finalMap(mapFinal);
+
+
+
 
     return 0;
 }

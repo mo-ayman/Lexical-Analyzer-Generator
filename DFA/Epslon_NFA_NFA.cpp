@@ -6,14 +6,17 @@
 #include <queue>
 #include <set>
 #include <algorithm>
-#include "HelpingMethods.h"
 #include "Epslon_NFA_NFA.h"
+#include "../LexicalRules/RuleTree.h"
+#include <unordered_map>
 using namespace std;
+
+
 /*
 This is the constructor of NFA first for loop to convert vextor im map of transition table to set to ease some 
 functions in future
 */
-Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, string>& finals, int initial) {
+Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string, Priority, int>>& finals, int initial) {
         
         int indx = 0;
         for (map<char, vector<int>> TransitionMap : table)
@@ -52,7 +55,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
        }
        return set<int>{};
    }
-   map<int, string> Epslon_NFA_NFA::get_Final_States()
+   unordered_map<int, tuple<string, Priority, int>> Epslon_NFA_NFA::get_Final_States()
      {
         return finalStateMap;
      }
@@ -93,19 +96,41 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
     */
     void Epslon_NFA_NFA::UpdateFinalStates(map<char, set<int>>& TransMap, int indx_final)
     {
+        // this temp set used to store all final states that current state map to
+        // to compare between them
+        vector< tuple<string, Priority, int>> temp_final_states;
         auto it = TransMap.find('\0');
+        bool flag=false;
         if (it != TransMap.end()) {
             for (int statElem : it->second)
             {
                 auto check = finalStateMap.find(statElem);
                 if (check != finalStateMap.end()) {
-                    finalStateMap.insert(std::pair<int, string>(indx_final, check->second));
+                    temp_final_states.push_back(check->second);
+                    flag = true;
+                    //finalStateMap.insert(std::pair<int, tuple<string, Priority, int>>(indx_final, check->second));
                     break;
                 }
             }
-
+            if (flag) {
+                  finalStateMap.insert(std::pair<int, tuple<string, Priority, int>>(indx_final, BestFinal(temp_final_states)));
+            }
         }
     }
+    tuple<string, Priority, int> Epslon_NFA_NFA::BestFinal(vector< tuple<string, Priority, int>>& temp_final_states) {
+        
+           // Sort the vector based on the double value in the tuple (at index 1,2)
+           std::sort(temp_final_states.begin(), temp_final_states.end(), [](const auto& a, const auto& b) {
+            if (std::get<1>(a) != std::get<1>(b)) {
+                return std::get<1>(a) < std::get<1>(b); // Sort based on the string value (at index 1)
+            }
+            else {
+                return std::get<2>(a) < std::get<2>(b); // If string values are equal, sort based on double value (at index 2)
+            }
+            });
+           return temp_final_states[0];
+    }
+
 
     /*
      First we push epslon states in queue and loop through it to add it's reach state int queue and int set vector of
@@ -157,44 +182,3 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, s
 
         }
     }
-
-/*
-int main() {
-    // Example transition table as an unordered map
-    HelpingMethods usefulMethods;
-    vector<map<char, vector<int>>> Ttable;
-    map<char, vector<int>> myMap{
-    {'0',{0}},
-    {'e',{1}}
-    };
-    map<char, vector<int>> myMap2{
-    {'1',{1}},
-    {'e',{2}}
-    };
-    map<char, vector<int>> myMap3{
-    {'0',{2}},
-    {'1',{2}}
-    };
-    Ttable.push_back(myMap);
-    Ttable.push_back(myMap2);
-    Ttable.push_back(myMap3);
-    vector<int> finalStates = { 2 };
-    int initialState = 0;
-
-    Epslon_NFA_NFA obj(Ttable, finalStates, initialState);
-    vector<map<char, set<int>>> nfa = obj.get_NFA();
-    vector<int> finals = obj.get_Final_States();
-
-    std::cout << "Elements in the map:" << std::endl;
-
-    usefulMethods.printvecMapSet(nfa);
-
-    std::cout << "Element final States:" << std::endl;
-    // Loop through the vector of maps
-    usefulMethods.printVector(finals);
-
-
-
-    return 0;
-}
-*/

@@ -1,12 +1,14 @@
 #include <iostream>
+#include <iomanip>
+#include <iostream>
 #include <vector>
 #include <string>
 #include <map>
 #include <queue>
 #include <set>
-#include "DFA.h"
-#include "Epslon_NFA_NFA.h"
-#include "HelpingMethods.h"
+#include "DFA.cpp"
+#include "HelpingMethods.cpp"
+#include "../LexicalRules/RuleTree.h"
 
 int main() {
     HelpingMethods HM;
@@ -56,13 +58,14 @@ int main() {
     transitionTable.push_back(myMap8);
     transitionTable.push_back(myMap9);
     transitionTable.push_back(myMap10);
-    map<int, string> finalStates{ {10,"(a|b)*abb"} };
+    unordered_map<int, tuple<string, Priority, int>> finalStates{ {10,make_tuple("(a|b)*abb",RESERVED,2)} };
     int initialState = 0;
     DFA obj(transitionTable, finalStates, initialState);
     vector<map<char, int>> dfa = obj.getDFA();
 
-
+    
     std::cout << "Elements in the map:" << std::endl;
+    
     // Loop through the vector of maps
     int indx = 0;
     for (const auto& myMap : dfa) {
@@ -74,8 +77,9 @@ int main() {
         std::cout << std::endl;
         indx++;
     }
+    
     cout << "Final States :  " << endl;
-    map<int, string> mapFinal = obj.get_finalStates();
+    unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
     HM.finalMap(mapFinal);
 
     return 0;
