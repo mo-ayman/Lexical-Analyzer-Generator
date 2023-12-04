@@ -9,4 +9,6 @@ add_executable(Lexical_Analyzer_Generator main.cpp
         LexicalRules/RuleTree.h
         LexicalRules/RuleTree.cpp
         LexicalRules/RuleParser.cpp
-        LexicalRules/RuleParser.h)
+        LexicalRules/RuleParser.h
+        NFA/NFAConstruction.cpp
+        NFA/NFAConstruction.h)
