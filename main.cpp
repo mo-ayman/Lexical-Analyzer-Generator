@@ -61,7 +61,7 @@ int main() {
     // -------------------------------------------------
     // Minimize the obtained DFA
     DFA_minimizer minimizer;
-    minimizer.minimize(dfa, dfa_start_state, mapFinal);
+    minimizer.minimize(dfa, dfa_start_state, obj.get_finalStates());
     auto min_dfa = minimizer.table;
     auto min_dfa_start = minimizer.start;
     auto min_dfa_fstates = minimizer.fstates;
