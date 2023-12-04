@@ -139,7 +139,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, unordered_
     void Epslon_NFA_NFA::Handle_Epslon(map<char, set<int>>& TransitionMap, int indx) {
         auto stateEpslon = TransitionMap.find('\0');
         if (stateEpslon != TransitionMap.end()) {
-            std::queue<int> EpslonQueue;/////////////////////////////////
+            std::queue<int> EpslonQueue;
             for (int element : TransitionMap.find('\0')->second) {
                 EpslonQueue.push(element);
             }

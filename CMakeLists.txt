@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.26)
+cmake_minimum_required(VERSION 3.25)
 project(Lexical_Analyzer_Generator)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -12,8 +12,11 @@ add_executable(Lexical_Analyzer_Generator main.cpp
         LexicalRules/RuleParser.h
         NFA/NFAConstruction.cpp
         NFA/NFAConstruction.h
+        DFA/Epslon_NFA_NFA.cpp
+        DFA/Epslon_NFA_NFA.h
         DFA/DFA.cpp
         DFA/DFA.h
         DFA/HelpingMethods.h
         DFA/HelpingMethods.cpp
+       
         )

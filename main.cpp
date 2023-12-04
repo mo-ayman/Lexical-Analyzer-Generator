@@ -2,6 +2,7 @@
 #include <unordered_map>
 
 #include "LexicalRules/RuleParser.h"
+#include "LexicalRules/Node.h"
 #include "LexicalRules/RuleTree.h"
 #include "NFA/NFAConstruction.h"
 #include "DFA/DFA.h"
@@ -37,12 +38,15 @@ int main() {
      std::cout << "DFA Taple:" << std::endl;
     // Loop through the vector of maps
     int indx = 0;
+      
     for (const auto& myMap : dfa) {
+        std::cout << indx;
         std::cout << "Elements in the map:" << std::endl;
         // Loop through each map and print its key-value pairs
         for (const auto& pair : myMap) {
-            std::cout << indx << ": " << pair.first << " " << pair.second << std::endl;
+            std::cout << ": " << pair.first << " -> " << pair.second ;
         }
+        cout<< std::endl;
         std::cout << std::endl;
         indx++;
     }

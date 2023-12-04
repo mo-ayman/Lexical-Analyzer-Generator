@@ -43,7 +43,6 @@ DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string,
             QueueStates.pop();
 
         }
-        std::cout << "mohamed Elgreatly" << std::endl;
         fillDFA();
         return DFA_States;
     }
@@ -63,7 +62,6 @@ DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string,
                 auto it = InputMap.find(pair.first);
                 auto item = it->second.begin();
                 std::advance(item, indx); // Move the iterator to the desired index
-                //cout << *item << std::endl;
                 auto stateNum = stateIndx.find(set);
                 eachStateMap.insert(std::pair<char, int>(*item, stateNum->second));
                 indx++;
@@ -109,17 +107,11 @@ DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string,
             for (const auto& pair : TransitionTable.at(state)) {
                 auto it = stringIndexMap.find(pair.first);
                 if (it != stringIndexMap.end()) {
-                    //cout<<state<<" : "<<TransitionTable.at(state).find(pair.first)->first<<"  nnn ";
-                    //HM.printSet(TransitionTable.at(state).find(pair.first)->second);
-                    //cout<<endl;
                     auto it = stringIndexMap.find(pair.first);
                     transitionStates[it->second].insert((pair.second).begin(), (pair.second).end());
                 }
                 else {
                     if(TransitionTable.at(state).find(pair.first) != TransitionTable.at(state).end()){
-                   //cout<<"oooo"<<state<<" : "<<TransitionTable.at(state).find(pair.first)->first;
-                   // HM.printSet(TransitionTable.at(state).find(pair.first)->second);
-                    //cout<<endl;
                     stringIndexMap.insert(std::pair<char, int>(pair.first, index));
                     index++;
                     transitionStates.push_back(pair.second);
@@ -128,14 +120,7 @@ DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string,
                 }
             }
         }
-        // cout<<"cpcoo"<<endl;
-        // HM.printSet(states);
-        // for(set<int> elem:transitionStates)
-        // {
-        //     HM.printSet(elem);
-        // }
-        // cout<<endl;
-        // cout<<"dendding"<<endl;
+   
         stateMap.insert(std::pair<set<int>, vector<set<int>>>(states, transitionStates));
         InputMap.insert(std::pair<set<int>, vector<char>>(states, inputTransition));
         for (const auto& set : transitionStates) {
@@ -166,15 +151,12 @@ DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string,
             if (it != finalStates.end()) {
                 temp_final_states.push_back(it->second);
                 flag = true;
-                //New_finalStates.insert(std::pair<int,tuple<string, Priority, int>>(indx, it->second));
-                //break;
+            
             }
         }
         if (flag) {
-           // cout<<"Hammoda  "<<endl;
-            //HM.printSet(OldState);
             New_finalStates.insert(std::pair<int, tuple<string, Priority, int>>(indx, BestFinal(temp_final_states)));
-           // cout<<"Hammoda2  "<<endl;
+         
         }
         
     }
