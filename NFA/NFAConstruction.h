@@ -23,25 +23,25 @@ public:
 
 private:
     int stateCount;
+    int startStateIndex;
+    const char EPS = '\0';
     std::vector<std::map<char, std::vector<int>>> nfs;
     std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates;
-    const char EPS = '\0';
-    int startStateIndex;
 
     std::pair<char, std::array<int, 2>> performOperation(Node* node);
 
     // under char return first and last state index of the branch
-    std::pair<char, std::array<int, 2>> concatOp(std::vector<Node *> nodes);
+    std::pair<char, std::array<int, 2>> concatOp(const std::vector<Node *>& nodes);
 
-    std::pair<char, std::array<int, 2>> starOp(std::vector<Node *> nodes);
+    std::pair<char, std::array<int, 2>> starOp(const std::vector<Node *>& nodes);
 
-    std::pair<char, std::array<int, 2>> plusOp(std::vector<Node *> nodes);
+    std::pair<char, std::array<int, 2>> plusOp(const std::vector<Node *>& nodes);
 
-    std::pair<char, std::array<int, 2>> orOp(std::vector<Node *> nodes);
+    std::pair<char, std::array<int, 2>> orOp(const std::vector<Node *>& nodes);
 
-    std::pair<char, std::array<int, 2>> questionOp(std::vector<Node *> nodes);
+    std::pair<char, std::array<int, 2>> questionOp(const std::vector<Node *>& nodes);
 
-    std::pair<char, std::array<int, 2>> leafOp(Node* nodes);
+    std::pair<char, std::array<int, 2>> leafOp(const Node* nodes);
 
     static std::pair<char, std::array<int, 2>> noneOp(const std::vector<Node *>& nodes);
 

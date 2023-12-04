@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <utility>
+#include <map>
 
 Node::Node() {
     this->terminal = '\0';
@@ -36,7 +37,7 @@ Node::Node(const char terminal) {
 Node::Node(char terminal, Operator op, std::vector<Node *> children) {
     this->terminal = terminal;
     this->op = op;
-    this->children = children;
+    this->children = std::move(children);
 }
 
 Node::~Node() {
@@ -64,7 +65,8 @@ std::map<Operator, std::string> opToString = {
         {NONE, "NONE"},
         {EPSILON, "EPSILON"}
 };
-void Node::print2() {
+
+void Node::print2() const {
     static std::map<Operator, std::string> opToString = {
             {CONCAT, "CONCAT"},
             {STAR, "STAR"},
@@ -81,7 +83,7 @@ void Node::print2() {
     } else {
         std::cout << opToString[op] << " ";
     }
-    for (auto child : children) {
+    for (const auto child : children) {
         child->print();
     }
 }

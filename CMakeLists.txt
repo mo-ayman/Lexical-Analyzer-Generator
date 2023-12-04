@@ -10,17 +10,19 @@ add_executable(Lexical_Analyzer_Generator main.cpp
         LexicalRules/RuleTree.cpp
         LexicalRules/RuleParser.cpp
         LexicalRules/RuleParser.h
-        
         NFA/NFAConstruction.cpp
         NFA/NFAConstruction.h
-        
-        DFA/Epslon_NFA_NFA.cpp
-        DFA/Epslon_NFA_NFA.h
+        DFA/EpsilonNFA.cpp
+        DFA/EpsilonNFA.h
         DFA/DFA.cpp
         DFA/DFA.h
         DFA/HelpingMethods.h
         DFA/HelpingMethods.cpp
-        
-        DFA_MIN/DFA_minimizer.h
-        DFA_MIN/DFA_minimizer.cpp
-        )
+        DFAMinimizer/DFAMinimizer.h
+        DFAMinimizer/DFAMinimizer.cpp
+        DFASerialization/DFASerialization.cpp
+        DFASerialization/DFASerialization.h
+        LexicalAnalyzer/LexicalAnalyzer.cpp
+        Visualization/Visualization.cpp
+        Visualization/Visualization.h
+        LexicalAnalyzer/LexicalAnalyzer.h)
