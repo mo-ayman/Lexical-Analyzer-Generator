@@ -31,12 +31,13 @@ std::vector<std::map<char, std::vector<int>>> NFAConstruction::getNfs() const {
 void NFAConstruction::constructNFA(const std::vector<RuleTree *>& rules) {
     startStateIndex = addState();
     int ruleIndex = 0;
-    for (const auto rule: rules) {
-        std::pair<char, std::array<int, 2>> curr = performOperation(rule->getRoot());
+    for (auto rule : rules) {
+        std::pair< char, std::array<int,2> > curr = performOperation(rule->getRoot());
+        char transChar = curr.first;
         int firstStateIndex = curr.second[0];
         int lastStateIndex = curr.second[1];
 
-        nfs[startStateIndex][EPS].push_back(firstStateIndex);
+        nfs[startStateIndex][transChar].push_back(firstStateIndex);
         finalStates[lastStateIndex] = {rule->getName(), rule->getPriority(), ruleIndex++};
     }
 }
