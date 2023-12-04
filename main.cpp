@@ -7,6 +7,7 @@
 #include "NFA/NFAConstruction.h"
 #include "DFA/DFA.h"
 #include "DFA/HelpingMethods.h"
+#include "DFA_MIN/DFA_minimizer.h"
 
 int main() {
     // get dir path of the source code and concatenate with the file name
@@ -19,6 +20,8 @@ int main() {
     std::vector<std::map<char, std::vector<int>>> nfs = nfaConstruction->getNfs();
     std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates = nfaConstruction->getFinalStates();
     int startStateIndex = nfaConstruction->getStartStateIndex();
+    // -------------------------------------------------
+    // NFA -> DFA
     DFA obj(nfs, finalStates, startStateIndex);
     vector<map<char, int>> dfa = obj.getDFA();
 
@@ -30,12 +33,11 @@ int main() {
     // Print the NFA table
     std::cout << "NFA table:" << std::endl;
     nfaConstruction->print();
-
     std::cout << std::endl;
 
 
     // Print DFA table and final state
-     std::cout << "DFA Taple:" << std::endl;
+    std::cout << "DFA Taple:" << std::endl;
     // Loop through the vector of maps
     int indx = 0;
       
@@ -55,9 +57,17 @@ int main() {
     unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
     HM.finalMap(mapFinal);
 
-
-
-
+    int dfa_start_state = 0; //TODO: assign the correct start state index for dfa
+    // -------------------------------------------------
+    // Minimize the obtained DFA
+    DFA_minimizer minimizer;
+    minimizer.minimize(dfa, dfa_start_state, mapFinal);
+    auto min_dfa = minimizer.table;
+    auto min_dfa_start = minimizer.start;
+    auto min_dfa_fstates = minimizer.fstates;
+    // -------------------------------------------------
+    // TODO: export visualizations
+    // TODO: export the serialized min_dfa (for part 2)
     return 0;
 }
 
