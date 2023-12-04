@@ -1,12 +1,12 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "LexicalRules/RuleParser.h"
-#include "LexicalRules/Node.h"
-#include "LexicalRules/RuleTree.h"
-#include "NFA/NFAConstruction.h"
-#include "DFA/DFA.h"
-#include "DFA/HelpingMethods.h"
+#include "LexicalRules/RuleParser.cpp"
+#include "LexicalRules/Node.cpp"
+#include "LexicalRules/RuleTree.cpp"
+#include "NFA/NFAConstruction.cpp"
+#include "DFA/DFA.cpp"
+#include "DFA/HelpingMethods.cpp"
 
 int main() {
     // get dir path of the source code and concatenate with the file name
@@ -29,11 +29,11 @@ int main() {
 
     // Print the NFA table
     std::cout << "NFA table:" << std::endl;
-    nfaConstruction->print();
+    //nfaConstruction->print();
 
     std::cout << std::endl;
 
-
+    
     // Print DFA table and final state
      std::cout << "DFA Taple:" << std::endl;
     // Loop through the vector of maps
@@ -41,7 +41,7 @@ int main() {
       
     for (const auto& myMap : dfa) {
         std::cout << indx;
-        std::cout << "Elements in the map:" << std::endl;
+        std::cout << "  Elements in the map:" << std::endl;
         // Loop through each map and print its key-value pairs
         for (const auto& pair : myMap) {
             std::cout << ": " << pair.first << " -> " << pair.second ;
