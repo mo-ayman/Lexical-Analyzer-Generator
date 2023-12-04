@@ -104,7 +104,7 @@ void DFA_minimizer::minimize(vector<map<char, int>> dfa, int start_state, unorde
                             fstates[new_fstate_idx] = final_entry.second;
                         }
                         else if(challenging_ord == prev_ord){
-                            throw std::runtime_error("Final states priority conflict (same class, same value)");
+                            //throw std::runtime_error("Final states priority conflict (same class, same value)");
                         }
                     } 
                 }

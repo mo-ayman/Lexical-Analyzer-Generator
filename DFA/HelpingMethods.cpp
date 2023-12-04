@@ -54,6 +54,21 @@ void HelpingMethods::finalMap(unordered_map<int, tuple<string, Priority, int>>& 
         std::cout << std::endl;
    
 }
+void HelpingMethods::printvecMapInt(vector<map<char, int>>& vec) {
+   int indx=0;
+   for (const auto& myMap : vec) {
+        std::cout << indx;
+        std::cout << "  Elements in the map:" << std::endl;
+        // Loop through each map and print its key-value pairs
+        for (const auto& pair : myMap) {
+            std::cout << ": " << pair.first << " -> " << pair.second ;
+        }
+        cout<< std::endl;
+        std::cout << std::endl;
+        indx++;
+        if(indx>20){break;}
+    }
+}
 // void HelpingMethods::printvecMapVec(vector<map<char, vector<int>>>& vec){
 
 // }

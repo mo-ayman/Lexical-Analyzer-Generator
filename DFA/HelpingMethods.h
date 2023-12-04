@@ -16,6 +16,7 @@ public:
     void printVector(const std::vector<int>& myvec);
     void printvecMapSet(std::vector<map<char, set<int>>>& vec);
     void finalMap(unordered_map<int, tuple<string, Priority, int>>& map);
+    void printvecMapInt(vector<map<char, int>>& vec);
 };
 
 #endif
