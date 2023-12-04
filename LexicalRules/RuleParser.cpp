@@ -194,7 +194,7 @@ Node* parseRule(const std::string& input, const int start, const int end,
             } else {
                 lastFound = new Node(nextChar);
             }
-            if (definitions.find(lastSeq) != definitions.end()) {
+            if ((i + 1 == end || !isValidRuleNameChar(input[i + 1])) && definitions.find(lastSeq) != definitions.end()) {
                 const int lastSeqLength = static_cast<int>(lastSeq.length());
                 Node* definitionCopy = definitions.at(lastSeq);
                 if (lastFound->getOp() == CONCAT) {
@@ -210,6 +210,8 @@ Node* parseRule(const std::string& input, const int start, const int end,
                 }
                 lastSeq = "";
             }
+        } else {
+            lastSeq = "";
         }
     }
     if (currentOrNode != nullptr) {
