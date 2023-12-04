@@ -53,7 +53,7 @@ int main() {
     transitionTable.push_back(myMap7);
     transitionTable.push_back(myMap8);
 
-    map<int, tuple<string, Priority, int>> finalStates{ {2,make_tuple("a",RESERVED,1)},
+    unordered_map<int, tuple<string, Priority, int>> finalStates{ {2,make_tuple("a",RESERVED,1)},
     {6,make_tuple("abb",RESERVED,2)},
     {8,make_tuple("a*b+",RESERVED,3)} };
     int initialState = 0;
@@ -76,7 +76,7 @@ int main() {
     }
     
     cout << "Final States :  " << endl;
-    map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
+    unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
     HM.finalMap(mapFinal);
 
     return 0;

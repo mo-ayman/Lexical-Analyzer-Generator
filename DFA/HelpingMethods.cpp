@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "HelpingMethods.h"
 #include "../LexicalRules/RuleTree.h"
+#include <unordered_map>
 using namespace std;
 
 void HelpingMethods::printSet(const std::set<int>& mySet) {
@@ -40,7 +41,7 @@ void HelpingMethods::printvecMapSet(vector<map<char, set<int>>>& vec) {
         indx++;
     }
 }
-void HelpingMethods::finalMap(map<int, tuple<string, Priority, int>>& map) {
+void HelpingMethods::finalMap(unordered_map<int, tuple<string, Priority, int>>& map) {
     std::cout << "Elements in the map:" << std::endl;
 
         // Loop through each map and print its key-value pairs

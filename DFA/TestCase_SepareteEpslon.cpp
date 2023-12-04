@@ -58,7 +58,7 @@ int main() {
     transitionTable.push_back(myMap8);
     transitionTable.push_back(myMap9);
     transitionTable.push_back(myMap10);
-    map<int, tuple<string, Priority, int>> finalStates{ {10,make_tuple("(a|b)*abb",RESERVED,2)} };
+    unordered_map<int, tuple<string, Priority, int>> finalStates{ {10,make_tuple("(a|b)*abb",RESERVED,2)} };
     int initialState = 0;
     DFA obj(transitionTable, finalStates, initialState);
     vector<map<char, int>> dfa = obj.getDFA();
@@ -79,7 +79,7 @@ int main() {
     }
     
     cout << "Final States :  " << endl;
-    map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
+    unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
     HM.finalMap(mapFinal);
 
     return 0;

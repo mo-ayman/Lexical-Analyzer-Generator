@@ -8,6 +8,7 @@
 #include "DFA.h"
 #include "Epslon_NFA_NFA.cpp"
 #include "../LexicalRules/RuleTree.h"
+#include <unordered_map>
 using namespace std;
 HelpingMethods HM;
 /*
@@ -15,7 +16,7 @@ HelpingMethods HM;
   to it's equivalent nfa
 */
 
-DFA::DFA(vector<map<char, vector<int>>>& table, map<int, tuple<string, Priority,int>>& finals, int initial) {
+DFA::DFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string, Priority,int>>& finals, int initial) {
         Epslon_NFA_NFA obj(table, finals, initial);
         TransitionTable = obj.get_NFA();
         finalStates = obj.get_Final_States();
@@ -143,7 +144,7 @@ DFA::DFA(vector<map<char, vector<int>>>& table, map<int, tuple<string, Priority,
 
     }
 
-    map<int, tuple<string,Priority , int>> DFA::get_finalStates() {
+    unordered_map<int, tuple<string,Priority , int>> DFA::get_finalStates() {
         return New_finalStates;
 
     }

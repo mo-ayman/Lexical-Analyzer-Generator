@@ -8,6 +8,7 @@
 #include <algorithm>
 #include "Epslon_NFA_NFA.h"
 #include "../LexicalRules/RuleTree.h"
+#include <unordered_map>
 using namespace std;
 
 
@@ -15,7 +16,7 @@ using namespace std;
 This is the constructor of NFA first for loop to convert vextor im map of transition table to set to ease some 
 functions in future
 */
-Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, tuple<string, Priority, int>>& finals, int initial) {
+Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, unordered_map<int, tuple<string, Priority, int>>& finals, int initial) {
         
         int indx = 0;
         for (map<char, vector<int>> TransitionMap : table)
@@ -54,7 +55,7 @@ Epslon_NFA_NFA::Epslon_NFA_NFA(vector<map<char, vector<int>>>& table, map<int, t
        }
        return set<int>{};
    }
-   map<int, tuple<string, Priority, int>> Epslon_NFA_NFA::get_Final_States()
+   unordered_map<int, tuple<string, Priority, int>> Epslon_NFA_NFA::get_Final_States()
      {
         return finalStateMap;
      }
