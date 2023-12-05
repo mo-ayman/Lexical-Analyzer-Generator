@@ -125,7 +125,7 @@ Token LexicalAnalyzer::getNextToken() {
                 }
                 if (lexeme.empty()) {
                     isEOF = true;
-                    return Token{lexemePosInFile, "EOF", ""};
+                    return Token{lexemePosInFile, "EOF", "", error};
                 }
                 // Panic Mode Recovery
                 panicModeRecovery(&error, &lexeme, &state);
