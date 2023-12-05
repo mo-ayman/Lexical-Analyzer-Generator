@@ -1,0 +1,9 @@
+int sum , count , pass , mnt; 
+while (pass !=10)
+{
+    pass = pass + 1 ;
+}
+for(pass=0 ;pass<5;pass++)
+{{
+    count =(count * mnt)/sum
+}}

@@ -11,6 +11,10 @@
 # Keep
 !example.txt
 !test_program.txt
+!Test_2.txt
+!Test_3.txt
+!Test_4.txt
+!Test_5_WithError.txt
 # Executables
 *.exe
 
