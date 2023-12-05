@@ -86,7 +86,7 @@ LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_si
     file = std::ifstream(input_path);
     buffer = std::vector<char>(buffer_size);
     bufferPos = 0;
-
+    bufferSize = buffer_size;
     if (!file.is_open()) {
         throw std::runtime_error("Error: Unable to open file: " + input_path);
     }
@@ -140,7 +140,8 @@ Token LexicalAnalyzer::getNextToken() {
                 continue;
             }
             // Load the next chunk from the file into the buffer and set the position to the start of the buffer
-            file.read(buffer.data(), static_cast<long long>(buffer.size()));
+            buffer.resize(bufferSize);
+            file.read(buffer.data(), bufferSize);
             // Resize the buffer to the actual number of bytes read
             const std::streamsize bytesRead = file.gcount();
             buffer.resize(bytesRead);
