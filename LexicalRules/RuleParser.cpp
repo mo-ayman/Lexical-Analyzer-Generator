@@ -6,7 +6,7 @@
 
 #include "RuleParser.h"
 
-std::string readRules(const std::string& filename) {
+static std::string readRules(const std::string& filename) {
     std::ifstream stream(filename);
     if (stream.is_open()) {
         std::stringstream str;
@@ -20,16 +20,16 @@ std::string readRules(const std::string& filename) {
     throw std::runtime_error("Could not open file");
 }
 
-bool isValidRuleNameChar(const char c) {
+static bool isValidRuleNameChar(const char c) {
     return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') ||
            (c >= 'A' && c <= 'Z') || c == '_';
 }
 
-bool isWhitespace(const char c) {
+static bool isWhitespace(const char c) {
     return c == ' ' || c == '\t' || c == '\n';
 }
 
-std::vector<std::string> split(const std::string& input) {
+static std::vector<std::string> split(const std::string& input) {
     const int inputLength = static_cast<int>(input.length());
     std::vector<std::string> lines;
     std::string currentLine;
@@ -60,7 +60,7 @@ std::vector<std::string> split(const std::string& input) {
     return lines;
 }
 
-Node* parseSet(const std::string& input, const int start, const int end) {
+static Node* parseSet(const std::string& input, const int start, const int end) {
     std::set<char> chars;
     for (int i = start; i < end; i++) {
         if (i != end - 2 && input[i + 1] == '-') {
@@ -87,7 +87,7 @@ Node* parseSet(const std::string& input, const int start, const int end) {
     return currentOrNode;
 }
 
-Node* parseRule(const std::string& input, const int start, const int end,
+static Node* parseRule(const std::string& input, const int start, const int end,
                 const std::unordered_map<std::string, Node *>& definitions) {
     Node* currentOrNode = nullptr;
     Node* lastFound = nullptr;
@@ -194,7 +194,7 @@ Node* parseRule(const std::string& input, const int start, const int end,
             } else {
                 lastFound = new Node(nextChar);
             }
-            if (definitions.find(lastSeq) != definitions.end()) {
+            if ((i + 1 == end || !isValidRuleNameChar(input[i + 1])) && definitions.find(lastSeq) != definitions.end()) {
                 const int lastSeqLength = static_cast<int>(lastSeq.length());
                 Node* definitionCopy = definitions.at(lastSeq);
                 if (lastFound->getOp() == CONCAT) {
@@ -210,6 +210,8 @@ Node* parseRule(const std::string& input, const int start, const int end,
                 }
                 lastSeq = "";
             }
+        } else {
+            lastSeq = "";
         }
     }
     if (currentOrNode != nullptr) {
@@ -224,7 +226,7 @@ Node* parseRule(const std::string& input, const int start, const int end,
     throw std::runtime_error("Rule cannot be empty");
 }
 
-void parseDefExp(const std::string& input, std::unordered_map<std::string, Node *>& definitions,
+static void parseDefExp(const std::string& input, std::unordered_map<std::string, Node *>& definitions,
                  std::vector<RuleTree *>& rules) {
     const int inputLength = static_cast<int>(input.length());
     std::string ruleName;
@@ -257,7 +259,7 @@ void parseDefExp(const std::string& input, std::unordered_map<std::string, Node 
     }
 }
 
-void parseReversed(const std::string& input, std::vector<RuleTree *>& rules) {
+static void parseReversed(const std::string& input, std::vector<RuleTree *>& rules) {
     const int inputLength = static_cast<int>(input.length());
     std::string ruleName;
     Node* lastFound = nullptr;
@@ -291,7 +293,7 @@ void parseReversed(const std::string& input, std::vector<RuleTree *>& rules) {
     }
 }
 
-void parsePunctuation(const std::string& input, std::vector<RuleTree *>& rules) {
+static void parsePunctuation(const std::string& input, std::vector<RuleTree *>& rules) {
     const int inputLength = static_cast<int>(input.length());
     bool symbolsFound = false;
     for (int i = 1; i < inputLength - 1; i++) {

@@ -2,8 +2,6 @@
 #define SRC_NODE_H
 
 #include <vector>
-#include <string>
-#include <map>
 
 enum Operator {
     CONCAT,
@@ -17,13 +15,9 @@ enum Operator {
 };
 
 class Node {
-private:
-
     char terminal;
     Operator op;
     std::vector<Node *> children;
-
-
 
 public:
 
@@ -31,7 +25,7 @@ public:
 
     explicit Node(Operator op);
 
-    Node(const char terminal);
+    explicit Node(char terminal);
 
     Node(char terminal, Operator op);
 
@@ -65,7 +59,7 @@ public:
 
     void print() const;
 
-    void print2();
+    void print2() const;
 
 };
 
