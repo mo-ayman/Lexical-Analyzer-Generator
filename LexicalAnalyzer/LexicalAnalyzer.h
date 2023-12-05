@@ -37,6 +37,7 @@ class LexicalAnalyzer {
     std::ifstream file;
     std::vector<char> buffer;
     size_t bufferPos;
+    size_t bufferSize;
     size_t lexemePosInFile = 0; // the position of the last character of lexeme within the input file
     bool isEOF = false;
 
@@ -45,7 +46,7 @@ class LexicalAnalyzer {
     int start_state{};
     std::unordered_map<int, std::tuple<std::string, Priority, int>> final_states;
 
-    void panicModeRecovery(std::string* error, std::string* lexeme, int* state,  int* errorLength);
+    void panicModeRecovery(std::string* error, std::string* lexeme, int* state, int* errorLength);
 
 public:
     LexicalAnalyzer(const std::string& input_path, size_t buffer_size, const std::string& DFA_path);

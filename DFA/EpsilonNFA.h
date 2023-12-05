@@ -36,4 +36,5 @@ public:
     static std::tuple<std::string, Priority, int> bestFinal(
         std::vector<std::tuple<std::string, Priority, int>>& temp_final_states);
 };
+
 #endif

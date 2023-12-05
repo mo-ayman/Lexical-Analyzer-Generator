@@ -50,5 +50,4 @@ private:
     int addState();
 };
 
-
 #endif //LEXICAL_ANALYZER_GENERATOR_NFACONSTRUCTION_H
