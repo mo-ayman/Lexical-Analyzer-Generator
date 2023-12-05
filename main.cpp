@@ -24,40 +24,41 @@ int main() {
     // NFA -> DFA
     DFA obj(nfs, finalStates, startStateIndex);
     vector<map<char, int>> dfa = obj.getDFA();
-
+    HelpingMethods HM;
     // Print all rules
     for (const auto& rule: rules) {
         rule->print();
     }
 
-    // Print the NFA table
+    //Print the NFA table
     std::cout << "NFA table:" << std::endl;
     nfaConstruction->print();
+    HM.finalMap(finalStates);
     std::cout << std::endl;
 
     
-    // Print DFA table and final state
-    std::cout << "DFA Taple:" << std::endl;
-    HelpingMethods HM;
-    HM.printvecMapInt(dfa);
-    cout << "Final States :  " << endl;
-    unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
-    HM.finalMap(mapFinal);
+    // // Print DFA table and final state
+    // std::cout << "DFA Taple:" << std::endl;
+    
+    // HM.printvecMapInt(dfa);
+    // cout << "Final States :  " << endl;
+    // unordered_map<int, tuple<string, Priority, int>>  mapFinal = obj.get_finalStates();
+    // HM.finalMap(mapFinal);
 
-    int dfa_start_state = 0; //TODO: assign the correct start state index for dfa
-    // -------------------------------------------------
-    // Minimize the obtained DFA
-    DFA_minimizer minimizer;
-    minimizer.minimize(dfa, dfa_start_state, obj.get_finalStates());
-    auto min_dfa = minimizer.table;
-    auto min_dfa_start = minimizer.start;
-    auto min_dfa_fstates = minimizer.fstates;
+    // int dfa_start_state = 0; //TODO: assign the correct start state index for dfa
+    // // -------------------------------------------------
+    // // Minimize the obtained DFA
+    // DFA_minimizer minimizer;
+    // minimizer.minimize(dfa, dfa_start_state, obj.get_finalStates());
+    // auto min_dfa = minimizer.table;
+    // auto min_dfa_start = minimizer.start;
+    // auto min_dfa_fstates = minimizer.fstates;
 
-    // Print DFA table and final state
-    std::cout << "DFA_minimized Taple:" << std::endl;
-    HM.printvecMapInt(min_dfa);
+    // // Print DFA table and final state
+    // std::cout << "DFA_minimized Taple:" << std::endl;
+    // HM.printvecMapInt(min_dfa);
 
-    // -------------------------------------------------
+    //-------------------------------------------------
     // TODO: export visualizations
     // TODO: export the serialized min_dfa (for part 2)
     return 0;
