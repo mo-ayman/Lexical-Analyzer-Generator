@@ -3,7 +3,7 @@ project(Lexical_Analyzer_Generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Lexical_Analyzer_Generator main.cpp
+add_executable(Lexical_Analyzer_Generator main_1.cpp
         LexicalRules/Node.cpp
         LexicalRules/Node.h
         LexicalRules/RuleTree.h
@@ -20,9 +20,15 @@ add_executable(Lexical_Analyzer_Generator main.cpp
         DFA/HelpingMethods.cpp
         DFAMinimizer/DFAMinimizer.h
         DFAMinimizer/DFAMinimizer.cpp
+        Visualization/Visualization.cpp
+        Visualization/Visualization.h
+        DFASerialization/DFASerialization.cpp
+        DFASerialization/DFASerialization.h)
+
+add_executable(Lexical_Analyzer main_2.cpp
         DFASerialization/DFASerialization.cpp
         DFASerialization/DFASerialization.h
         LexicalAnalyzer/LexicalAnalyzer.cpp
-        Visualization/Visualization.cpp
-        Visualization/Visualization.h
-        LexicalAnalyzer/LexicalAnalyzer.h)
+        LexicalAnalyzer/LexicalAnalyzer.h
+        main_2.cpp
+        main_2.cpp)
