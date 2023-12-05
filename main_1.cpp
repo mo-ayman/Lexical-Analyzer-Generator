@@ -38,7 +38,8 @@ int main() {
     auto* nfaConstruction = new NFAConstruction();
     nfaConstruction->constructNFA(rules);
     const std::vector<std::map<char, std::vector<int>>> nfs = nfaConstruction->getNfs();
-    const std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates = nfaConstruction->getFinalStates();
+    const std::unordered_map<int, std::tuple<std::string, Priority, int>> finalStates = nfaConstruction->
+            getFinalStates();
     const int startStateIndex = nfaConstruction->getStartStateIndex();
 
     // Print the NFA table
