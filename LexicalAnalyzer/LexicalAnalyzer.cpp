@@ -48,18 +48,25 @@ Token::Token(const size_t fp, std::string t, std::string l, std::string e) {
     rule_priority = Priority::NORMAL;
 }
 
-void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme, int* state) {
+void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme, int* state, int* errorLength) {
     // Panic Mode Recovery
     std::vector<char> new_buffer;
     if (!lexeme->empty()) {
         // discard first character of lexeme
         if (!isWhitespace((*lexeme)[0]) || !error->empty()) {
             *error += (*lexeme)[0];
+            if(!isWhitespace((*lexeme)[0])) {
+                *errorLength = error->size();
+            }
         }
+
         new_buffer.insert(new_buffer.end(), lexeme->begin() + 1, lexeme->end());
     } else {
         if (!isWhitespace(buffer[bufferPos]) || !error->empty()) {
             *error += buffer[bufferPos];
+            if(!isWhitespace(buffer[bufferPos])) {
+                *errorLength = error->size();
+            }
         }
         bufferPos++;
         lexemePosInFile++;
@@ -106,6 +113,7 @@ Token LexicalAnalyzer::getNextToken() {
 
     int state = start_state; // current state
     std::string error;
+    int errorLength = 0;
     while (true) {
         // If the buffer is fully processed
         if (bufferPos >= buffer.size()) {
@@ -113,7 +121,7 @@ Token LexicalAnalyzer::getNextToken() {
             if (file.eof()) {
                 if (maximalMunchType != -1) {
                     Token maximalMunchToken(maximalMunchFilePos, final_states[maximalMunchType],
-                                            lexeme.substr(0, maximalMunchEnd), error);
+                                            lexeme.substr(0, maximalMunchEnd), error.substr(0, errorLength));
                     std::vector<char> new_buffer;
                     if (!lexeme.empty()) {
                         new_buffer.insert(new_buffer.end(), lexeme.begin() + maximalMunchEnd, lexeme.end());
@@ -125,10 +133,10 @@ Token LexicalAnalyzer::getNextToken() {
                 }
                 if (lexeme.empty()) {
                     isEOF = true;
-                    return Token{lexemePosInFile, "EOF", "", error};
+                    return Token{lexemePosInFile, "EOF", "", error.substr(0, errorLength)};
                 }
                 // Panic Mode Recovery
-                panicModeRecovery(&error, &lexeme, &state);
+                panicModeRecovery(&error, &lexeme, &state, &errorLength);
                 continue;
             }
             // Load the next chunk from the file into the buffer and set the position to the start of the buffer
@@ -143,11 +151,11 @@ Token LexicalAnalyzer::getNextToken() {
             // Character not found in the DFA
             if (maximalMunchType == -1) {
                 // Panic Mode Recovery
-                panicModeRecovery(&error, &lexeme, &state);
+                panicModeRecovery(&error, &lexeme, &state, &errorLength);
             } else {
                 // Maximal munch found
                 Token maximalMunchToken(maximalMunchFilePos, final_states[maximalMunchType],
-                                        lexeme.substr(0, maximalMunchEnd), error);
+                                        lexeme.substr(0, maximalMunchEnd), error.substr(0, errorLength));
                 // Update buffer and reset maximal munch variables
                 std::vector<char> new_buffer;
                 if (!lexeme.empty()) {
