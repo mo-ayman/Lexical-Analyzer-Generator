@@ -75,13 +75,6 @@ int main() {
     const auto min_dfa = minimizer.table;
     const auto min_dfa_start = minimizer.start;
     const auto min_dfa_fstates = minimizer.fstates;
-
-    // Print DFA table and final state
-    std::cout << "min_dfa_fstates:" << std::endl;
-    printFinalStates(min_dfa_fstates);
-    std::cout << "DFA_minimized Taple:" << std::endl;
-    // HM.printvecMapInt(min_dfa);
-
     // -------------------------------------------------
     // Export visualizations
     Visualization::exportDfaGraph(min_dfa, min_dfa_start, min_dfa_fstates, src_path + "/min_dfa_graph");

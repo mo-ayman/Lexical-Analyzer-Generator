@@ -16,9 +16,9 @@ int main()
         {
             cout << "Error, removing \"" << token.error << "\"" << endl;
         }
-        std::cout << std::setw(8) << "Pos: " << std::setw(5) << token.filePos
-                  << " | Type: " << std::setw(10) << token.type
+        cout << setw(8) << "Pos: " << setw(5) << token.filePos
+                  << " | Type: " << setw(10) << token.type
                   << " | Lexeme: \"" << token.lexeme << "\""
-                  << std::endl;    } while (token.type != "EOF");
+                  << endl;    } while (token.type != "EOF");
     return 0;
 }

@@ -53,12 +53,12 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
     std::vector<char> new_buffer;
     if (!lexeme->empty()) {
         // discard first character of lexeme
-        if (!isWhitespace((*lexeme)[0])) {
+        if (!isWhitespace((*lexeme)[0]) || !error->empty()) {
             *error += (*lexeme)[0];
         }
         new_buffer.insert(new_buffer.end(), lexeme->begin() + 1, lexeme->end());
     } else {
-        if (!isWhitespace(buffer[bufferPos])) {
+        if (!isWhitespace(buffer[bufferPos]) || !error->empty()) {
             *error += buffer[bufferPos];
         }
         bufferPos++;
