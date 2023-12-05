@@ -10,8 +10,8 @@
 #include "../LexicalRules/RuleTree.h"
 
 static std::vector<int> assignNumbers(const int num_of_states,
-                               std::unordered_map<int, std::tuple<std::string, Priority, int>> final_states,
-                               size_t* num_of_classes) {
+                                      std::unordered_map<int, std::tuple<std::string, Priority, int>> final_states,
+                                      size_t* num_of_classes) {
     std::unordered_map<std::string, int> stringToNumber;
     std::vector<int> resultVector;
 

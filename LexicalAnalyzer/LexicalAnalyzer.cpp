@@ -55,8 +55,8 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
         // discard first character of lexeme
         if (!isWhitespace((*lexeme)[0]) || !error->empty()) {
             *error += (*lexeme)[0];
-            if(!isWhitespace((*lexeme)[0])) {
-                *errorLength = error->size();
+            if (!isWhitespace((*lexeme)[0])) {
+                *errorLength = static_cast<int>(error->size());
             }
         }
 
@@ -64,8 +64,8 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
     } else {
         if (!isWhitespace(buffer[bufferPos]) || !error->empty()) {
             *error += buffer[bufferPos];
-            if(!isWhitespace(buffer[bufferPos])) {
-                *errorLength = error->size();
+            if (!isWhitespace(buffer[bufferPos])) {
+                *errorLength = static_cast<int>(error->size());
             }
         }
         bufferPos++;

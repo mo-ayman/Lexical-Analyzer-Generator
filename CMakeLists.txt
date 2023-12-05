@@ -29,6 +29,4 @@ add_executable(Lexical_Analyzer main_2.cpp
         DFASerialization/DFASerialization.cpp
         DFASerialization/DFASerialization.h
         LexicalAnalyzer/LexicalAnalyzer.cpp
-        LexicalAnalyzer/LexicalAnalyzer.h
-        main_2.cpp
-        main_2.cpp)
+        LexicalAnalyzer/LexicalAnalyzer.h)

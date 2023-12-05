@@ -39,6 +39,7 @@ std::vector<std::map<char, int>> DFA::getDFA() {
         handleState(QueueStates.front());
         QueueStates.pop();
     }
+    // Here Calling below method
     fillDFA();
     return DFA_States;
 }
@@ -55,8 +56,10 @@ void DFA::fillDFA() {
         int indx = 0;
         for (const auto& set: pair.second) {
             const auto it = InputMap.find(pair.first);
+            // go to the equivalent input order as set in InputMap
             auto item = it->second.begin();
             std::advance(item, indx); // Move the iterator to the desired index
+            // get indx of the current set of states to replace it
             const auto stateNum = stateIndx.find(set);
             eachStateMap.insert(std::pair(*item, stateNum->second));
             indx++;
