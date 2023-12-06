@@ -15,7 +15,7 @@ public:
     std::vector<std::map<char, int>> table;
     std::unordered_map<int, std::tuple<std::string, Priority, int>> fstates;
 
-    void minimize(std::vector<std::map<char, int>> dfa, int start_state,
+    void minimize(const std::vector<std::map<char, int>>& dfa, int start_state,
                   const std::unordered_map<int, std::tuple<std::string, Priority, int>>& final_states);
 };
 

@@ -8,10 +8,11 @@
 #include <algorithm>
 
 #include "../LexicalRules/RuleTree.h"
+static constexpr int MOD = 1000000007;
 
 static std::vector<int> assignNumbers(const int num_of_states,
                                       std::unordered_map<int, std::tuple<std::string, Priority, int>> final_states,
-                                      size_t* num_of_classes) {
+                                      size_t* partitionsCount) {
     std::unordered_map<std::string, int> stringToNumber;
     std::vector<int> resultVector;
 
@@ -27,102 +28,106 @@ static std::vector<int> assignNumbers(const int num_of_states,
             resultVector.push_back(stringToNumber[str]);
         }
     }
-    *num_of_classes = currentNumber;
+    *partitionsCount = currentNumber;
     return resultVector;
 }
 
-void DFAMinimizer::minimize(std::vector<std::map<char, int>> dfa, int start_state,
+long long hash(const std::string& s, const long long oldHashValue = 0){
+    long long hashValue = oldHashValue;
+    for (const char k: s) {
+        hashValue = hashValue * 256 + k;
+        hashValue %= MOD;
+    }
+    return hashValue;
+}
+
+void DFAMinimizer::minimize(const std::vector<std::map<char, int>>& dfa, const int start_state,
                             const std::unordered_map<int, std::tuple<std::string, Priority, int>>& final_states) {
-    size_t num_of_classes;
+
+    size_t partitionsCount;
 
     // assign each class a number (0 for NF states, then 1,2,3,... for F states)
-    std::vector<int> prev = assignNumbers(static_cast<int>(dfa.size()), final_states, &num_of_classes);
-    std::vector<int> next(prev.size());
-    std::unordered_map<int, int> S;
+    std::vector<int> currentPartition = assignNumbers(static_cast<int>(dfa.size()), final_states, &partitionsCount);
+    std::vector<int> nextPartition(currentPartition.size());
+    std::unordered_map<int, int> partitionToState;
 
     // continue partitioning until convergence
     bool converged = false;
     while (!converged) {
-        S.clear();
+        partitionToState.clear();
         for (int i = 0; i < dfa.size(); ++i) {
-            constexpr int MOD = 1000000007;
-            long long hash = 0;
-            std::string hstr = std::to_string(prev[i]) + ", ";
-            for (char k: hstr) {
-                hash = hash * 256 + k;
-                hash %= MOD;
-            }
+            std::string hstr = std::to_string(currentPartition[i]) + ", ";
+            long long h = hash(hstr);
             for (const auto& entry: dfa[i]) {
-                char input = entry.first;
-                int destination = entry.second;
-                std::string hash_component_str =
-                        std::to_string(input) + ", " + std::to_string(prev[destination]) + ", ";
-                for (char k: hash_component_str) {
-                    hash = hash * 256 + k;
-                    hash %= MOD;
-                }
+                const char input = entry.first;
+                const int destination = entry.second;
+                hstr = std::to_string(input) + ", " + std::to_string(currentPartition[destination]) + ", ";
+                h = hash(hstr, h);
             }
-            next[i] = static_cast<int>(hash);
-            S[static_cast<int>(hash)] = i;
+            nextPartition[i] = static_cast<int>(h);
+            partitionToState[static_cast<int>(h)] = i;
         }
 
         // check for convergence
-        converged = (S.size() == num_of_classes);
+        converged = (partitionToState.size() == partitionsCount);
 
-        // update num of classes
-        num_of_classes = S.size();
+        // update partitions count
+        partitionsCount = partitionToState.size();
 
-        // swap prev with next
-        swap(prev, next);
+        // swap currentPartition with nextPartition
+        swap(currentPartition, nextPartition);
     }
 
-    // build S_idx
-    std::unordered_map<int, int> S_idx;
+    // build partitionToIndex map
+    std::unordered_map<int, int> partitionToIndex;
 
-    int idx = static_cast<int>(S.size()) - 1;
-    for (const auto& entry: S) {
-        S_idx[entry.first] = idx--;
+    int idx = static_cast<int>(partitionToState.size()) - 1;
+    for (const auto& entry: partitionToState) {
+        partitionToIndex[entry.first] = idx--;
     }
 
     // build the minimized DFA
     std::vector<std::map<char, int>> min_dfa;
-    for (const auto& entry: S) {
-        int target_state_idx = entry.second;
-        std::map<char, int> target_state_map = dfa[target_state_idx];
+    for (const auto& entry: partitionToState) {
+        const int targetState = entry.second;
+        std::map<char, int> targetStateMap = dfa[targetState];
 
-        // build a new map for the target state
+        // build a new map for the partition of target state
         std::map<char, int> m;
-        for (const auto& input_entry: target_state_map) {
-            char input = input_entry.first;
-            int destination = S_idx[prev[input_entry.second]];
+        for (const auto& entry: targetStateMap) {
+            char input = entry.first;
+            const int destination = partitionToIndex[currentPartition[entry.second]];
             m[input] = destination;
         }
 
         min_dfa.insert(min_dfa.begin(), m);
     }
-    // find the starting state for the minimum dfa.
-    start = S_idx[prev[start_state]];
+    // find the starting state for the minimal dfa.
+    start = partitionToIndex[currentPartition[start_state]];
 
     // build the final states map for the minimal dfa.
-    for (const auto& final_entry: final_states) {
-        // assumes low index means higher priority.
-        int original_fstate_idx = final_entry.first;
-        if (const int new_fstate_idx = S_idx[prev[original_fstate_idx]];
-            fstates.find(new_fstate_idx) == fstates.end()) {
-            fstates[new_fstate_idx] = final_entry.second;
+    for (const auto& entry: final_states) {
+        const int stateIndex = entry.first;
+        const int partitionIndex = partitionToIndex[currentPartition[stateIndex]];
+        if (fstates.find(partitionIndex) == fstates.end()) {
+            fstates[partitionIndex] = entry.second;
         } else {
-            Priority prev = std::get<1>(fstates[new_fstate_idx]);
-            Priority challenging = std::get<1>(final_entry.second);
-            if (challenging < prev) {
-                fstates[new_fstate_idx] = final_entry.second;
-            } else if (challenging == prev) {
-                int prev_ord = std::get<2>(fstates[new_fstate_idx]);
-                int challenging_ord = std::get<2>(final_entry.second);
-                if (challenging_ord < prev_ord) {
-                    fstates[new_fstate_idx] = final_entry.second;
+            const Priority prevPriority = std::get<1>(fstates[partitionIndex]);
+            const Priority challengingPriority = std::get<1>(entry.second);
+            if (challengingPriority < prevPriority) {
+                fstates[partitionIndex] = entry.second;
+            } else if (challengingPriority == prevPriority) {
+                const int prevIdx = std::get<2>(fstates[partitionIndex]);
+                const int challengingIdx = std::get<2>(entry.second);
+                if (challengingIdx < prevIdx) {
+                    fstates[partitionIndex] = entry.second;
                 }
             }
         }
     }
     table = min_dfa;
 }
+/*
+
+
+*/
