@@ -61,7 +61,7 @@ namespace Visualization {
     void exportDfaGraph(const std::vector<std::map<char, int>>& dfaTable, int startState,
                         const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finalStates,
                         const std::string& filePath) {
-        std::ofstream outFile(filePath);
+        std::ofstream outFile(filePath + ".dot");
 
         if (!outFile.is_open()) {
             std::cerr << "Error: Unable to open the file for writing." << std::endl;
@@ -101,10 +101,10 @@ namespace Visualization {
         outFile.close();
 
         // 4. Generate the image using Graphviz https://graphviz.gitlab.io/download/
-        const std::string command = "dot -Tpng " + filePath + " -o " + filePath + ".png";
+        const std::string command = "dot -Tpdf " + filePath + ".dot -o " + filePath + ".pdf";
 
         if (system(command.c_str()) == 0) {
-            std::cout << "DFA graph exported to: " << filePath << ".png" << std::endl;
+            std::cout << "DFA graph exported to: " << filePath << ".pdf" << std::endl;
         } else {
             std::cerr << "Error: Unable to generate the image. Make sure Graphviz is installed." << std::endl;
         }
@@ -114,7 +114,7 @@ namespace Visualization {
     void exportNFAGraph(const std::vector<std::map<char, std::vector<int>>>& nfaTable, int startState,
                         const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finalStates,
                         const std::string& filePath) {
-        std::ofstream outFile(filePath);
+        std::ofstream outFile(filePath + ".dot");
 
         if (!outFile.is_open()) {
             std::cerr << "Error: Unable to open the file for writing." << std::endl;
@@ -159,10 +159,10 @@ namespace Visualization {
         outFile.close();
 
         // 4. Generate the image using Graphviz https://graphviz.gitlab.io/download/
-        const std::string command = "dot -Tpng " + filePath + " -o " + filePath + ".png";
+        const std::string command = "dot -Tpdf " + filePath + ".dot -o " + filePath + ".pdf";
 
         if (system(command.c_str()) == 0) {
-            std::cout << "NFA graph exported to: " << filePath << ".png" << std::endl;
+            std::cout << "NFA graph exported to: " << filePath << ".pdf" << std::endl;
         } else {
             std::cerr << "Error: Unable to generate the image. Make sure Graphviz is installed." << std::endl;
         }
