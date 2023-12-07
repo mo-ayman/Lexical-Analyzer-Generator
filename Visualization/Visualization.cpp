@@ -47,6 +47,8 @@ namespace Visualization {
 
                 if (const auto transition = dfaTable[i].find(input); transition != dfaTable[i].end()) {
                     outFile << transition->second;
+                } else {
+                    outFile << "FI";
                 }
             }
             outFile << '\n';
