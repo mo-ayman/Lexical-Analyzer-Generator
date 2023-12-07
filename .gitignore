@@ -6,7 +6,9 @@
 *.dat
 *.png
 *.jpg
-**/*.txt
+*.pdf
+*.dot
+*.txt
 
 # Keep
 !example.txt
@@ -15,6 +17,7 @@
 !Test_3.txt
 !Test_4.txt
 !Test_5_WithError.txt
+
 # Executables
 *.exe
 
