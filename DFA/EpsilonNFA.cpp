@@ -28,7 +28,10 @@ EpsilonNFA::EpsilonNFA(const std::vector<std::map<char, std::vector<int>>>& tabl
     finalStateMap = finals;
     initialState = initial;
 }
-
+/*
+This method used to map each states to all states with epslon transition like if 1 under epslon
+got to state 2 and 2 under epslon got to 3 then 1 go to 3 under epslon
+*/
 void EpsilonNFA::updateEpsilonIteration(std::vector<std::map<char, std::set<int>>>& T_table) {
     for (std::map<char, std::set<int>>& TransitionMap: T_table) {
         for (auto& pair: TransitionMap) {
