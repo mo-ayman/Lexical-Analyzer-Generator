@@ -296,7 +296,7 @@ In DFA, I used a queue to search states by visiting each state then pop it and p
 **Some Methods Definitions in Epsilon_NFA_NFA class:**
 1. `EpsilonNFA::EpsilonNFA(const std::vector<std::map<char, std::vector<int>>>& table,const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finals,const int initial)` 
      - This is the constructor of NFA, first for loop is to convert vector in map of transition table to set to ease some functions in future.
-2. Other methods used to convert Epsilon_NFA_NFA to NFA
+2. Other methods used to convert Epsilon_NFA_NFA to NFA and are commented in code.
 
 
 ## DFA Minimizer
