@@ -285,7 +285,7 @@ In DFA, I used a queue to search states by visiting each state then pop it and p
 2. `std::vector<std::map<char, int>> DFA::getDFA()`
     - This method first push into queue the states and calling method HandleState for each state which in turn (This function i fill stateMap that map each state to it's transition states that first state map to them and fill InputMap which map each state with it's input chars ). Finally calling  fillDFA func(This method fills DFA_States vector of each map by getting each state index and replacing it with a set of states corresponding).
 3. `void DFA::fillDFA()`
-    - This method fills the DFA_States vector of each map by getting each state index and replacing it with a set of states corresponding.
+    - This method fills the DFA_States vector of each map by getting each state index and replacing it with a set of states corresponding go to implementation to understand it well.
 4. `std::map<std::set<int>, int> DFA::makeEachStateIndx()`
     - This method used to map each set to its index in Transition table to used in  fillDFA() func  when update DFA_states
 5. `void DFA::handleState(std::set<int>& states)`
