@@ -691,7 +691,7 @@ The `.l` file contains the lexical rules and behavior of the lexical analyzer. I
     | [:blank:]  |	A blank or tab character |
     | [:graph:]  |	Any printable character other than space |
     | [:punct:]  |	A punctuation mark |
-| 
+
 2. **Rules Section:** This section contains the lexical rules and is enclosed between `%%` symbols. It is written in the form `pattern action`. For example, we can define a rule that matches a digit as follows:
 
     ```lex
