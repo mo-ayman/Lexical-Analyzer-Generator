@@ -4,15 +4,14 @@
 #include "LexicalAnalyzer/LexicalAnalyzer.h"
 
 int main(const int argc, char** argv) {
-    if (argc != 3) {
+    if (argc != 4) {
         std::cerr << "Error: Invalid number of arguments." << std::endl;
         return 1;
     }
 
-    const auto output_path = std::string(argv[0]);
     const auto dfa_path = std::string(argv[1]);
     const auto input_path = std::string(argv[2]);
-
+    const auto output_path = std::string(argv[3]);
 
     std::ofstream outputFile(output_path);
     LexicalAnalyzer lexer(input_path, 1024, dfa_path);
