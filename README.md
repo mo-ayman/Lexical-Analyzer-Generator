@@ -285,21 +285,24 @@ The DFA minimization algorithm is based on Hopcroft's algorithm with some modifi
 ### Steps
 
 1. **Initialize partitions:**
-    Divide the set of states into multiple partitions 
-    1. Make **partitions** array, so that **partitions[i]** represents the partition of the **i<sup>th</sup>** state.
+    Divide the set of states into multiple partitions:
+    1. Make **`partitions`** array, so that **`partitions[i]`** represents the partition of the **i<sup>th</sup>** state.
     2. Assign each state an integer representing the partition it belongs to: 
         * **0** for non-final states.
         * **1, 2, 3, …, F** for final states.
 
 2. **Refine partitions:** 
-    1. Iterate through the states and determine their new partitions based on the partitions of their destinations. 
-    2. Utilize a polynomial rolling hash for efficient summarization of state transitions.
+    1. Iterate through the states and determine their new partitions based on their behaviour; the partitions of their destinations. 
+    2. Utilize Hashing for summarizing state behaviours.
+    3. update `partitions`.
 
 3. **Repeat Refinement:** 
     Repeat step 2, until no partition changes occur.
 
-4. **Create Minimized DFA:** 
-    Construct a new DFA using the final partitions as states. The transitions of the new DFA are determined by the transitions between the original states within each partition.
+4. **Construct the Minimized DFA:** 
+    Construct a new DFA using the final partitions as states, such that
+    the transitions of the new DFA states are determined by the transitions 
+    between the original states within each partition.
 
 ### Simplified Pseudo Code
 
@@ -346,6 +349,7 @@ Overall space complexity = $O(N)$
 
 [^1]: The probability of two distinct strings having the same hash value is very low (**1/m**), but in a **deployment** environment, a cryptographic hash function is recommended for enhanced security.
 
+----------
 ## Lexical Analyzer
 
 The `LexicalAnalyzer` class is a crucial component of a lexical analysis system designed to tokenize input source code based on a pre-defined deterministic finite automaton (DFA). Lexical analysis is a vital phase in the compilation process, responsible for breaking down the source code into a sequence of meaningful tokens.
@@ -408,10 +412,10 @@ The `LexicalAnalyzer` class is a crucial component of a lexical analysis system 
   
 - **Public Methods:**
   - `getNextToken()`: Retrieves the next token from the input source code based on the input DFA transitions.
-
+-----------------
 ### Routines
 
-**getNextToken**
+**getNextToken():**
 
 I. **Initialize local variables:**
 - Initialize needed variables to maintain the current `state` in DFA, `lexeme`, `error` and other maximal munch variables.
@@ -427,7 +431,7 @@ II. **Loop:**
         - Otherwise, Perform **`panicModeRecovery`** and **continue** to the next iteration.
    3. **Load Next Chunk:**
       - Load the next chunk from the file into the buffer **if needed**.
-   4. **Read next character input:** `c = buffer[bufferPos]`
+   4. **Read Next Character input:** `c = buffer[bufferPos]`
    4. **Check Dead End:**
       - **If the `c` is whitespace or not found in the DFA:**
            - If maximal munch hasn't occurred, perform **`panicModeRecovery`**.
@@ -439,8 +443,8 @@ II. **Loop:**
    6. **Check Final State:**
       - **If `state` is final:**
            - update maximal munch variables.
-
-**panicModeRecovery**
+-------
+**panicModeRecovery():**
 
 1. **Initialize a new buffering vector *`B`*.**
 2. **If `lexeme` is non-empty:**
@@ -449,11 +453,9 @@ II. **Loop:**
    - Insert `buffer[bufferPos+1:]` into *`B`*.
 4. **If the removed character is not whitespace:**
    - Append it to `error`.
-5. **If the removed character is whitespace:**
-   - Append it only if `error` is not empty.
-6. **Reset `bufferPos`, `lexeme`, and `state`.**
-7. **Set `buffer` to *`B`***
-
+5. **Reset `bufferPos`, `lexeme`, and `state`.**
+6. **Set `buffer` to *`B`***
+---------------
 ## Usage
 
 ### Lexical Analyzer Generator

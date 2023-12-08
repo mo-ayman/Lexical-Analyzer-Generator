@@ -127,7 +127,3 @@ void DFAMinimizer::minimize(const std::vector<std::map<char, int>>& dfa, const i
     }
     table = min_dfa;
 }
-/*
-
-
-*/
