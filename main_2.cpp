@@ -60,26 +60,29 @@ int main(const int argc, char** argv) {
         token = lexer.getNextToken();
         if (!token.error.empty()) {
             verboseFile << std::setw(8) << "-- Error" << ", discarding ";
-            int k=0;
-            for (char ch : token.error) {
+            std::cerr << "Error: Invalid tokens: ";
+            int k = 0;
+            for (char ch: token.error) {
                 verboseFile << "'" << ch << "'";
-                if(k<(token.error).size()-1) {
+                std::cerr << "'" << ch << "'";
+                if (k < (token.error).size() - 1) {
                     verboseFile << ", ";
+                    std::cerr << ", ";
                 }
                 k++;
                 tokensFile << "Error" << std::endl;
             }
             verboseFile << std::endl;
+            std::cerr << std::endl;
         }
         tokensFile << token.type << std::endl;
         verboseFile << std::setw(8) << "Pos: " << std::setw(5) << token.filePos
-                    << " | Type: " << std::setw(10) << token.type
-                    << " | Lexeme: \"" << token.lexeme << "\""
-                    << std::endl;
+                << " | Type: " << std::setw(10) << token.type
+                << " | Lexeme: \"" << token.lexeme << "\""
+                << std::endl;
     } while (token.type != "EOF");
 
     tokensFile.close();
     verboseFile.close();
     return 0;
 }
-
