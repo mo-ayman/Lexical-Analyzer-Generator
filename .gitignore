@@ -9,6 +9,9 @@
 *.pdf
 *.dot
 *.txt
+*.out
+*.log
+*.yy.c
 
 # Keep
 !example.txt
