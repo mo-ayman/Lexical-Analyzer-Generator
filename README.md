@@ -370,7 +370,6 @@ Overall space complexity = $O(N)$
 
 [^1]: The probability of two distinct strings having the same hash value is very low (**1/m**), but in a **deployment** environment, a cryptographic hash function is recommended for enhanced security.
 
-----------
 ## Lexical Analyzer
 
 The `LexicalAnalyzer` class is a crucial component of a lexical analysis system designed to tokenize input source code based on a pre-defined deterministic finite automaton (DFA). Lexical analysis is a vital phase in the compilation process, responsible for breaking down the source code into a sequence of meaningful tokens.
@@ -433,7 +432,7 @@ The `LexicalAnalyzer` class is a crucial component of a lexical analysis system 
   
 - **Public Methods:**
   - `getNextToken()`: Retrieves the next token from the input source code based on the input DFA transitions.
------------------
+
 ### Routines
 
 **getNextToken():**
@@ -464,7 +463,7 @@ II. **Loop:**
    6. **Check Final State:**
       - **If `state` is final:**
            - update maximal munch variables.
--------
+
 **panicModeRecovery():**
 
 1. **Initialize a new buffering vector *`B`*.**
@@ -476,7 +475,8 @@ II. **Loop:**
    - Append it to `error`.
 5. **Reset `bufferPos`, `lexeme`, and `state`.**
 6. **Set `buffer` to *`B`***
----------------
+
+
 ## Usage
 
 ### Lexical Analyzer Generator
@@ -489,10 +489,10 @@ It takes one argument which is the path to the rules file. It generates a serial
 
 ### Lexical Analyzer
 
-It takes two arguments which are the path to the serialized minimized DFA file and the path to the input source code file. It prints the tokens to the standard output.
+It takes three arguments: the path to the serialized minimized DFA file, the path to the input source code file, and the path to the output file containing the tokens. It also takes an optional argument `--verbose` to output an additional file containing the tokens with more details.
 
 ```bash
-./<executable> <path-to-serialized-minimized-DFA-file> <path-to-input-source-code-file>
+./<executable> <path-to-serialized-minimized-DFA-file> <path-to-input-source-code-file> -o <path-to-output-file> [--verbose]
 ```
 
 ## Flex Short Tutorial
