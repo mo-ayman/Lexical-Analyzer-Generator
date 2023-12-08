@@ -290,13 +290,13 @@ In DFA, I used a queue to search states by visiting each state then pop it and p
     - This method used to map each set to its index in Transition table to used in  fillDFA() func  when update DFA_states
 5. `void DFA::handleState(std::set<int>& states)`
     - This function i fill stateMap that map each state to it's transition states that first state map to them and fill InputMap which map each state with it's input chars this functions help me in  getDFA func
-6. void DFA::updateFinalStates(int indx, const std::set<int>& OldState)` 
+6. `void DFA::updateFinalStates(int indx, const std::set<int>& OldState)` 
     - This method makes new final states by applying if any state of old ones contains one of the final states then take that one as the final state by taking the most  priority one.
 
 **Some Methods Definitions in Epsilon_NFA_NFA class:**
-   1. `EpsilonNFA::EpsilonNFA(const std::vector<std::map<char, std::vector<int>>>& table,const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finals,const int initial)` 
-    - This is the constructor of NFA, first for loop is to convert vector in map of transition table to set to ease some functions in future.
-   2. Other methods used to convert Epsilon_NFA_NFA to NFA
+1. `EpsilonNFA::EpsilonNFA(const std::vector<std::map<char, std::vector<int>>>& table,const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finals,const int initial)` 
+     - This is the constructor of NFA, first for loop is to convert vector in map of transition table to set to ease some functions in future.
+2. Other methods used to convert Epsilon_NFA_NFA to NFA
 
 
 ## DFA Minimizer
