@@ -3,15 +3,21 @@
 #include <fstream>
 #include "LexicalAnalyzer/LexicalAnalyzer.h"
 
-int main() {
-    std::string src_path = __FILE__;
-    src_path = src_path.substr(0, src_path.find_last_of("\\/"));
+int main(const int argc, char** argv) {
+    if (argc != 3) {
+        std::cerr << "Error: Invalid number of arguments." << std::endl;
+        return 1;
+    }
 
-    std::ofstream outputFile(src_path+"/output.txt"); // Open a file for writing
+    const auto output_path = std::string(argv[0]);
+    const auto dfa_path = std::string(argv[1]);
+    const auto input_path = std::string(argv[2]);
 
-    LexicalAnalyzer lexer(src_path + "/test_program.txt", 1024, src_path + "/min_dfa.dat");
+
+    std::ofstream outputFile(output_path);
+    LexicalAnalyzer lexer(input_path, 1024, dfa_path);
+
     Token token;
-
     do {
         token = lexer.getNextToken();
         if (!token.error.empty()) {
@@ -32,7 +38,7 @@ int main() {
                     << std::endl;
     } while (token.type != "EOF");
 
-    outputFile.close(); // Close the file when you're done
+    outputFile.close();
     return 0;
 }
 

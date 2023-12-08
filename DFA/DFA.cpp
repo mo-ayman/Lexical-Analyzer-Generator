@@ -24,10 +24,10 @@ DFA::DFA(const std::vector<std::map<char, std::vector<int>>>& table,
 }
 
 /*
-  this method first push into stack the states and calling method HandleState for each state which
+  this method first push into queue the states and calling method HandleState for each state which
   in turn (This function i fill stateMap that map each state to it's transition state that state map to them
-  and fill InputMap which map each state with it's input chars thers functions help me in fillDFA func).
-  finall it call fillDFA func(This method fill DFA_States vector of each map by getting each state indx and replace it with set of states
+  and fill InputMap which map each state with it's input chars thers functions help me in getDFA func).
+  finally it call fillDFA func(This method fill DFA_States vector of each map by getting each state index and replace it with set of states
       corressponding)
 */
 std::vector<std::map<char, int>> DFA::getDFA() {
@@ -45,7 +45,7 @@ std::vector<std::map<char, int>> DFA::getDFA() {
 }
 
 /*
-  This method fill DFA_States vector of each map by getting each state indx and replace it with set of states
+  This method fill DFA_States vector of each map by getting each state index and replace it with set of states
   corressponding
 */
 void DFA::fillDFA() {
@@ -69,7 +69,7 @@ void DFA::fillDFA() {
 }
 
 /*
- This method used to map each set to it's indx in Transition table to used in  fillDFA() func
+ This method used to map each set to it's index in Transition table to used in  fillDFA() func
  when update DFA_states
 */
 std::map<std::set<int>, int> DFA::makeEachStateIndx() {
@@ -86,7 +86,7 @@ std::map<std::set<int>, int> DFA::makeEachStateIndx() {
 
 /*
   This function i fill stateMap that map each state to it's transition state that state map to them
-  and fill InputMap which map each state with it's input chars thers functions help me in fillDFA func
+  and fill InputMap which map each state with it's input chars this function help me in getDFA() func
 */
 void DFA::handleState(std::set<int>& states) {
     std::map<char, int> stringIndexMap;
@@ -128,7 +128,7 @@ std::unordered_map<int, std::tuple<std::string, Priority, int>> DFA::getFinalSta
 
 /*
    This method make new final states by applying if any
-   state of old ones contain one of final state then take that one as final state
+   state of old ones contain one of final state then take that one as final state by taking the most  priority one
 */
 void DFA::updateFinalStates(int indx, const std::set<int>& OldState) {
     // this temp set used to store all final states that current state map to

@@ -22,12 +22,17 @@ void printFinalStates(const std::unordered_map<int, std::tuple<std::string, Prio
     }
 }
 
-int main() {
-    // get dir path of the source code and concatenate with the file name
+int main(const int argc, char** argv) {
+    if (argc != 2) {
+        std::cerr << "Error: Invalid number of arguments." << std::endl;
+        return 1;
+    }
+
+    // Get dir path of the source code and concatenate with the file name
     std::string src_path = __FILE__;
     src_path = src_path.substr(0, src_path.find_last_of("\\/"));
-    const std::string example_path = src_path + "/example.txt";
-    const std::vector<RuleTree *> rules = RuleParser::parseFromFile(example_path);
+    const auto rules_path = std::string(argv[1]);
+    const std::vector<RuleTree *> rules = RuleParser::parseFromFile(rules_path);
 
     // Print all rules
     for (const auto& rule: rules) {

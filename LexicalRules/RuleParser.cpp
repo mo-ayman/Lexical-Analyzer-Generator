@@ -88,7 +88,7 @@ static Node* parseSet(const std::string& input, const int start, const int end) 
 }
 
 static Node* parseRule(const std::string& input, const int start, const int end,
-                const std::unordered_map<std::string, Node *>& definitions) {
+                       const std::unordered_map<std::string, Node *>& definitions) {
     Node* currentOrNode = nullptr;
     Node* lastFound = nullptr;
     std::string lastSeq;
@@ -194,7 +194,8 @@ static Node* parseRule(const std::string& input, const int start, const int end,
             } else {
                 lastFound = new Node(nextChar);
             }
-            if ((i + 1 == end || !isValidRuleNameChar(input[i + 1])) && definitions.find(lastSeq) != definitions.end()) {
+            if ((i + 1 == end || !isValidRuleNameChar(input[i + 1])) && definitions.find(lastSeq) != definitions.
+                end()) {
                 const int lastSeqLength = static_cast<int>(lastSeq.length());
                 Node* definitionCopy = definitions.at(lastSeq);
                 if (lastFound->getOp() == CONCAT) {
@@ -227,7 +228,7 @@ static Node* parseRule(const std::string& input, const int start, const int end,
 }
 
 static void parseDefExp(const std::string& input, std::unordered_map<std::string, Node *>& definitions,
-                 std::vector<RuleTree *>& rules) {
+                        std::vector<RuleTree *>& rules) {
     const int inputLength = static_cast<int>(input.length());
     std::string ruleName;
     int inputIterator = 0;
