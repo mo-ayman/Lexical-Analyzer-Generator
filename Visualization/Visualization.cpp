@@ -29,26 +29,42 @@ namespace Visualization {
         }
 
         // 2. Write the DFA table to the file
-        outFile << std::setw(5) << "State" << " ";
+        // Get the longest token name
+        int maxTokenNameLength = 0;
+        for (const auto& entry: finalStates) {
+            if (const std::string& tokenName = std::get<0>(entry.second); tokenName.length() > maxTokenNameLength) {
+                maxTokenNameLength = static_cast<int>(tokenName.length());
+            }
+        }
+
+        outFile << "| State | " << std::setw(maxTokenNameLength) << "Token" << " |";
         for (const auto& input: allInputs) {
-            outFile << std::setw(5) << input;
+            outFile << " " << std::setw(5) << input << " |";
+        }
+        outFile << '\n';
+
+        outFile << "| :---: | :" << std::setw(std::max(maxTokenNameLength - 2, 0)) << std::setfill('-') << "" <<
+                std::setfill(' ') << ": |";
+        for (const auto& input: allInputs) {
+            outFile << " :---: |";
         }
         outFile << '\n';
 
         for (int i = 0; i < dfaTable.size(); ++i) {
             // Mark final states with an asterisk
-            if (finalStates.find(i) != finalStates.end()) {
-                outFile << std::setw(5) << i << "*";
+            if (const auto finalState = finalStates.find(i); finalState != finalStates.end()) {
+                const std::string& tokenName = std::get<0>(finalState->second);
+                outFile << "| " << std::setw(4) << i << "* |";
+                outFile << " " << std::setw(maxTokenNameLength) << tokenName << " |";
             } else {
-                outFile << std::setw(5) << i << " ";
+                outFile << "| " << std::setw(4) << i << "  |";
+                outFile << " " << std::setw(maxTokenNameLength) << " " << " |";
             }
             for (const auto& input: allInputs) {
-                outFile << std::setw(5);
-
                 if (const auto transition = dfaTable[i].find(input); transition != dfaTable[i].end()) {
-                    outFile << transition->second;
+                    outFile << " " << std::setw(5) << transition->second << " |";
                 } else {
-                    outFile << "FI";
+                    outFile << " " << std::setw(6) << "Φ" << " |";
                 }
             }
             outFile << '\n';
