@@ -6,21 +6,14 @@
 #include <string>
 #include <map>
 #include <vector>
+#include "../Definition.h"
 
 class ParsingCFG {
 private:
-    class Definition {
-        std::string name;
-        bool isTerminal;
-    };
-
     std::map<Definition* , std::vector<std::vector<Definition*>>> rules;
 
-
 public:
-
     auto getRules() -> std::map<Definition* , std::vector<std::vector<Definition*>>>&;
-
 
 };
 
