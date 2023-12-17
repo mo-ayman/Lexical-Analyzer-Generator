@@ -1,7 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include "LexicalAnalyzer/LexicalAnalyzer.h"
+#include "LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h"
 
 int main(const int argc, char** argv) {
     if (argc < 5) {

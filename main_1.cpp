@@ -1,14 +1,14 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "LexicalRules/RuleParser.h"
-#include "LexicalRules/RuleTree.h"
-#include "NFA/NFAConstruction.h"
-#include "DFA/DFA.h"
-#include "DFA/HelpingMethods.h"
-#include "DFAMinimizer/DFAMinimizer.h"
-#include "Visualization/Visualization.h"
-#include "DFASerialization/DFASerialization.h"
+#include "LexicalAnalyzerGenerator/LexicalRules/RuleParser.h"
+#include "LexicalAnalyzerGenerator/LexicalRules/RuleTree.h"
+#include "LexicalAnalyzerGenerator/NFA/NFAConstruction.h"
+#include "LexicalAnalyzerGenerator/DFA/DFA.h"
+#include "LexicalAnalyzerGenerator/DFA/HelpingMethods.h"
+#include "LexicalAnalyzerGenerator/DFAMinimizer/DFAMinimizer.h"
+#include "LexicalAnalyzerGenerator/Visualization/Visualization.h"
+#include "LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h"
 
 void printFinalStates(const std::unordered_map<int, std::tuple<std::string, Priority, int>>& finalStates) {
     for (const auto& entry: finalStates) {
@@ -27,7 +27,6 @@ int main(const int argc, char** argv) {
         std::cerr << "Error: Invalid number of arguments." << std::endl;
         return 1;
     }
-
     // Get dir path of the source code and concatenate with the file name
     std::string src_path = __FILE__;
     src_path = src_path.substr(0, src_path.find_last_of("\\/"));
