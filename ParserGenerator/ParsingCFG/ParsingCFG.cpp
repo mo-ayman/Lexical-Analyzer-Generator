@@ -4,6 +4,6 @@
 
 #include "ParsingCFG.h"
 
-auto ParsingCFG::getRules() -> std::map<Node *, std::vector<std::vector<Node *>>> & {
+auto ParsingCFG::getRules() -> std::map<Definition *, std::vector<std::vector<Definition *>>> & {
     return rules;
 }

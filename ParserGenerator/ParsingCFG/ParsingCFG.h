@@ -9,17 +9,17 @@
 
 class ParsingCFG {
 private:
-    class Node {
+    class Definition {
         std::string name;
-        [[maybe_unused]] bool isTerminal;
+        bool isTerminal;
     };
 
-    std::map<Node* , std::vector<std::vector<Node*>>> rules;
+    std::map<Definition* , std::vector<std::vector<Definition*>>> rules;
 
 
 public:
 
-    auto getRules() -> std::map<Node* , std::vector<std::vector<Node*>>>&;
+    auto getRules() -> std::map<Definition* , std::vector<std::vector<Definition*>>>&;
 
 
 };
