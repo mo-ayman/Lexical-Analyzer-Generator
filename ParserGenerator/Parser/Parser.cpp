@@ -2,6 +2,9 @@
 #include <random>
 #include <algorithm>
 #include "Parser.h"
+
+#include <memory>
+
 #include "../Definition/Definition.h"
 
 
@@ -21,13 +24,11 @@ bool operator==(const Token& lhs, const ParseTreeNode& rhs) {
 
 Parser::Parser(const unordered_map<const Definition*, unordered_map<string, vector<const Definition*>>>& parsingTable)
     : table(parsingTable) {}
-/*
- * Assumes `eofString` is unique.
- *
- */
-ParseTreeNode* Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol, const Definition* epsilonSymbol, const string& eofString) {
+
+std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol,
+                                             const Definition* epsilonSymbol, const string& eofString){
     // Initialize a stack of parseTree nodes
-    stack<ParseTreeNode*> nodeStack;
+    stack<std::shared_ptr<ParseTreeNode>> nodeStack;
     Token currentToken;
 
     // Define repetitive routines
@@ -39,9 +40,10 @@ ParseTreeNode* Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition*
         nextToken();
     };
     // The parse tree root node
-    const auto rootNode = new ParseTreeNode(startSymbol);
-    const Definition eofDefinition = Definition(eofString);
-    nodeStack.push(new ParseTreeNode(&eofDefinition));
+    const auto rootNode = std::make_shared<ParseTreeNode>(startSymbol);
+    const auto eofDefinition = Definition(eofString);
+
+    nodeStack.push(std::make_shared<ParseTreeNode>(&eofDefinition));
     nodeStack.push(rootNode);
     nextToken();
     while (!nodeStack.empty()) {
@@ -87,14 +89,13 @@ ParseTreeNode* Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition*
         // Non-sync rule is found:
         nodeStack.pop();
         for(int k=production.size()-1; k >= 0; k--) {
-            ParseTreeNode* childNode = new ParseTreeNode(production[k]);
+            auto childNode =  std::make_shared<ParseTreeNode>(production[k]);
             stackTopNode->insertLeft(childNode);
             if(production[k]!= epsilonSymbol) {
                 nodeStack.push(childNode);
             }
         }
     }
-
     if(!lexicalAnalyzer.isEOF() || !currentToken.isEOF) {
         cerr<<"Excess tokens:" << endl;
         if(!currentToken.isEOF) {
@@ -105,7 +106,7 @@ ParseTreeNode* Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition*
         }
     }
     if(!nodeStack.empty()) {
-        cerr<<"Error: Unexpected end of file." << endl;
+        cerr<<"Error: Unexpected End Of File." << endl;
     }
     return rootNode;
 }

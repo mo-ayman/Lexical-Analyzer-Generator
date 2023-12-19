@@ -16,16 +16,15 @@ bool ParseTreeNode::getIsTerminal(){
 }
 
 
-void ParseTreeNode::insertLeft(const ParseTreeNode* child) {
+void ParseTreeNode::insertLeft(std::shared_ptr<const ParseTreeNode> child) {
     children.insert(children.begin(), child);
 }
-void ParseTreeNode::insertRight(const ParseTreeNode* child) {
+void ParseTreeNode::insertRight(std::shared_ptr<const ParseTreeNode> child) {
     children.push_back(child);
 }
 
 
-void ParseTreeNode:: plotGraph(const std::string& outputPath) {
-    // Create a DOT file
+void ParseTreeNode:: plotGraph(const std::string& outputPath) const{
     std::ofstream dotFile = std::ofstream(outputPath + ".dot");
     if (!dotFile.is_open()) {
         std::cerr << "Error: Unable to open DOT file for writing." << std::endl;
@@ -33,22 +32,24 @@ void ParseTreeNode:: plotGraph(const std::string& outputPath) {
     }
     dotFile << "digraph ParseTree {" << std::endl;
     // BFS
-    std::queue<const ParseTreeNode*> q;
-    q.push(this);
+    std::queue<std::shared_ptr<const ParseTreeNode>> q;
+    q.push(std::make_shared<const ParseTreeNode>(*this));
+    auto pRoot = q.front().get();
+
     while (!q.empty()) {
-        const ParseTreeNode* current = q.front();
+        const auto current = q.front();
         q.pop();
-        // Plot the current node accordingly
-        string color = (current == this)? "Tomato" : "lightblue";
-        dotFile << "  " << reinterpret_cast<std::uintptr_t>(current)
+        // Plot the current node
+        string color = (current.get() == pRoot)? "Tomato" : "lightblue";
+        dotFile << "  " << reinterpret_cast<std::uintptr_t>(current.get())
                 << " [style=filled, fillcolor="+color+", label=\"" + current->content->getName() + "\"";
         if (current->content->getIsTerminal()) {
             dotFile << ", shape=triangle, style=filled, fillcolor=gold";
         }
         dotFile << "]" << std::endl;
-        // Plot edges to children
+        // Specify edges to children
         for (const auto child : current->children) {
-            dotFile << reinterpret_cast<std::uintptr_t>(current) << " -> " << reinterpret_cast<std::uintptr_t>(child) << std::endl;
+            dotFile << reinterpret_cast<std::uintptr_t>(current.get()) << " -> " << reinterpret_cast<std::uintptr_t>(child.get()) << std::endl;
             q.push(child);
         }
         dotFile << ";" << std::endl;
@@ -65,9 +66,9 @@ void ParseTreeNode:: plotGraph(const std::string& outputPath) {
 }
 
 
-void ParseTreeNode :: printLeftmostDerivationSteps(std::ostream& os, vector<const Definition*> ignoreList) {
-    std::vector<const ParseTreeNode*> nodes;
-    nodes.push_back(this);
+void ParseTreeNode :: printLeftmostDerivationSteps(std::ostream& os, vector<const Definition*> ignoreList) const {
+    std::vector<std::shared_ptr<const ParseTreeNode>> nodes;
+    nodes.push_back(std::make_shared<const ParseTreeNode>(*this));
     os << this->content->getName() << " " << std::endl;
     int nonTerminalIdx = 0;
     while (true) {

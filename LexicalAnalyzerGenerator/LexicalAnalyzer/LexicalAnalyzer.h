@@ -44,6 +44,7 @@ class LexicalAnalyzer {
     void panicModeRecovery(std::string* error, std::string* lexeme, int* state);
 
 public:
+    virtual ~LexicalAnalyzer() = default;
 
     LexicalAnalyzer();
 
