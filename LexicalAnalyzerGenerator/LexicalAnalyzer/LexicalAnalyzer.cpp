@@ -13,7 +13,12 @@ static bool isWhitespace(const char c) {
 }
 
 Token::Token() {
+    isEOF = false;
+}
+
+Token::Token(const bool boolisEOF) {
     rule_priority = NORMAL;
+    isEOF = boolisEOF;
 }
 
 Token::Token(const size_t fp, const std::tuple<std::string, Priority, int>& t, std::string l) {
@@ -22,6 +27,7 @@ Token::Token(const size_t fp, const std::tuple<std::string, Priority, int>& t, s
     type = std::get<0>(t);
     rule_index = std::get<2>(t);
     rule_priority = std::get<1>(t);
+    isEOF = false;
 }
 
 Token::Token(const size_t fp, const std::tuple<std::string, Priority, int>& t, std::string l, std::string e) {
@@ -31,6 +37,7 @@ Token::Token(const size_t fp, const std::tuple<std::string, Priority, int>& t, s
     error = std::move(e);
     rule_index = std::get<2>(t);
     rule_priority = std::get<1>(t);
+    isEOF = false;
 }
 
 Token::Token(const size_t fp, std::string t, std::string l) {
@@ -38,6 +45,7 @@ Token::Token(const size_t fp, std::string t, std::string l) {
     filePos = fp;
     type = std::move(t);
     rule_priority = NORMAL;
+    isEOF = false;
 }
 
 Token::Token(const size_t fp, std::string t, std::string l, std::string e) {
@@ -46,6 +54,7 @@ Token::Token(const size_t fp, std::string t, std::string l, std::string e) {
     type = std::move(t);
     error = std::move(e);
     rule_priority = Priority::NORMAL;
+    isEOF = false;
 }
 
 void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme, int* state) {
@@ -76,6 +85,9 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
     *state = start_state;
 }
 
+LexicalAnalyzer::LexicalAnalyzer() {}
+
+
 LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_size, const std::string& DFA_path) {
     file = std::ifstream(input_path);
     buffer = std::vector<char>(buffer_size);
@@ -99,6 +111,9 @@ LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_si
 }
 
 Token LexicalAnalyzer::getNextToken() {
+    if(boolisEOF) {
+        return Token(true);
+    }
     std::string lexeme;
 
     int maximalMunchType = -1;
@@ -125,8 +140,8 @@ Token LexicalAnalyzer::getNextToken() {
                     return maximalMunchToken;
                 }
                 if (lexeme.empty()) {
-                    isEOF = true;
-                    return Token{lexemePosInFile, "EOF", "", error};
+                    boolisEOF = true;
+                    return Token(true);
                 }
                 // Panic Mode Recovery
                 panicModeRecovery(&error, &lexeme, &state);
@@ -179,4 +194,8 @@ Token LexicalAnalyzer::getNextToken() {
             }
         }
     }
+}
+
+bool LexicalAnalyzer::isEOF() const {
+    return boolisEOF;
 }
