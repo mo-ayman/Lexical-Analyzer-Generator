@@ -7,12 +7,10 @@ class Definition;
 using namespace std;
 
 class Parser {
-    unordered_map<Definition, unordered_map<string, vector<Definition>>> table;
+    unordered_map<const Definition*, unordered_map<string, vector<const Definition*>>> table;
 public:
-    Parser(const unordered_map<Definition, unordered_map<string, vector<Definition>>>& parsingTable);
-    static ParseTreeNode parse(LexicalAnalyzer* lexicalAnalyzer, const Definition& startSymbol);
-    static ParseTreeNode parse(LexicalAnalyzer* lexicalAnalyzer, const Definition& startSymbol, const std::string& outputFilePath);
+    Parser(const unordered_map<const Definition*, unordered_map<string, vector<const Definition*>>>& parsingTable);
 
+    ParseTreeNode* parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol, const Definition* epsilonSymbol, const string& eofString);
 };
-
 #endif //PARSER_H

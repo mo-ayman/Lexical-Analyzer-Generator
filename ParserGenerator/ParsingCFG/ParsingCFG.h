@@ -6,7 +6,7 @@
 #include <string>
 #include <map>
 #include <vector>
-#include "../Definition.h"
+#include "../Definition/Definition.h"
 
 class ParsingCFG {
 private:

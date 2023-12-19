@@ -1,25 +1,29 @@
 #ifndef TREENODE_H
 #define TREENODE_H
+
 #include <ostream>
 #include <queue>
 #include <vector>
-
-#include "../Definition.h"
-
+#include <algorithm>
+#include "../../Definition/Definition.h"
 using namespace std;
 
 class ParseTreeNode {
-private:
-    Definition* content;
-    vector<ParseTreeNode> children;
-
 public:
-    explicit ParseTreeNode(Definition* content);
+    const Definition* content;
+    vector<const ParseTreeNode*> children;
 
-    // Overloading the << operator for output stream
-    friend std::ostream& operator<<(std::ostream& os, const ParseTreeNode& obj);
-
+    bool getIsTerminal();
+    explicit ParseTreeNode(const Definition* definition);
+    ~ParseTreeNode() {
+        for (auto child : children) {
+            delete child;
+        }
+    }
+    void insertLeft(const ParseTreeNode* child);
+    void insertRight(const ParseTreeNode* child);
+    void plotGraph(const std::string& outputPath);
+    void printLeftmostDerivationSteps(std::ostream& os, vector<const Definition*> ignoreList);
 };
-
 
 #endif
