@@ -5,7 +5,12 @@
 #include <string>
 using namespace std;
 
-
+/*
+ * This is the constructor part it take 3 pointers
+ * First pointer point to InputRules as T=>FT'|e T is Definition* and map to vector of FT' and e all as Definition*
+ * second first contain first of non-terminals also in form of map T=>{(*,1),("+",0)} integer value represent index of production rule
+ * Third pointer follow contain follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals)
+ * */
 
 PPT::PPT(map<Definition *, vector<vector<Definition *>>>* InputRules,
          map<Definition *, vector<pair<int, Definition*>>>* first, map<Definition *, vector<Definition*>>* follow)
@@ -15,33 +20,39 @@ PPT::PPT(map<Definition *, vector<vector<Definition *>>>* InputRules,
    followM = follow;
 }
 
-
-map<Definition*, map<Definition*, vector<Definition*>>>* PPT::get_PPT()
+/*
+ * This function called to return final predictive parsing table as pointer
+ * */
+map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
 {
-    //cout<<"gg"<<(*InputRules).size()<<endl;
     fillFirstChunck();
     fillFollowChunck();
 
 	return PPTable;
 }
+/*
+ * This function used to fill first production rules in table
+ * First get non-terminal that search for it's first non-terminals
+ * second loop over all first and add in PPTable equivalent production rule
+ * Finally if  slot is empty append in PPTable the production rule
+ * */
 void PPT::fillFirstChunck()
 {
-    //cout<<"ffff"<<(*firstM).size()<<endl;
 	for (auto& pairLoop : *firstM) {
-
         Definition* NonTerminal = pairLoop.first;
-		//map<Definition*, vector<Definition*>> Input_map; //=new  map<Definition*, vector<Definition*>>() ;
         for(pair<int,Definition*>& subFirst :pairLoop.second) {
-            if((subFirst.second)->getName()=="w"){continue;}
+            if((subFirst.second)->getName()=="Epslon"){continue;}
+            // get index of the production rule T=>FT'|e FT' has index 0
             int Ptoduction_Indx = subFirst.first;
-            map<Definition*, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
-            auto it = ((*PPTable)[NonTerminal]).find((subFirst.second));
+            //check if slot in table not contain 2 production rule check LL(1) condition
+            map<string, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
+            auto it = LL1_checkMap.find((subFirst.second)->getName());
             if (it !=LL1_checkMap.end()) {
-                auto& Input_map = (*PPTable)[NonTerminal];
-                Input_map.insert(pair<Definition*,vector<Definition*>>(subFirst.second,(*InputRulesM)[NonTerminal][Ptoduction_Indx]));
+                throw runtime_error("Not LL(1) grammar");
             }
             else {
-                throw runtime_error("Not LL(1) grammer");
+                auto& Input_map = (*PPTable)[NonTerminal];
+                Input_map.insert(pair<string,vector<Definition*>>((subFirst.second)->getName(),(*InputRulesM)[NonTerminal][Ptoduction_Indx]));
             }
         }
 
@@ -52,7 +63,7 @@ void PPT::fillFollowChunck()
 {
     // first for loop to iterate over follow map
 	for (auto& pairLoop : *followM) {
-        cout<<"uuuUUU "<<(*followM).size()<<endl;
+
         //get non-terminal key of follow
         Definition* NonTerminal = pairLoop.first;
 
@@ -64,13 +75,13 @@ void PPT::fillFollowChunck()
 
         // loop through all follow of given non-terminal and filling Input_map that represent str->production rule
         for(auto& subFollow :pairLoop.second){
-            auto it = Input_map.find(subFollow);
+            auto it = Input_map.find(subFollow->getName());
             if (getEpslonIndx > -1) {
                 if (it != Input_map.end()) {
                     throw runtime_error("Not11 LL(1) grammar");
 
                 } else {
-                    Input_map.insert(pair<Definition*, vector<Definition *>>(subFollow,
+                    Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(),
                                                                              (*InputRulesM)[NonTerminal][getEpslonIndx]));
                 }
             } else {
@@ -78,7 +89,7 @@ void PPT::fillFollowChunck()
                     throw runtime_error("Not88 LL(1) grammar");
 
                 } else {
-                    Input_map.insert(pair<Definition*, vector<Definition *>>(subFollow, {}));
+                    Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(), {}));
                 }
 
             }
@@ -88,27 +99,27 @@ void PPT::fillFollowChunck()
 
 int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 {
-    //cout<<mappingFirst.size()<<"  iiii"<<endl;
+
     for(pair<int,Definition*> subFirst :mappingFirst) {
 
         string Tname = (subFirst.second)->getName();
         cout<<Tname<<endl;
-        if (Tname=="w") {
-                cout<<"armt"<<endl;
+        if (Tname=="Epslon") {
+
                 return subFirst.first;
             }
 	}
-    cout<<mappingFirst.size()<<"  iiii"<<endl<<endl;
+
 	return -1;
 }
 
 
-void PPT::print(map<Definition *, map<Definition *, vector<Definition *>>> *table) {
+void PPT::print(map<Definition *, map<string, vector<Definition *>>> *table) {
     for (const auto& pair: *table) {
         std::cout << ": " << pair.first->getName() << " ->str: ";
         for (const auto& pairSecond: pair.second)
         {
-            std::cout <<pairSecond.first->getName() <<"=>" ;
+            std::cout <<pairSecond.first<<"=>" ;
             for (const auto& pairVect: pairSecond.second){
                 cout << pairVect->getName() ;
             }
@@ -130,7 +141,7 @@ int main() {
     Definition* T3=new Definition("(");
     Definition* T4=new Definition(")");
     Definition* T5=new Definition("id");
-    Definition* T6=new Definition("w");
+    Definition* T6=new Definition("Epslon");
     Definition* T7=new Definition("$");
 
     cout<<T6->getName()<<endl;
@@ -160,19 +171,8 @@ int main() {
 
     cout<<(*follow).size();
     PPT obj(InputRules,first,follow);
-    map<Definition*, map<Definition*, vector<Definition*>>>* table=obj.get_PPT();
+    map<Definition*, map<string, vector<Definition*>>>* table=obj.get_PPT();
     obj.print(table);
-//    for (const auto& pair: *table) {
-//        std::cout << ": " << pair.first->getName() << " ->str: ";
-//        for (const auto& pairSecond: pair.second)
-//        {
-//            std::cout <<pairSecond.first->getName() << ":Stat:" ;
-//            for (const auto& pairVect: pairSecond.second){
-//                cout << pairVect->getName() << ", " << std::endl;
-//            }
-//        }
-//
-//        std::cout << std::endl;
-//    }
+
  return 0;
 }
