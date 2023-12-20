@@ -85,7 +85,7 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
     *state = start_state;
 }
 
-LexicalAnalyzer::LexicalAnalyzer() {}
+LexicalAnalyzer::LexicalAnalyzer() = default;
 
 
 LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_size, const std::string& DFA_path) {
@@ -105,7 +105,7 @@ LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_si
 
     // Import the DFA
     if (DFASerialization::importDFA(dfa, start_state, final_states, DFA_path) == -1) {
-        // TODO: handle importing DFA error (DFA_path doesn't exist)
+        // Handle importing DFA error (DFA_path doesn't exist)
         throw std::runtime_error("Error: Unable to import DFA from file: " + DFA_path);
     }
 }

@@ -32,8 +32,8 @@ class LexicalAnalyzer {
     // Input
     std::ifstream file;
     std::vector<char> buffer;
-    size_t bufferPos;
-    size_t bufferSize;
+    size_t bufferPos{};
+    size_t bufferSize{};
     size_t lexemePosInFile = 0; // the position of the last character of lexeme within the input file
     bool boolisEOF = false;
     // Dfa
