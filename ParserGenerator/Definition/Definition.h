@@ -19,12 +19,21 @@ public:
     [[nodiscard]] size_t hash() const noexcept;
 
     bool operator==(const Definition& other) const noexcept;
+
+    static Definition * getEpsilon();
+
+    static Definition * getDollar();
+
+    static const std::string EPSILON;
 };
+
 
 // Specialization of std::hash<Definition>
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
+
 };
+
 
 #endif // DEFINITION_H
