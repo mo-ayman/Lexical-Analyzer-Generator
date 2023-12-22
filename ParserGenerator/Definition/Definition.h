@@ -4,22 +4,25 @@
 #include <string>
 
 class Definition {
-    bool isTerminal;
     std::string name;
+    bool isTerminal;
 
 public:
     explicit Definition(std::string newName);
+
     Definition(std::string newName, bool newIsTerminal);
 
-    bool getIsTerminal() const;
-    const std::string& getName() const;
+    [[nodiscard]] bool getIsTerminal() const;
 
-    size_t hash() const noexcept;
+    [[nodiscard]] const std::string& getName() const;
+
+    [[nodiscard]] size_t hash() const noexcept;
+
     bool operator==(const Definition& other) const noexcept;
 };
 
 // Specialization of std::hash<Definition>
-template <>
+template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
 };

@@ -2,10 +2,12 @@
 
 // Constructors
 Definition::Definition(std::string newName)
-    : name(std::move(newName)), isTerminal(true) {}
+    : name(std::move(newName)), isTerminal(true) {
+}
 
 Definition::Definition(std::string newName, const bool newIsTerminal)
-    : name(std::move(newName)), isTerminal(newIsTerminal) {}
+    : name(std::move(newName)), isTerminal(newIsTerminal) {
+}
 
 // Getters
 const std::string& Definition::getName() const {
