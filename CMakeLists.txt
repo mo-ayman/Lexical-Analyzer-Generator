@@ -32,6 +32,9 @@ add_executable(Lexical_Analyzer main_2.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
+        ParserGenerator/Predictive_PT/PPT.h
+        ParserGenerator/Predictive_PT/PPT.cpp
+        ParserGenerator/Predictive_PT/TrailExample.cpp
         ParserGenerator/FirstAndFollow/First.h
         ParserGenerator/FirstAndFollow/First.cpp
         ParserGenerator/FirstAndFollow/Follow.h

@@ -4,8 +4,8 @@
 #include <string>
 
 class Definition {
-    std::string name;
     bool isTerminal;
+    std::string name;
 
 public:
     static const std::string EPSILON;
@@ -15,11 +15,13 @@ public:
 
     Definition(std::string newName, bool newIsTerminal);
 
+
     [[nodiscard]] bool getIsTerminal() const;
 
     [[nodiscard]] const std::string& getName() const;
 
     [[nodiscard]] size_t hash() const noexcept;
+
 
     bool operator==(const Definition& other) const noexcept;
 
@@ -31,6 +33,7 @@ public:
 
 
 // Specialization of std::hash<Definition>
+
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;

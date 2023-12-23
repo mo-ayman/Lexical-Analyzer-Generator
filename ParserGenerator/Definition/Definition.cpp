@@ -8,6 +8,7 @@ const std::string Definition::DOLLAR = "wTInxLvczZfefQSSTrDo2qwRGdWJ5pqO";
 
 // Constructors
 Definition::Definition(std::string newName)
+
     : name(std::move(newName)), isTerminal(true) {
 }
 
@@ -50,7 +51,6 @@ namespace std {
     size_t hash<Definition>::operator()(const Definition& obj) const noexcept {
         return obj.hash();
     }
+
 }
-
-
 
