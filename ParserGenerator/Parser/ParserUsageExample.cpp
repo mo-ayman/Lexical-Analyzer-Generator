@@ -30,7 +30,9 @@ public:
 int main(const int argc, char** argv) {
     // Sheet 5, Question 2
     const Definition S("S", false), R("R", false), U("U", false), V("V", false), T("T", false);
-    const Definition s("s"), u("u"), v("v"), b("b"), t("t"); const auto epsilon=Definition::getEpsilon(), eof=Definition::getEpsilon();
+    const Definition s("s"), u("u"), v("v"), b("b"), t("t");
+    const auto epsilon=Definition::getEpsilon();
+    const auto eof=Definition::getDollar();
 
     unordered_map<const Definition *, unordered_map<string, vector<const Definition *>>> table;
     table[&S] = unordered_map<string, vector<const Definition *>>();
@@ -95,10 +97,18 @@ int main(const int argc, char** argv) {
     // Parsing (Syntax Analysis)
     auto parser = Parser(table);
     auto lex = (MockLexicalAnalyzer(
-        {"s", "s", "s", "u", "u", "b", "b", "b", "t", "v", "t", "$"}));
+        {"s", "s", "u", "u", "b", "b", "t", "v", "t", "$"}));
 
     auto root = parser.parse(lex, &S);
-    root->printLeftmostDerivationSteps(cout, {epsilon});
+    // Write Derivation steps
+    std::ofstream outputFile("Sheet5_Q2_LeftMostDerivation.txt");
+    if (outputFile.is_open()) {
+        outputFile << *root;
+        outputFile.close();
+    } else {
+        std::cerr << "Unable to open the file for writing." << std::endl;
+    }
+    // Export tree graph
     root->plotGraph("Sheet5_Q2_parseTree");
     return 0;
 }

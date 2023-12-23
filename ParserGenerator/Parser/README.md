@@ -37,8 +37,8 @@ public:
 The parsing algorithm used by the `Parser` class is a stack-based approach that employs a predictive parsing table for decision making. Here is a simplified pseudocode representation:
 ```cpp
 initialize empty parse tree T
-initialize root node S with start symbol
-insert S into T
+initialize root node R with the start symbol
+insert R into T
 initialize stack with S
 initialize currentToken
 while stack is not empty:
@@ -60,6 +60,8 @@ while stack is not empty:
             
 if excess tokens or unexpected EOF:
     handleExcessTokensOrEOFError()
+    
+return R
 ```
 
 ## Error Recovery

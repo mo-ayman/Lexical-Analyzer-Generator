@@ -22,9 +22,9 @@ public:
 
     void plotGraph(const std::string& outputPath) const;
 
-    void printLeftmostDerivationSteps(std::ostream& os, vector<const Definition *> ignoreList) const;
+    void printLeftmostDerivationSteps(std::ostream& os) const;
 
-    // ~ParseTreeNode() {for (auto child : children){delete child;}}
+    friend std::ostream& operator<<(std::ostream& os, const ParseTreeNode& node);
 };
 
 #endif

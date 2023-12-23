@@ -42,10 +42,12 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
         q.pop();
         // Plot the current node
         string color = (current.get() == pRoot) ? "Tomato" : "lightblue";
+        string name = current->content == Definition::getEpsilon()? "ε": current->content->getName();
         dotFile << "  " << reinterpret_cast<std::uintptr_t>(current.get())
-                << " [style=filled, fillcolor=" + color + ", label=\"" + current->content->getName() + "\"";
-        if (current->content->getIsTerminal()) {
-            dotFile << ", shape=triangle, style=filled, fillcolor=gold";
+                << " [style=filled, fillcolor=" + color + ", label=\"" + name + "\"";
+        if (current->content->getIsTerminal()){
+            color = current->content == Definition::getEpsilon()? "yellow": "gold";
+            dotFile << ", shape=triangle, style=filled, fillcolor="+color;
         }
         dotFile << "]" << std::endl;
         // Specify edges to children
@@ -68,7 +70,7 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
 }
 
 
-void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os, vector<const Definition *> ignoreList) const {
+void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os) const{
     std::vector<std::shared_ptr<const ParseTreeNode>> nodes;
     nodes.push_back(std::make_shared<const ParseTreeNode>(*this));
     os << this->content->getName() << " " << std::endl;
@@ -87,10 +89,7 @@ void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os, vector<const 
         auto removedNode = nodes[nonTerminalIdx];
         nodes.erase(nodes.begin() + nonTerminalIdx);
         for (int j = 0; j < removedNode->children.size(); j++) {
-            if (std::find_if(ignoreList.begin(), ignoreList.end(),
-                             [removedNode, j](const Definition* ptr) {
-                                 return ptr == removedNode->children[j]->content;
-                             }) == ignoreList.end()) {
+            if (!(removedNode->children[j]->content == Definition::getEpsilon())) {
                 nodes.insert(nodes.begin() + nonTerminalIdx + j, removedNode->children[j]);
             }
         }
@@ -102,4 +101,8 @@ void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os, vector<const 
         }
         os << std::endl;
     }
+}
+std::ostream& operator<<(std::ostream& os, const ParseTreeNode& node){
+    node.printLeftmostDerivationSteps(os);
+    return os;
 }
