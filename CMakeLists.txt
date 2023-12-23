@@ -35,14 +35,33 @@ add_executable(Lexical_Analyzer main_2.cpp
         ParserGenerator/Predictive_PT/PPT.h
         ParserGenerator/Predictive_PT/PPT.cpp
         ParserGenerator/Predictive_PT/TrailExample.cpp
+        ParserGenerator/FirstAndFollow/First.h
+        ParserGenerator/FirstAndFollow/First.cpp
+        ParserGenerator/FirstAndFollow/Follow.h
+        ParserGenerator/FirstAndFollow/Follow.cpp
 )
 
+# ParserGenerator/main.cpp
 add_executable(Parser_Generator ParserGenerator/main.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
         ParserGenerator/ParsingCFG/ParsingCFG.cpp
+        ParserGenerator/Parser/ParseTree/ParseTreeNode.h
+        ParserGenerator/Parser/ParseTree/ParseTreeNode.cpp
+        ParserGenerator/Parser/Parser.h
+        ParserGenerator/Parser/Parser.cpp
+        ParserGenerator/Definition/Definition.cpp
+        ParserGenerator/Definition/Definition.h
+)
+
+# ParserGenerator/Parser/main.cpp
+add_executable(Parser ParserGenerator/Parser/ParserUsageExample.cpp
+        LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
+        LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
+        LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
+        LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         ParserGenerator/Parser/ParseTree/ParseTreeNode.h
         ParserGenerator/Parser/ParseTree/ParseTreeNode.cpp
         ParserGenerator/Parser/Parser.h
