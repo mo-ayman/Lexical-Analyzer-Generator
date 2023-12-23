@@ -1,5 +1,6 @@
 #include <stdexcept>
 #include <iostream>
+
 #include "Definition.h"
 
 // Constants

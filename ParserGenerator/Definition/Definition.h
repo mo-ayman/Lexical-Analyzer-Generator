@@ -15,7 +15,6 @@ public:
 
     Definition(std::string newName, bool newIsTerminal);
 
-
     [[nodiscard]] bool getIsTerminal() const;
 
     [[nodiscard]] const std::string& getName() const;
@@ -25,11 +24,10 @@ public:
 
     bool operator==(const Definition& other) const noexcept;
 
-    static Definition * getEpsilon();
-    static Definition * getDollar();
+    static Definition* getEpsilon();
 
+    static Definition* getDollar();
 };
-
 
 
 // Specialization of std::hash<Definition>
@@ -37,7 +35,6 @@ public:
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
-
 };
 
 

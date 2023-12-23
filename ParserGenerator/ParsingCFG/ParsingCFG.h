@@ -1,21 +1,17 @@
-
 #ifndef PARSER_GENERATOR_PARSINGCFG_H
 #define PARSER_GENERATOR_PARSINGCFG_H
-
 
 #include <string>
 #include <map>
 #include <vector>
+
 #include "../Definition/Definition.h"
 
-class ParsingCFG {
-private:
-    std::map<Definition* , std::vector<std::vector<Definition*>>> rules;
+namespace ParsingCFG {
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parse(const std::string& input);
 
-public:
-    auto getRules() -> std::map<Definition* , std::vector<std::vector<Definition*>>>&;
-
-};
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(const std::string& filename);
+}
 
 
 #endif //PARSER_GENERATOR_PARSINGCFG_H
