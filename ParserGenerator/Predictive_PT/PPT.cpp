@@ -58,7 +58,12 @@ void PPT::fillFirstChunck()
 
 	}
 }
-
+/*
+ * In this function i loop through all follow map
+ * in each follow i check if there is epsilon transition in first then add production rule
+ * that result to that in table if there is no conflict in table slot
+ * if there is no epsilon in first of the non-terminal then place sync in table
+ * */
 void PPT::fillFollowChunck()
 {
     // first for loop to iterate over follow map
@@ -96,16 +101,17 @@ void PPT::fillFollowChunck()
         }
 	}
 }
-
+/*
+ * This function used to check if there is epslon in first of given non-terminal vector contail
+ * All first of that non-terminals
+ * */
 int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 {
 
     for(pair<int,Definition*> subFirst :mappingFirst) {
 
-        string Tname = (subFirst.second)->getName();
-        cout<<Tname<<endl;
-        if (Tname=="Epslon") {
-
+        string T_name = (subFirst.second)->getName();
+        if (T_name=="Epslon") {
                 return subFirst.first;
             }
 	}
@@ -113,10 +119,12 @@ int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 	return -1;
 }
 
-
+/*
+ * This function used to print Predictive parsing table
+ * */
 void PPT::print(map<Definition *, map<string, vector<Definition *>>> *table) {
     for (const auto& pair: *table) {
-        std::cout << ": " << pair.first->getName() << " ->str: ";
+        std::cout << pair.first->getName() << " --str(NT)=>P-Rule:  ";
         for (const auto& pairSecond: pair.second)
         {
             std::cout <<pairSecond.first<<"=>" ;
@@ -144,7 +152,6 @@ int main() {
     Definition* T6=new Definition("Epslon");
     Definition* T7=new Definition("$");
 
-    cout<<T6->getName()<<endl;
 
 	map<Definition*, vector<vector<Definition*>>>* InputRules = new map<Definition*, vector<vector<Definition*>>>();
 	map<Definition*, vector<pair<int, Definition*>>>* first = new map<Definition*, vector<pair<int, Definition*>>>();
