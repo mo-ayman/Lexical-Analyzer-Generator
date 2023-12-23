@@ -108,7 +108,7 @@ int main(const int argc, char** argv) {
     } else {
         std::cerr << "Unable to open the file for writing." << std::endl;
     }
-    // Export tree graph
+    // Export graph
     root->plotGraph("Sheet5_Q2_parseTree");
     return 0;
 }

@@ -24,7 +24,6 @@ void ParseTreeNode::insertRight(const std::shared_ptr<const ParseTreeNode>& chil
     children.push_back(child);
 }
 
-
 void ParseTreeNode::plotGraph(const std::string& outputPath) const {
     auto dotFile = std::ofstream(outputPath + ".dot");
     if (!dotFile.is_open()) {
@@ -41,12 +40,12 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
         const auto current = q.front();
         q.pop();
         // Plot the current node
-        string color = (current.get() == pRoot) ? "Tomato" : "lightblue";
+        string color = (current.get() == pRoot) ? "hotpink" : "lightblue";
         string name = current->content == Definition::getEpsilon()? "ε": current->content->getName();
         dotFile << "  " << reinterpret_cast<std::uintptr_t>(current.get())
                 << " [style=filled, fillcolor=" + color + ", label=\"" + name + "\"";
         if (current->content->getIsTerminal()){
-            color = current->content == Definition::getEpsilon()? "yellow": "gold";
+            color = current->content == Definition::getEpsilon()? "gold": "yellow";
             dotFile << ", shape=triangle, style=filled, fillcolor="+color;
         }
         dotFile << "]" << std::endl;
