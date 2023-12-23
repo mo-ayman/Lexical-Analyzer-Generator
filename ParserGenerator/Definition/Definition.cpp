@@ -3,7 +3,9 @@
 #include "Definition.h"
 
 // Constants
-const std::string Definition::EPSILON = "EPSILON";
+const std::string Definition::EPSILON = "tjxsp9UyVd8JyqB4D3DsXt3HTbxFQVR3";
+const std::string Definition::DOLLAR = "wTInxLvczZfefQSSTrDo2qwRGdWJ5pqO";
+
 // Constructors
 Definition::Definition(std::string newName)
     : name(std::move(newName)), isTerminal(true) {
@@ -13,7 +15,6 @@ Definition::Definition(std::string newName, const bool newIsTerminal)
     : name(std::move(newName)), isTerminal(newIsTerminal) {
 }
 
-// Getters
 const std::string& Definition::getName() const {
     return name;
 }
@@ -39,9 +40,10 @@ Definition * Definition::getEpsilon() {
 }
 
 Definition *Definition::getDollar() {
-    static Definition dollar("$", true);
+    static Definition dollar(Definition::DOLLAR, true);
     return &dollar;
 }
+
 
 // Specialization of std::hash<Definition>
 namespace std {

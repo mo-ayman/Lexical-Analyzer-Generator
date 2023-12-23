@@ -8,6 +8,9 @@ class Definition {
     bool isTerminal;
 
 public:
+    static const std::string EPSILON;
+    static const std::string DOLLAR;
+
     explicit Definition(std::string newName);
 
     Definition(std::string newName, bool newIsTerminal);
@@ -21,11 +24,10 @@ public:
     bool operator==(const Definition& other) const noexcept;
 
     static Definition * getEpsilon();
-
     static Definition * getDollar();
 
-    static const std::string EPSILON;
 };
+
 
 
 // Specialization of std::hash<Definition>

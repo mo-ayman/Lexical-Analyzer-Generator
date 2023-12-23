@@ -27,8 +27,7 @@ Parser::Parser(const unordered_map<const Definition *, unordered_map<string, vec
     : table(parsingTable) {
 }
 
-std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol,
-                                                   const Definition* epsilonSymbol, const string& eofString) {
+std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol) {
     // Initialize a stack of parseTree nodes
     stack<std::shared_ptr<ParseTreeNode>> nodeStack;
     Token currentToken;
@@ -41,17 +40,19 @@ std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnaly
         nodeStack.pop();
         nextToken();
     };
-    // The parse tree root node
+    // The parse tree root node (has the start symbol)
     const auto rootNode = std::make_shared<ParseTreeNode>(startSymbol);
-    const auto eofDefinition = Definition(eofString);
 
-    nodeStack.push(std::make_shared<ParseTreeNode>(&eofDefinition));
+    // Push $ node  into the stack
+    nodeStack.push(std::make_shared<ParseTreeNode>(Definition::getDollar()));
+    // Push the root node into the stack
     nodeStack.push(rootNode);
+    // Read first Token
     nextToken();
     while (!nodeStack.empty()) {
         auto stackTopNode = nodeStack.top();
 
-        if ((currentToken.isEOF && stackTopNode->content->getName() == eofString) || (
+        if ((currentToken.isEOF && stackTopNode.get()->content == Definition::getDollar()) || (
                 !currentToken.isEOF && currentToken == *stackTopNode)) {
             matchToken();
             continue;
@@ -70,10 +71,7 @@ std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnaly
         // Specify what column of the table corresponds to the current token.
         string column = currentToken.type;
         if (currentToken.isEOF) {
-            column = eofString;
-        } else if (currentToken.type == eofString) {
-            nextToken();
-            continue;
+            column = Definition::DOLLAR;
         }
         auto productionEntry = table[row].find(column);
         if (const bool productionExists = (productionEntry != table[row].end()); !productionExists) {
@@ -97,7 +95,7 @@ std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnaly
         for (int k = static_cast<int>(production.size()) - 1; k >= 0; k--) {
             auto childNode = std::make_shared<ParseTreeNode>(production[k]);
             stackTopNode->insertLeft(childNode);
-            if (production[k] != epsilonSymbol) {
+            if (production[k] != Definition::getEpsilon()) {
                 nodeStack.push(childNode);
             }
         }
