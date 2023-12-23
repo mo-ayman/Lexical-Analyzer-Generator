@@ -6,12 +6,14 @@
 const std::string Definition::EPSILON = "EPSILON";
 // Constructors
 Definition::Definition(std::string newName)
+
     : name(std::move(newName)), isTerminal(true) {
 }
 
 Definition::Definition(std::string newName, const bool newIsTerminal)
     : name(std::move(newName)), isTerminal(newIsTerminal) {
 }
+
 
 // Getters
 const std::string& Definition::getName() const {
@@ -48,7 +50,6 @@ namespace std {
     size_t hash<Definition>::operator()(const Definition& obj) const noexcept {
         return obj.hash();
     }
+
 }
-
-
 
