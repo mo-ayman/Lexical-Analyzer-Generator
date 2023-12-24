@@ -8,7 +8,7 @@ using namespace std;
 /*
  * This is the constructor part it take 3 pointers
  * First pointer point to InputRules as T=>FT'|e T is Definition* and map to vector of FT' and e all as Definition*
- * second first contain first of non-terminals also in form of map T=>{(*,1),("+",0)} integer value represent index of production rule
+ * second, first contains vector of non-terminals also in form of map T=>{(*,1),("+",0)} integer value represent index of production rule
  * Third pointer follow contain follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals)
  * */
 

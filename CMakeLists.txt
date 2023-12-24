@@ -55,6 +55,8 @@ add_executable(Parser_Generator ParserGenerator/main.cpp
         ParserGenerator/Parser/Parser.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
+        ParserGenerator/Predictive_PT/PPT.h
+        ParserGenerator/Predictive_PT/PPT.cpp
 )
 
 # ParserGenerator/Parser/main.cpp
