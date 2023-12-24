@@ -22,7 +22,6 @@ public:
 
     std::vector<Definition *> getFirst(Definition *definition);
 
-
     std::map<Definition *, std::vector<Definition *>> getFirst();
 
 private:

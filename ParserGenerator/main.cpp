@@ -38,9 +38,12 @@ int main(const int argc, char** argv) {
     auto* first = new First(rules);
     first->constructFirst();
     first->print();
+
     auto* follow = new Follow(rules, first);
     follow->constructFollow();
     follow->print();
+
+
      /* Parsing
       *TODO: import `table`, IF we were to perform the pipeline in a different main() -> makes more sense.
       *TODO: OTHERWISE, perform the pipeline & obtain `table` here.

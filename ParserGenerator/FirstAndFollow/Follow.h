@@ -20,7 +20,7 @@ public:
     void constructFollow();
 
     std::vector<Definition *> getFollow(Definition *definition);
-
+    std::map<Definition *, std::vector<Definition *>> getFollow();
     void print() const;
 
 
