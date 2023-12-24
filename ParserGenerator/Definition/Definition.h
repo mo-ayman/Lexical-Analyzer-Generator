@@ -4,12 +4,10 @@
 #include <string>
 
 class Definition {
-    bool isTerminal;
     std::string name;
+    bool isTerminal;
 
 public:
-    static const std::string EPSILON;
-    static const std::string DOLLAR;
 
     explicit Definition(std::string newName);
 
@@ -27,6 +25,9 @@ public:
     static Definition* getEpsilon();
 
     static Definition* getDollar();
+
+    static const std::string EPSILON;
+    static const std::string DOLLAR;
 };
 
 
@@ -35,6 +36,7 @@ public:
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
+
 };
 
 

@@ -5,29 +5,27 @@
 
 #include <iostream>
 #include "Follow.h"
+#include "First.h"
 
 
-Follow::Follow() {
-    rules = std::map<Definition *, std::vector<std::vector<Definition *>>>();
-    first = std::map<Definition *, std::vector<Definition *>>();
+Follow::Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
+               First* first) {
+    this->rules = rules;
+    this->first = first;
     follow = std::map<Definition *, std::vector<Definition *>>();
     isFollowCalculated = std::unordered_set<Definition *>();
-
 }
 
-void Follow::constructFollow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
-                             const std::map<Definition *, std::vector<Definition *>> &first) {
-    this->first = first;
-    this->rules = rules;
+void Follow::constructFollow() {
 
-
+    follow[rules.begin()->first].push_back(Definition::getDollar());
     for (const auto &rule : rules) {
-        constructFollowUtils(rule.first);
+        getFollow(rule.first);
     }
 
 }
 
-std::vector<Definition *> Follow::constructFollowUtils(Definition *definition) {
+std::vector<Definition *> Follow::getFollow(Definition *definition) {
     if (definition->getIsTerminal()) {
         return std::vector<Definition *>{definition};
     }
@@ -43,7 +41,7 @@ std::vector<Definition *> Follow::constructFollowUtils(Definition *definition) {
                 if (*def[i] == *definition) {
                     if (i == def.size() - 1) {
                         if (!(*(rule.first) == *definition)) {
-                            std::vector<Definition *> result = constructFollowUtils(rule.first);
+                            std::vector<Definition *> result = getFollow(rule.first);
                             for (auto r : result) {
                                 // use visited to remove dup
                                 if (visited.find(r->getName()) == visited.end()) {
@@ -53,7 +51,7 @@ std::vector<Definition *> Follow::constructFollowUtils(Definition *definition) {
                             }
                         }
                     } else {
-                        std::vector<Definition *> result = first[def[i + 1]];
+                        std::vector<Definition *> result = first->getFirst(def[i + 1]);
                         for (auto r : result) {
                             if (visited.find(r->getName()) == visited.end()) {
                                 follow[definition].push_back(r);
@@ -62,7 +60,7 @@ std::vector<Definition *> Follow::constructFollowUtils(Definition *definition) {
                         }
                         if (std::find(result.begin(), result.end(), Definition::getEpsilon()) != result.end()) {
                             if (!(*(rule.first) == *definition)) {
-                                std::vector<Definition *> result = constructFollowUtils(rule.first);
+                                std::vector<Definition *> result = getFollow(rule.first);
                                 for (auto r : result) {
                                     if (visited.find(r->getName()) == visited.end()) {
                                         follow[definition].push_back(r);
@@ -83,30 +81,20 @@ std::vector<Definition *> Follow::constructFollowUtils(Definition *definition) {
 }
 
 void Follow::print() const {
+    std::cout << "====================== Follow ======================" << std::endl;
     for (auto rule : rules) {
         std::cout << rule.first->getName() << " : ";
-        for (auto def : rule.second) {
-            for (auto d : def) {
-                std::cout << d->getName() << " ";
+        auto f = follow.find(rule.first);
+        for (auto d : f->second) {
+            if(d->getIsTerminal()) {
+                std::cout << "'" << d->getName() << "' ";
             }
-            std::cout << "| ";
+            else {
+                throw std::runtime_error("Follow is not terminal");
+            }
         }
         std::cout << std::endl;
     }
     std::cout << std::endl;
-    for (auto f : follow) {
-        std::cout << f.first->getName() << " : ";
-        for (auto d : f.second) {
-            std::cout << d->getName() << " ";
-        }
-        std::cout << std::endl;
-    }
-    std::cout << std::endl;
-    for (auto f : first) {
-        std::cout << f.first->getName() << " : ";
-        for (auto d : f.second) {
-            std::cout << d->getName() << " ";
-        }
-        std::cout << std::endl;
-    }
+
 }
