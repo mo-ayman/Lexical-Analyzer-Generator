@@ -30,6 +30,14 @@ add_executable(Lexical_Analyzer main_2.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
+        ParserGenerator/FirstAndFollow/First.h
+        ParserGenerator/FirstAndFollow/First.cpp
+        ParserGenerator/FirstAndFollow/Follow.h
+        ParserGenerator/FirstAndFollow/Follow.cpp
+        ParserGenerator/FirstAndFollow/First.h
+        ParserGenerator/FirstAndFollow/Follow.h
+        ParserGenerator/FirstAndFollow/Follow.cpp
+        ParserGenerator/FirstAndFollow/First.cpp
 )
 
 # ParserGenerator/main.cpp
@@ -45,6 +53,10 @@ add_executable(Parser_Generator ParserGenerator/main.cpp
         ParserGenerator/Parser/Parser.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
+        ParserGenerator/FirstAndFollow/First.h
+        ParserGenerator/FirstAndFollow/Follow.h
+        ParserGenerator/FirstAndFollow/Follow.cpp
+        ParserGenerator/FirstAndFollow/First.cpp
 )
 
 # ParserGenerator/Parser/main.cpp

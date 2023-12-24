@@ -10,22 +10,23 @@
 #include <unordered_set>
 #include <map>
 #include "../Definition/Definition.h"
+#include "First.h"
 
 class Follow {
 public:
-    Follow();
+    Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
+           First* first1);
 
-    void constructFollow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules
-    , const std::map<Definition *, std::vector<Definition *>> &first);
+    void constructFollow();
 
-    [[nodiscard]] std::vector<Definition *> constructFollowUtils(Definition *definition);
+    std::vector<Definition *> getFollow(Definition *definition);
 
     void print() const;
 
 
 private:
     std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
-    std::map<Definition *, std::vector<Definition *>> first;
+    First* first{};
     std::map<Definition *, std::vector<Definition *>> follow;
     std::unordered_set<Definition *> isFollowCalculated;
 
