@@ -12,8 +12,7 @@ class Parser {
 unordered_map<const Definition*, unordered_map<string, vector<const Definition*>>> table;
 public:
     Parser(const unordered_map<const Definition*, unordered_map<string, vector<const Definition*>>>& parsingTable);
-    std::shared_ptr<const ParseTreeNode> parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol,
-                                         const Definition* epsilonSymbol, const string& eofString);
+    std::shared_ptr<const ParseTreeNode> parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol);
 };
 ```
 
@@ -35,9 +34,12 @@ public:
 
 ## Parsing Algorithm
 
-The parsing algorithm used by the `Parser` class is a stack-based approach that employs a parsing table for decision making. Here is a simplified pseudocode representation:
+The parsing algorithm used by the `Parser` class is a stack-based approach that employs a predictive parsing table for decision making. Here is a simplified pseudocode representation:
 ```cpp
-initialize stack with root node
+initialize empty parse tree T
+initialize root node R with the start symbol
+insert R into T
+initialize stack with S
 initialize currentToken
 while stack is not empty:
     stackTopNode = top of stack
@@ -50,14 +52,16 @@ while stack is not empty:
         column = currentToken.type or eofString
         if table[row][column] exists:
             production = table[row][column]
-            applyProduction(production)
-            for element in production reversed:
+            insert production into T
+            for element in reverse(production):
                 push element into stack
         else:
             Perform Error Recovery
             
 if excess tokens or unexpected EOF:
     handleExcessTokensOrEOFError()
+    
+return R
 ```
 
 ## Error Recovery

@@ -8,10 +8,12 @@ class Definition {
     std::string name;
 
 public:
+    static const std::string EPSILON;
+    static const std::string DOLLAR;
+
     explicit Definition(std::string newName);
 
     Definition(std::string newName, bool newIsTerminal);
-
 
     [[nodiscard]] bool getIsTerminal() const;
 
@@ -22,11 +24,9 @@ public:
 
     bool operator==(const Definition& other) const noexcept;
 
-    static Definition * getEpsilon();
+    static Definition* getEpsilon();
 
-    static Definition * getDollar();
-
-    static const std::string EPSILON;
+    static Definition* getDollar();
 };
 
 
@@ -35,7 +35,6 @@ public:
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
-
 };
 
 
