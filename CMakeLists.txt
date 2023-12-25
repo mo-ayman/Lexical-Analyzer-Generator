@@ -3,6 +3,7 @@ project(Lexical_Analyzer_Generator)
 
 set(CMAKE_CXX_STANDARD 17)
 
+#### Phase 1
 add_executable(Lexical_Analyzer_Generator main_1.cpp
         LexicalAnalyzerGenerator/LexicalRules/Node.cpp
         LexicalAnalyzerGenerator/LexicalRules/Node.h
@@ -40,8 +41,8 @@ add_executable(Lexical_Analyzer main_2.cpp
         ParserGenerator/FirstAndFollow/First.cpp
 )
 
-# ParserGenerator/main.cpp
-add_executable(Parser_Generator ParserGenerator/Main/main.cpp
+#### Phase 2
+add_executable(Parser_Generator ParserGenerator/Main/parserGeneration.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
@@ -62,8 +63,7 @@ add_executable(Parser_Generator ParserGenerator/Main/main.cpp
         ParserGenerator/FirstAndFollow/First.cpp
 )
 
-# ParserGenerator/Parser/main.cpp
-add_executable(Parser ParserGenerator/Parser/ParserUsageExample.cpp
+add_executable(Parser ParserGenerator/Main/parsing.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
