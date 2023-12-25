@@ -4,8 +4,9 @@
 #include "Definition.h"
 
 // Constants
-const std::string Definition::EPSILON = "tjxsp9UyVd8JyqB4D3DsXt3HTbxFQVR3";
-const std::string Definition::DOLLAR = "wTInxLvczZfefQSSTrDo2qwRGdWJ5pqO";
+
+const std::string Definition::EPSILON = "EPSILON";
+const std::string Definition::DOLLAR = "$";
 
 // Constructors
 Definition::Definition(std::string newName)
@@ -52,6 +53,7 @@ namespace std {
     size_t hash<Definition>::operator()(const Definition& obj) const noexcept {
         return obj.hash();
     }
-
 }
+
+
 

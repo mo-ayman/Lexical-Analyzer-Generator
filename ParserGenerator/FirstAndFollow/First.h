@@ -14,13 +14,15 @@
 class First {
 
 public:
-    First();
+    First(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
 
-    void constructFirst(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
-
-    [[nodiscard]] std::vector<Definition *> constructFirstUtils(Definition *definition);
+    void constructFirst();
 
     void print() const;
+
+    std::vector<Definition *> getFirst(Definition *definition);
+
+    std::map<Definition *, std::vector<Definition *>> getFirst();
 
 private:
     std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
