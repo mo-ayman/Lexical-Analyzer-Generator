@@ -3,7 +3,6 @@
 
 #include "Predictive_PT/PPT.h"
 
-#include "ParsingCFG/ParsingCFG.h"
 #include "FirstAndFollow/First.h"
 #include "FirstAndFollow/Follow.h"
 
@@ -16,9 +15,10 @@ int main(const int argc, char** argv) {
     std::string src_path = __FILE__;
     src_path = src_path.substr(0, src_path.find_last_of("\\/"));
     std::cout << src_path << std::endl;
-    const auto rules_path = src_path + "/example_rules.txt"; // std::string(argv[1]);
+    const auto rules_path = src_path + "\\example_rules4.txt"; // std::string(argv[1]);
+    std::cout<<src_path<<endl;
     const std::map<Definition *, std::vector<std::vector<Definition *>>> rules = ParsingCFG::parseFromFile(rules_path);
-    // Print all rules
+//    // Print all rules
     std::cout << "====================== Rules ======================" << std::endl;
     for (const auto& rule: rules) {
         std::cout << rule.first->getName() << " -> ";
@@ -52,12 +52,10 @@ int main(const int argc, char** argv) {
     /*
      * PPTable(Greatly part)
      * */
-    //map<Definition *, std::vector<Definition *>>
+    std::cout << "====================== PPTable ======================" << std::endl;
     map<Definition*, vector<pair<int, Definition*>>> first1 = first->getFirst();
     map<Definition*, vector<Definition*>> follow2=follow->getFollow();//= new map<Definition*, vector<Definition*>>();
     auto* obj=new PPT(rules,first1,follow2);
-    //auto* obj=new PPT(rules,*first1,());
-    obj->get_PPT();
     obj->print(obj->get_PPT());
 
 

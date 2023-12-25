@@ -1,6 +1,5 @@
 #include "PPT.h"
 #include <stdexcept>
-#include "../Definition/Definition.cpp"
 #include <iostream>
 #include <string>
 using namespace std;
@@ -27,7 +26,6 @@ map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
 {
     fillFirstChunck();
     fillFollowChunck();
-
 	return PPTable;
 }
 /*
@@ -38,17 +36,19 @@ map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
  * */
 void PPT::fillFirstChunck()
 {
+//    cout<<"ooo oo"<<endl;
 	for (auto& pairLoop : firstM) {
         Definition* NonTerminal = pairLoop.first;
         for(pair<int,Definition*>& subFirst :pairLoop.second) {
             if((subFirst.second)->getName()=="EPSILON"){continue;}
             // get index of the production rule T=>FT'|e FT' has index 0
             int Ptoduction_Indx = subFirst.first;
+
             //check if slot in table not contain 2 production rule check LL(1) condition
             map<string, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
             auto it = LL1_checkMap.find((subFirst.second)->getName());
             if (it !=LL1_checkMap.end()) {
-                throw runtime_error("Not LL(1) grammar");
+                throw runtime_error("Not LL44(1) grammar");
             }
             else {
                 auto& Input_map = (*PPTable)[NonTerminal];
@@ -91,7 +91,7 @@ void PPT::fillFollowChunck()
                 }
             } else {
                 if (it != Input_map.end()) {
-                    throw runtime_error("Not88 LL(1) grammar");
+                    continue;
 
                 } else {
                     Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(), {}));
@@ -107,11 +107,9 @@ void PPT::fillFollowChunck()
  * */
 int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 {
-
     for(pair<int,Definition*> subFirst :mappingFirst) {
-
         string T_name = (subFirst.second)->getName();
-        if (T_name=="EPSILON") {
+        if (T_name==((subFirst.second)->getEpsilon())->getName()) {
                 return subFirst.first;
             }
 	}
@@ -138,49 +136,49 @@ void PPT::print(map<Definition *, map<string, vector<Definition *>>> *table) {
     }
 }
 
-int main() {
-    Definition* n1=new Definition("E", false);
-    Definition* n2=new Definition("E'",false);
-    Definition* n3=new Definition("T",false);
-    Definition* n4=new Definition( "T'",false);
-    Definition* n5=new Definition("F",false);
-    Definition* T1=new Definition("+");
-    Definition* T2=new Definition("*");
-    Definition* T3=new Definition("(");
-    Definition* T4=new Definition(")");
-    Definition* T5=new Definition("id");
-    Definition* T6=n1->getEpsilon();
-    Definition* T7=new Definition("$");
-
-
-	map<Definition*, vector<vector<Definition*>>>* InputRules = new map<Definition*, vector<vector<Definition*>>>();
-	map<Definition*, vector<pair<int, Definition*>>>* first = new map<Definition*, vector<pair<int, Definition*>>>();
-	map<Definition*, vector<Definition*>>* follow = new map<Definition*, vector<Definition*>>();
-
-    vector<vector<Definition*>> v1 ={ initializer_list<Definition*>{n3,n2}};
-	InputRules->insert(make_pair(n1, v1));
-	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n2, { {T1,n3,n2},{T6} }));
-	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n3, { {n5,n4}}));
-	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n4, { {T2,n5,n4},{T6}}));
-	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n5, { {T3,n1,T4},{T5}}));
-
-    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n1,{make_pair(0,T3),make_pair(0,T5)}));
-    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n2,{make_pair(0,T1),make_pair(1,T6)}));
-    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n3,{make_pair(0,T3),make_pair(0,T5)}));
-    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n4,{make_pair(0,T2),make_pair(1,T6)}));
-    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n5,{make_pair(0,T3),make_pair(1,T5)}));
-
-    follow->insert(pair<Definition*, vector<Definition*>>(n1,{T7,T4}));
-    follow->insert(pair<Definition*, vector<Definition*>>(n2,{T7,T4}));
-    follow->insert(pair<Definition*, vector<Definition*>>(n3,{T1,T7,T4}));
-    follow->insert(pair<Definition*, vector<Definition*>>(n4,{T7,T1,T4}));
-    follow->insert(pair<Definition*, vector<Definition*>>(n5,{T7,T1,T2,T4}));
-
-    cout<<(*follow).size();
-    auto* obj =new PPT(*InputRules,*first,*follow);
-
-    map<Definition*, map<string, vector<Definition*>>>* table=obj->get_PPT();
-    obj->print(table);
-
- return 0;
-}
+//int main() {
+//    Definition* n1=new Definition("E", false);
+//    Definition* n2=new Definition("E'",false);
+//    Definition* n3=new Definition("T",false);
+//    Definition* n4=new Definition( "T'",false);
+//    Definition* n5=new Definition("F",false);
+//    Definition* T1=new Definition("+");
+//    Definition* T2=new Definition("*");
+//    Definition* T3=new Definition("(");
+//    Definition* T4=new Definition(")");
+//    Definition* T5=new Definition("id");
+//    Definition* T6=n1->getEpsilon();
+//    Definition* T7=new Definition("$");
+//
+//
+//	map<Definition*, vector<vector<Definition*>>>* InputRules = new map<Definition*, vector<vector<Definition*>>>();
+//	map<Definition*, vector<pair<int, Definition*>>>* first = new map<Definition*, vector<pair<int, Definition*>>>();
+//	map<Definition*, vector<Definition*>>* follow = new map<Definition*, vector<Definition*>>();
+//
+//    vector<vector<Definition*>> v1 ={ initializer_list<Definition*>{n3,n2}};
+//	InputRules->insert(make_pair(n1, v1));
+//	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n2, { {T1,n3,n2},{T6} }));
+//	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n3, { {n5,n4}}));
+//	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n4, { {T2,n5,n4},{T6}}));
+//	InputRules->insert(pair<Definition*, vector<vector<Definition*>>>(n5, { {T3,n1,T4},{T5}}));
+//
+//    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n1,{make_pair(0,T3),make_pair(0,T5)}));
+//    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n2,{make_pair(0,T1),make_pair(1,T6)}));
+//    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n3,{make_pair(0,T3),make_pair(0,T5)}));
+//    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n4,{make_pair(0,T2),make_pair(1,T6)}));
+//    first->insert(pair<Definition*, vector<pair<int, Definition*>>>(n5,{make_pair(0,T3),make_pair(1,T5)}));
+//
+//    follow->insert(pair<Definition*, vector<Definition*>>(n1,{T7,T4}));
+//    follow->insert(pair<Definition*, vector<Definition*>>(n2,{T7,T4}));
+//    follow->insert(pair<Definition*, vector<Definition*>>(n3,{T1,T7,T4}));
+//    follow->insert(pair<Definition*, vector<Definition*>>(n4,{T7,T1,T4}));
+//    follow->insert(pair<Definition*, vector<Definition*>>(n5,{T7,T1,T2,T4}));
+//
+//    cout<<(*follow).size();
+//    auto* obj =new PPT(*InputRules,*first,*follow);
+//
+//    map<Definition*, map<string, vector<Definition*>>>* table=obj->get_PPT();
+//    obj->print(table);
+//
+// return 0;
+//}

@@ -119,5 +119,5 @@ void Follow::print() const {
 }
 
 std::map<Definition *, std::vector<Definition *>> Follow::getFollow() {
-    return std::map<Definition *, std::vector<Definition *>>();
+    return follow;
 }
