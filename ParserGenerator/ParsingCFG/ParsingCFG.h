@@ -11,6 +11,8 @@ namespace ParsingCFG {
     std::map<Definition *, std::vector<std::vector<Definition *>>> parse(const std::string& input);
 
     std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(const std::string& filename);
+
+    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
 }
 
 

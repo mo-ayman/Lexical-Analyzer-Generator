@@ -59,6 +59,8 @@ add_executable(Parser_Generator ParserGenerator/main.cpp
         ParserGenerator/FirstAndFollow/Follow.h
         ParserGenerator/FirstAndFollow/Follow.cpp
         ParserGenerator/FirstAndFollow/First.cpp
+        ParserGenerator/ParsingCFG/AdaptCFG.h
+        ParserGenerator/ParsingCFG/AdaptCFG.cpp
 )
 
 # ParserGenerator/Parser/main.cpp

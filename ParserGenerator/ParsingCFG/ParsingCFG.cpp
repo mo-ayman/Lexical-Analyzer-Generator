@@ -220,4 +220,24 @@ namespace ParsingCFG {
     std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(const std::string& filename) {
         return parse(readRules(filename));
     }
+
+    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
+        for (const auto& rule: rules) {
+            std::cout << rule.first->getName() << " -> ";
+            for (const auto& alternative: rule.second) {
+                for (const auto& definition: alternative) {
+                    if (definition->getIsTerminal()) {
+                        std::cout << "'" << definition->getName() << "' ";
+                    } else {
+                        std::cout << definition->getName() << " ";
+                    }
+                }
+                if (alternative != rule.second.back()) {
+                    std::cout << "| ";
+                }
+            }
+            std::cout << std::endl;
+        }
+        std::cout << std::endl;
+    }
 };

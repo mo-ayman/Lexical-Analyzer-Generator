@@ -1,6 +1,3 @@
-//
-// Created by rusev on 12/24/23.
-//
 
 #ifndef LEXICAL_ANALYZER_GENERATOR_ADAPTCFG_H
 #define LEXICAL_ANALYZER_GENERATOR_ADAPTCFG_H
@@ -16,10 +13,16 @@ public:
     AdaptCFG(std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
     void adaptCFG();
 
+    [[nodiscard]] std::map<Definition *, std::vector<std::vector<Definition *>>> getNewRules() const;
+
+
 private:
     void eliminateLeftRecursion();
     void eliminateLeftFactoring();
+    void consistensyAchieve();
     std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
+    std::map<Definition *, std::vector<std::vector<Definition *>>> newRules;
+    
 };
 
 
