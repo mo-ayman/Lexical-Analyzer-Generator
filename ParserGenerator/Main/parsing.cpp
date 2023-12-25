@@ -135,4 +135,6 @@ int main(const int argc, char** argv) {
     std::ofstream outputFile(LeftMostDerivationFile);
     outputFile << parseTreeRoot;
     outputFile.close();
+
+    //TODO: Collect Heap Garbage (definitions)
 }

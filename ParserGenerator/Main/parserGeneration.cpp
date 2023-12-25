@@ -128,6 +128,6 @@ int main(const int argc, char** argv) {
     outputFile << serializedTable;
     outputFile.close();
 
-    //TODO: Collect Heap Garbage (if any)
+    //TODO: Collect Heap Garbage (definitions, what else ...?)
     return 0;
 }
