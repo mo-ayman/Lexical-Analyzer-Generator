@@ -5,7 +5,7 @@
 #include <iostream>
 #include "AdaptCFG.h"
 
-AdaptCFG::AdaptCFG(std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
+AdaptCFG::AdaptCFG(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
     this->rules = rules;
 }
 

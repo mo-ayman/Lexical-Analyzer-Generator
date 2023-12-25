@@ -15,7 +15,7 @@
 class Follow {
 public:
     Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
-           First* first1);
+           First* first1, Definition* startSymbol);
 
     void constructFollow();
 
@@ -30,6 +30,7 @@ private:
     std::map<Definition *, std::vector<Definition *>> follow;
     std::unordered_set<Definition *> isFollowCalculated;
     std::unordered_set<Definition *> inStack;
+    Definition* startSymbol;
 
 };
 

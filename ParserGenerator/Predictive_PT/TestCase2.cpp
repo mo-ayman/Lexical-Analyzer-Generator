@@ -1,5 +1,4 @@
 #include <stdexcept>
-#include "PPT.cpp"
 #include "../Definition/Definition.h"
 #include <iostream>
 #include <string>

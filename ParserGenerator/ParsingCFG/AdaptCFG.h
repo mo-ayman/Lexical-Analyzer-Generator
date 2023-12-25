@@ -10,7 +10,7 @@
 class AdaptCFG {
 
 public:
-    AdaptCFG(std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
+    AdaptCFG(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
     void adaptCFG();
 
     [[nodiscard]] std::map<Definition *, std::vector<std::vector<Definition *>>> getNewRules() const;

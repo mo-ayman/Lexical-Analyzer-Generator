@@ -9,19 +9,19 @@
 
 
 Follow::Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
-               First* first) {
+               First* first, Definition* startSymbol) {
     this->rules = rules;
     this->first = first;
     follow = std::map<Definition *, std::vector<Definition *>>();
     isFollowCalculated = std::unordered_set<Definition *>();
+    this->startSymbol = startSymbol;
 }
 
 void Follow::constructFollow() {
 
-    follow[rules.begin()->first].push_back(Definition::getDollar());
+    follow[startSymbol].push_back(Definition::getDollar());
 
     for (const auto &rule : rules) {
-//        std::cout << "constructFollow: " << rule.first->getName() << std::endl;
         getFollow(rule.first);
     }
 
