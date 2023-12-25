@@ -80,6 +80,3 @@ The parsing module includes error handling mechanisms to recover from unexpected
 3. Parsing Table Sync Cell:
 
     If the production for the current non-terminal and token is empty, a sync rule is applied. The stack top (non-terminal) is popped, and parsing continues.
-
-## Usage Example
-Check `ParserUsageExample.cpp`

@@ -44,15 +44,13 @@ class LexicalAnalyzer {
     void panicModeRecovery(std::string* error, std::string* lexeme, int* state);
 
 public:
-    virtual ~LexicalAnalyzer() = default;
-
-    LexicalAnalyzer();
+    ~LexicalAnalyzer() = default;
 
     LexicalAnalyzer(const std::string& input_path, size_t buffer_size, const std::string& DFA_path);
 
-    virtual Token getNextToken();
+    Token getNextToken();
 
-    virtual bool isEOF() const;
+    bool isEOF() const;
 };
 
 #endif //LEXICALANALYZER_H

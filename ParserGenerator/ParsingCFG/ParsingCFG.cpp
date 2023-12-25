@@ -68,7 +68,8 @@ static std::vector<std::string> split(const std::string& input) {
 }
 
 static std::vector<std::vector<Definition *>> parseRule(const std::string& input, const int start,
-                                                        std::unordered_map<std::string, Definition *>& definitions_pool) {
+                                                        std::unordered_map<std::string, Definition *>&
+                                                        definitions_pool) {
     const int end = static_cast<int>(input.length());
     bool isInsideQuotes = false;
     std::string lastSeq;
@@ -163,8 +164,9 @@ static std::vector<std::vector<Definition *>> parseRule(const std::string& input
     return std::move(rule);
 }
 
-static void parseDefExp(const std::string& input, std::unordered_map<std::string, Definition *>& definitions_pool,
-                        std::map<Definition *, std::vector<std::vector<Definition *>>>& rules) {
+static Definition* parseDefExp(const std::string& input,
+                               std::unordered_map<std::string, Definition *>& definitions_pool,
+                               std::map<Definition *, std::vector<std::vector<Definition *>>>& rules) {
     const int inputLength = static_cast<int>(input.length());
     std::string ruleName;
     int inputIterator = 0;
@@ -195,19 +197,25 @@ static void parseDefExp(const std::string& input, std::unordered_map<std::string
     }
     inputIterator++;
     rules[defintion] = parseRule(input, inputIterator, definitions_pool);
+    return defintion;
 }
 
 namespace ParsingCFG {
-    std::map<Definition *, std::vector<std::vector<Definition *>>> parse(const std::string& input) {
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parse(const std::string& input, Definition** start) {
         const std::vector<std::string> lines = split(input);
         std::unordered_map<std::string, Definition *> definitions_pool;
         std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
+        int i = 0;
         for (const auto& line: lines) {
             const int lineLength = static_cast<int>(line.length());
             if (lineLength < 2) {
                 throw std::runtime_error("Unexpected rule length");
             }
-            parseDefExp(line, definitions_pool, rules);
+            const auto definition = parseDefExp(line, definitions_pool, rules);
+            if (i == 0) {
+                *start = definition;
+            }
+            i++;
         }
         for (const auto& definition: definitions_pool) {
             if (!definition.second->getIsTerminal() && rules.find(definition.second) == rules.end()) {
@@ -217,8 +225,9 @@ namespace ParsingCFG {
         return rules;
     }
 
-    std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(const std::string& filename) {
-        return parse(readRules(filename));
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(
+        const std::string& filename, Definition** start) {
+        return parse(readRules(filename), start);
     }
 
     void print(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
