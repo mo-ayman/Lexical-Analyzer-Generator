@@ -16,10 +16,11 @@ First::First(const std::map<Definition *, std::vector<std::vector<Definition *>>
 }
 
 void First::constructFirst() {
+    // size
+
     for (const auto& rule : rules) {
         getFirst(rule.first);
     }
-
 }
 
 std::vector<std::pair<int, Definition *>> First::getFirst(Definition *definition) {
@@ -34,7 +35,7 @@ std::vector<std::pair<int, Definition *>> First::getFirst(Definition *definition
     else {
         std::unordered_set<std::string> visited; // remove dup
         for (int i = 0; i < rules[definition].size(); ++i) {
-            if(definition == rules[definition][i][0]) {
+            if(definition->getName() == rules[definition][i][0]->getName()) {
                 continue;
             }
 
@@ -55,7 +56,10 @@ std::vector<std::pair<int, Definition *>> First::getFirst(Definition *definition
 
 
 void First::print() const {
+
     std::cout << "====================== First ======================" << std::endl;
+    // size
+//    std::cout << "first.size(): " << rules.size() << std::endl;
     for (const auto& rule: rules) {
         std::cout << rule.first->getName() << " -> ";
         auto f = first.find(rule.first);

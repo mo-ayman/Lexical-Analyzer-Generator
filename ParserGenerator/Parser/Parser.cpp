@@ -5,7 +5,6 @@
 
 #include <memory>
 
-#include "../Definition/Definition.h"
 
 bool operator==(const Definition* lhs, const Token& rhs) {
     return lhs->getIsTerminal() && lhs->getName() == rhs.type;
