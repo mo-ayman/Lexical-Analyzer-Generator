@@ -1,5 +1,6 @@
 #include "ParsingCFG/ParsingCFG.h"
 #include "Parser/Parser.h"
+#include "Predictive_PT/PPT.h"
 
 using namespace std;
 
@@ -28,6 +29,13 @@ int main(const int argc, char** argv) {
         std::cout << std::endl;
     }
     std::cout << std::endl;
+
+    /*
+     * PPTable(Greatly part)
+     * */
+//    PPT* obj=new PPT(rules,first,follow);
+//    (*obj).print((*obj).get_PPT());
+
      /* Parsing
       *TODO: import `table`, IF we were to perform the pipeline in a different main() -> makes more sense.
       *TODO: OTHERWISE, perform the pipeline & obtain `table` here.

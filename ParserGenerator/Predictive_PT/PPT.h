@@ -10,7 +10,7 @@ using namespace std;
 
 class PPT {
 private:
-	map<Definition*,map<string,vector<Definition*>>>* PPTable =new map<Definition*,map<string,vector<Definition*>>>();
+	map<Definition*,map<string,vector<Definition*>>>* PPTable =new map<Definition*,map<string,vector< Definition*>>>();
     map<Definition*, vector<vector<Definition*>>>* InputRulesM;
     map<Definition*, vector<pair<int, Definition*>>>* firstM;
     map<Definition*, vector<Definition*>>* followM;
