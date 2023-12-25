@@ -46,6 +46,7 @@ add_executable(Parser_Generator ParserGenerator/main.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
+        ParserGenerator/ParsingCFG/ParsingCFG.h
         ParserGenerator/ParsingCFG/ParsingCFG.cpp
         ParserGenerator/Parser/ParseTree/ParseTreeNode.h
         ParserGenerator/Parser/ParseTree/ParseTreeNode.cpp
@@ -53,6 +54,8 @@ add_executable(Parser_Generator ParserGenerator/main.cpp
         ParserGenerator/Parser/Parser.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
+        ParserGenerator/Predictive_PT/PPT.h
+        ParserGenerator/Predictive_PT/PPT.cpp
         ParserGenerator/FirstAndFollow/First.h
         ParserGenerator/FirstAndFollow/Follow.h
         ParserGenerator/FirstAndFollow/Follow.cpp

@@ -1,8 +1,11 @@
 #include "ParsingCFG/ParsingCFG.h"
 #include "Parser/Parser.h"
-#include "ParsingCFG/ParsingCFG.h"
+
+#include "Predictive_PT/PPT.h"
+
 #include "FirstAndFollow/First.h"
 #include "FirstAndFollow/Follow.h"
+
 
 using namespace std;
 
@@ -12,9 +15,10 @@ int main(const int argc, char** argv) {
     std::string src_path = __FILE__;
     src_path = src_path.substr(0, src_path.find_last_of("\\/"));
     std::cout << src_path << std::endl;
-    const auto rules_path = src_path + "/example_rules.txt"; // std::string(argv[1]);
+    const auto rules_path = src_path + "\\example_rules4.txt"; // std::string(argv[1]);
+    std::cout<<src_path<<endl;
     const std::map<Definition *, std::vector<std::vector<Definition *>>> rules = ParsingCFG::parseFromFile(rules_path);
-    // Print all rules
+//    // Print all rules
     std::cout << "====================== Rules ======================" << std::endl;
     for (const auto& rule: rules) {
         std::cout << rule.first->getName() << " -> ";
@@ -35,6 +39,8 @@ int main(const int argc, char** argv) {
     std::cout << std::endl;
 
 
+
+
     auto* first = new First(rules);
     first->constructFirst();
     first->print();
@@ -42,6 +48,17 @@ int main(const int argc, char** argv) {
     auto* follow = new Follow(rules, first);
     follow->constructFollow();
     follow->print();
+
+    /*
+     * PPTable(Greatly part)
+     * */
+    std::cout << "====================== PPTable ======================" << std::endl;
+    map<Definition*, vector<pair<int, Definition*>>> first1 = first->getFirst();
+    map<Definition*, vector<Definition*>> follow2=follow->getFollow();//= new map<Definition*, vector<Definition*>>();
+    auto* obj=new PPT(rules,first1,follow2);
+    obj->print(obj->get_PPT());
+
+
 
      /* Parsing
       *TODO: import `table`, IF we were to perform the pipeline in a different main() -> makes more sense.
