@@ -88,6 +88,7 @@ std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnaly
             // Sync rule
             cerr << "Error, sync popping " << row->getName() << " from the stack." << endl;
             nodeStack.pop();
+            continue;
         }
         // Non-sync rule is found:
         nodeStack.pop();
