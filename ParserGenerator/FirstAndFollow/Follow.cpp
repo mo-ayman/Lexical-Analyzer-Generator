@@ -19,13 +19,16 @@ Follow::Follow(const std::map<Definition *, std::vector<std::vector<Definition *
 void Follow::constructFollow() {
 
     follow[rules.begin()->first].push_back(Definition::getDollar());
+
     for (const auto &rule : rules) {
+//        std::cout << "constructFollow: " << rule.first->getName() << std::endl;
         getFollow(rule.first);
     }
 
 }
 
 std::vector<Definition *> Follow::getFollow(Definition *definition) {
+//    std::cout << "constructFollowUtils: " << definition->getName() << std::endl;
     if (definition->getIsTerminal()) {
         return std::vector<Definition *>{definition};
     }
@@ -33,6 +36,12 @@ std::vector<Definition *> Follow::getFollow(Definition *definition) {
     if (isFollowCalculated.find(definition) != isFollowCalculated.end()) {
         return follow[definition];
     }
+
+    if(inStack.find(definition) != inStack.end()) {
+//        inStack.erase(definition);
+        return {};
+    }
+    inStack.insert(definition);
 
     std::unordered_set<std::string> visited; // remove dup
     for (const auto &rule : rules) {
@@ -51,14 +60,22 @@ std::vector<Definition *> Follow::getFollow(Definition *definition) {
                             }
                         }
                     } else {
-                        std::vector<Definition *> result = first->getFirst(def[i + 1]);
+                        auto result = first->getFirst(def[i + 1]);
+                        bool hasEpsilon = false;
                         for (auto r : result) {
-                            if (visited.find(r->getName()) == visited.end()) {
-                                follow[definition].push_back(r);
-                                visited.insert(r->getName());
+                            if(r.second->getName() == Definition::getEpsilon()->getName()) {
+//                                std::cout << "epsilon found" << std::endl;
+                                hasEpsilon = true;
+                                continue;
+                            }
+                            if (visited.find(r.second->getName()) == visited.end()) {
+                                follow[definition].push_back(r.second);
+                                visited.insert(r.second->getName());
                             }
                         }
-                        if (std::find(result.begin(), result.end(), Definition::getEpsilon()) != result.end()) {
+
+                        if (hasEpsilon) {
+//                            std::cout << "epsilon found" << std::endl;
                             if (!(*(rule.first) == *definition)) {
                                 std::vector<Definition *> result = getFollow(rule.first);
                                 for (auto r : result) {
@@ -74,8 +91,10 @@ std::vector<Definition *> Follow::getFollow(Definition *definition) {
             }
         }
     }
-
-    isFollowCalculated.insert(definition);
+    if(!follow[definition].empty()) {
+        isFollowCalculated.insert(definition);
+    }
+    inStack.erase(definition);
     return follow[definition];
 
 }

@@ -6,7 +6,7 @@
 #include "ParsingCFG/ParsingCFG.h"
 #include "FirstAndFollow/First.h"
 #include "FirstAndFollow/Follow.h"
-#include "../Definition/Definition.cpp"
+
 
 using namespace std;
 
@@ -53,12 +53,13 @@ int main(const int argc, char** argv) {
      * PPTable(Greatly part)
      * */
     //map<Definition *, std::vector<Definition *>>
-    map<Definition*, vector<pair<int, Definition*>>>* first1 = new map<Definition*, vector<pair<int, Definition*>>>();
+    map<Definition*, vector<pair<int, Definition*>>> first1 = first->getFirst();
     map<Definition*, vector<Definition*>> follow2=follow->getFollow();//= new map<Definition*, vector<Definition*>>();
-    auto* obj=new PPT(rules,*first1,follow2);
+    auto* obj=new PPT(rules,first1,follow2);
     //auto* obj=new PPT(rules,*first1,());
     obj->get_PPT();
     obj->print(obj->get_PPT());
+
 
 
      /* Parsing

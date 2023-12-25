@@ -1,0 +1,7 @@
+# E = T Edash
+# Edash = '+' E | \L
+# T = F Tdash
+# Tdash = T | \L
+# F = P Fdash
+# Fdash = '*' F | \L
+# P = '(' E ')' | 'a' | 'b' | \L
