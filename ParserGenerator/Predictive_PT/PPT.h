@@ -11,11 +11,11 @@ using namespace std;
 class PPT {
 private:
 	map<Definition*,map<string,vector<Definition*>>>* PPTable =new map<Definition*,map<string,vector< Definition*>>>();
-    map<Definition*, vector<vector<Definition*>>>* InputRulesM;
-    map<Definition*, vector<pair<int, Definition*>>>* firstM;
-    map<Definition*, vector<Definition*>>* followM;
+    map<Definition*, vector<vector<Definition*>>> InputRulesM;
+    map<Definition*, vector<pair<int, Definition*>>> firstM;
+    map<Definition*, vector<Definition*>> followM;
 public:
-    PPT(map<Definition*, vector<vector<Definition *>>>* InputRules, map<Definition*, vector<pair<int,Definition*>>>* first, map<Definition*,vector<Definition*>>* follow);
+    PPT(const map<Definition*, vector<vector<Definition *>>>& InputRules, map<Definition*, vector<pair<int,Definition*>>>& first, map<Definition*,vector<Definition*>>& follow);
     map<Definition*, map<string, vector<Definition*>>>* get_PPT();
     void fillFirstChunck();
     void fillFollowChunck();

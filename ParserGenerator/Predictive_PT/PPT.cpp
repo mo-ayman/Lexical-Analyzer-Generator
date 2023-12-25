@@ -12,10 +12,10 @@ using namespace std;
  * Third pointer follow contain follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals)
  * */
 
-PPT::PPT(map<Definition *, vector<vector<Definition *>>>* InputRules,
-         map<Definition *, vector<pair<int, Definition*>>>* first, map<Definition *, vector<Definition*>>* follow)
+PPT::PPT(const map<Definition *, vector<vector<Definition *>>>& InputRules,
+         map<Definition *, vector<pair<int, Definition*>>>& first, map<Definition *, vector<Definition*>>& follow)
 {
-   InputRulesM = InputRules;
+   this->InputRulesM = InputRules;
    firstM = first;
    followM = follow;
 }
@@ -38,7 +38,7 @@ map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
  * */
 void PPT::fillFirstChunck()
 {
-	for (auto& pairLoop : *firstM) {
+	for (auto& pairLoop : firstM) {
         Definition* NonTerminal = pairLoop.first;
         for(pair<int,Definition*>& subFirst :pairLoop.second) {
             if((subFirst.second)->getName()=="EPSILON"){continue;}
@@ -52,7 +52,7 @@ void PPT::fillFirstChunck()
             }
             else {
                 auto& Input_map = (*PPTable)[NonTerminal];
-                Input_map.insert(pair<string,vector<Definition*>>((subFirst.second)->getName(),(*InputRulesM)[NonTerminal][Ptoduction_Indx]));
+                Input_map.insert(pair<string,vector<Definition*>>((subFirst.second)->getName(),(InputRulesM)[NonTerminal][Ptoduction_Indx]));
             }
         }
 
@@ -67,7 +67,7 @@ void PPT::fillFirstChunck()
 void PPT::fillFollowChunck()
 {
     // first for loop to iterate over follow map
-	for (auto& pairLoop : *followM) {
+	for (auto& pairLoop : followM) {
 
         //get non-terminal key of follow
         Definition* NonTerminal = pairLoop.first;
@@ -76,7 +76,7 @@ void PPT::fillFollowChunck()
         auto& Input_map = (*PPTable)[NonTerminal];
 
         //check if first of that non-terminal contain epslon transition
-		int getEpslonIndx = checkEpslon((*firstM)[NonTerminal]);
+		int getEpslonIndx = checkEpslon((firstM)[NonTerminal]);
 
         // loop through all follow of given non-terminal and filling Input_map that represent str->production rule
         for(auto& subFollow :pairLoop.second){
@@ -87,7 +87,7 @@ void PPT::fillFollowChunck()
 
                 } else {
                     Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(),
-                                                                             (*InputRulesM)[NonTerminal][getEpslonIndx]));
+                                                                             (InputRulesM)[NonTerminal][getEpslonIndx]));
                 }
             } else {
                 if (it != Input_map.end()) {
@@ -177,9 +177,10 @@ int main() {
     follow->insert(pair<Definition*, vector<Definition*>>(n5,{T7,T1,T2,T4}));
 
     cout<<(*follow).size();
-    PPT obj(InputRules,first,follow);
-    map<Definition*, map<string, vector<Definition*>>>* table=obj.get_PPT();
-    obj.print(table);
+    auto* obj =new PPT(*InputRules,*first,*follow);
+
+    map<Definition*, map<string, vector<Definition*>>>* table=obj->get_PPT();
+    obj->print(table);
 
  return 0;
 }
