@@ -8,6 +8,7 @@
 
 #include "../FirstAndFollow/First.h"
 #include "../FirstAndFollow/Follow.h"
+#include "../ParsingCFG/AdaptCFG.h"
 
 using namespace std;
 
@@ -62,7 +63,7 @@ int main(const int argc, char** argv) {
     std::cout<<src_path<<endl;
 
     Definition* start;
-    const map<Definition *, std::vector<std::vector<Definition *>>> rules = ParsingCFG::parseFromFile(rules_path, &start);
+    map<Definition *, std::vector<std::vector<Definition *>>> rules = ParsingCFG::parseFromFile(rules_path, &start);
     // Print all rules
     std::cout << "====================== Rules ======================" << std::endl;
     for (const auto& rule: rules) {
@@ -83,12 +84,21 @@ int main(const int argc, char** argv) {
     }
     std::cout << std::endl;
 
+    std::cout << "====================== Adapted Rules ======================" << std::endl;
+    auto adaptCFG = new AdaptCFG(rules);
+    adaptCFG->adaptCFG();
+    map<Definition *, std::vector<std::vector<Definition *>>> newRules = adaptCFG->getNewRules();
+
+    ParsingCFG::print(newRules);
+    rules = newRules;
+
+    std::cout << "================ Obtaining First & Follow ================" << std::endl;
 
     auto* first = new First(rules);
     first->constructFirst();
     first->print();
 
-    auto* follow = new Follow(rules, first);
+    auto* follow = new Follow(rules, first, start);
     follow->constructFollow();
     follow->print();
 

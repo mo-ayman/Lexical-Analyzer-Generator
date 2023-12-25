@@ -43,45 +43,30 @@ add_executable(Lexical_Analyzer main_2.cpp
 
 #### Phase 2
 add_executable(Parser_Generator ParserGenerator/Main/parserGeneration.cpp
-        LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
-        LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
-        ParserGenerator/Parser/ParseTree/ParseTreeNode.h
-        ParserGenerator/Parser/ParseTree/ParseTreeNode.cpp
-        ParserGenerator/Parser/Parser.h
-        ParserGenerator/Parser/Parser.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
-        ParserGenerator/Main/main.cpp
         ParserGenerator/Predictive_PT/PPT.h
         ParserGenerator/Predictive_PT/PPT.cpp
         ParserGenerator/FirstAndFollow/First.h
         ParserGenerator/FirstAndFollow/Follow.h
         ParserGenerator/FirstAndFollow/Follow.cpp
         ParserGenerator/FirstAndFollow/First.cpp
+        ParserGenerator/ParsingCFG/ParsingCFG.h
+        ParserGenerator/ParsingCFG/ParsingCFG.cpp
+        ParserGenerator/ParsingCFG/AdaptCFG.h
+        ParserGenerator/ParsingCFG/AdaptCFG.cpp
+
 )
 
 add_executable(Parser ParserGenerator/Main/parsing.cpp
+        ParserGenerator/Definition/Definition.cpp
+        ParserGenerator/Definition/Definition.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.h
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.cpp
         LexicalAnalyzerGenerator/DFASerialization/DFASerialization.h
-        ParserGenerator/Parser/ParseTree/ParseTreeNode.h
         ParserGenerator/Parser/ParseTree/ParseTreeNode.cpp
-        ParserGenerator/Parser/Parser.h
+        ParserGenerator/Parser/ParseTree/ParseTreeNode.h
         ParserGenerator/Parser/Parser.cpp
-        ParserGenerator/Definition/Definition.cpp
-        ParserGenerator/Definition/Definition.h
-        ParserGenerator/Main/main.cpp
-        ParserGenerator/Predictive_PT/PPT.h
-        ParserGenerator/Predictive_PT/PPT.cpp
-        ParserGenerator/FirstAndFollow/First.h
-        ParserGenerator/FirstAndFollow/Follow.h
-        ParserGenerator/FirstAndFollow/Follow.cpp
-        ParserGenerator/FirstAndFollow/First.cpp
-        ParserGenerator/ParsingCFG/AdaptCFG.h
-        ParserGenerator/ParsingCFG/AdaptCFG.cpp
-        ParserGenerator/Predictive_PT/TestCase2.cpp
-        ParserGenerator/Predictive_PT/TrailExample.cpp
-        ParserGenerator/main.cpp
-        ParserGenerator/ParsingCFG/ParsingCFG.cpp
+        ParserGenerator/Parser/Parser.h
 )
