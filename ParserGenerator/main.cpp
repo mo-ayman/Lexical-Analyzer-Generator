@@ -15,7 +15,7 @@ int main(const int argc, char** argv) {
     std::string src_path = __FILE__;
     src_path = src_path.substr(0, src_path.find_last_of("\\/"));
     std::cout << src_path << std::endl;
-    const auto rules_path = src_path + "\\example_rules4.txt"; // std::string(argv[1]);
+    const auto rules_path = src_path + "\\example_rules.txt"; // std::string(argv[1]);
     std::cout<<src_path<<endl;
     const std::map<Definition *, std::vector<std::vector<Definition *>>> rules = ParsingCFG::parseFromFile(rules_path);
 //    // Print all rules

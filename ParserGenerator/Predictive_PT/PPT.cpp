@@ -22,7 +22,7 @@ PPT::PPT(const map<Definition *, vector<vector<Definition *>>>& InputRules,
 /*
  * This function called to return final predictive parsing table as pointer
  * */
-map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
+unordered_map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
 {
     fillFirstChunck();
     fillFollowChunck();
@@ -120,7 +120,7 @@ int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 /*
  * This function used to print Predictive parsing table
  * */
-void PPT::print(map<Definition *, map<string, vector<Definition *>>> *table) {
+void PPT::print(unordered_map<Definition *, map<string, vector<Definition *>>> *table) {
     for (const auto& pair: *table) {
         std::cout << pair.first->getName() << " --str(NT)=>P-Rule:  ";
         for (const auto& pairSecond: pair.second)
