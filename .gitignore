@@ -17,6 +17,8 @@
 !example_*.txt
 !LexicalAnalyzerGenerator/Results/**
 !LexicalAnalyzerGenerator/Images/**
+!ParserGenerator/Main/input_*.txt
+!ParserGenerator/Main/lexical_analyzer.dat
 
 # Executables
 *.exe
