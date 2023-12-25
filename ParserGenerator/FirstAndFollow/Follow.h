@@ -29,6 +29,7 @@ private:
     First* first{};
     std::map<Definition *, std::vector<Definition *>> follow;
     std::unordered_set<Definition *> isFollowCalculated;
+    std::unordered_set<Definition *> inStack;
 
 };
 
