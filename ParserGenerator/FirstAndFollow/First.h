@@ -20,14 +20,14 @@ public:
 
     void print() const;
 
-    std::vector<Definition *> getFirst(Definition *definition);
+    std::vector<std::pair<int, Definition *>> getFirst(Definition *definition);
 
-    std::map<Definition *, std::vector<Definition *>> getFirst();
+    std::map<Definition *, std::vector<std::pair<int, Definition *>>> getFirst();
 
 private:
     std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
     std::unordered_set<Definition*> isFirstCalculated;
-    std::map<Definition *, std::vector<Definition *>> first;
+    std::map<Definition *, std::vector<std::pair<int, Definition *>>> first;
 };
 
 

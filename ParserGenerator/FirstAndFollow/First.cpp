@@ -11,7 +11,7 @@
 First::First(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
     this->rules = rules;
     isFirstCalculated = std::unordered_set<Definition*>();
-    first = std::map<Definition *, std::vector<Definition *>>();
+    first = std::map<Definition *, std::vector<std::pair<int, Definition *>>>();
 
 }
 
@@ -22,10 +22,10 @@ void First::constructFirst() {
 
 }
 
-std::vector<Definition *> First::getFirst(Definition *definition) {
+std::vector<std::pair<int, Definition *>> First::getFirst(Definition *definition) {
 //    std::cout << "constructFirstUtils: " << definition->getName() << std::endl;
     if (definition->getIsTerminal()) {
-        return std::vector<Definition *>{definition};
+        return std::vector<std::pair<int, Definition *>>{std::make_pair(0, definition)};
     }
 
     if(isFirstCalculated.find(definition) != isFirstCalculated.end()) {
@@ -33,14 +33,16 @@ std::vector<Definition *> First::getFirst(Definition *definition) {
     }
     else {
         std::unordered_set<std::string> visited; // remove dup
-        for (auto def : rules[definition]) {
-            if(definition == def[0]) continue;
+        for (int i = 0; i < rules[definition].size(); ++i) {
+            if(definition == rules[definition][i][0]) {
+                continue;
+            }
 
-            std::vector<Definition *> result = getFirst(def[0]);
+            auto result = getFirst(rules[definition][i][0]);
             for (auto r : result) {
-                if (visited.find(r->getName()) == visited.end()) {
-                    first[definition].push_back(r);
-                    visited.insert(r->getName());
+                if (visited.find(r.second->getName()) == visited.end()) {
+                    first[definition].emplace_back(i, r.second);
+                    visited.insert(r.second->getName());
                 }
             }
         }
@@ -59,10 +61,10 @@ void First::print() const {
         auto f = first.find(rule.first);
         if (f != first.end()) {
             for (auto def: f->second) {
-                if (def->getIsTerminal()) {
-                    std::cout << "'" << def->getName() << "' ";
+                if (def.second->getIsTerminal()) {
+                    std::cout << "'" << def.second->getName() << "' ";
                 } else {
-                    throw std::runtime_error("First is not terminal");
+                    std::cout << def.second->getName() << " ";
                 }
             }
         }
@@ -70,8 +72,7 @@ void First::print() const {
     }
 }
 
-std::map<Definition *, std::vector<Definition *>> First::getFirst() {
+std::map<Definition *, std::vector<std::pair<int, Definition *>>> First::getFirst() {
     return first;
 }
-
 
