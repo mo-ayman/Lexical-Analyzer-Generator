@@ -11,6 +11,10 @@ using namespace std;
  * Third pointer follow contain follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals)
  * */
 
+unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* PPT::pp_table() const {
+    return PPTable;
+}
+
 PPT::PPT(const map<Definition *, vector<vector<Definition *>>>& InputRules,
          map<Definition *, vector<pair<int, Definition*>>>& first, map<Definition *, vector<Definition*>>& follow)
 {
@@ -22,7 +26,7 @@ PPT::PPT(const map<Definition *, vector<vector<Definition *>>>& InputRules,
 /*
  * This function called to return final predictive parsing table as pointer
  * */
-unordered_map<Definition*, map<string, vector<Definition*>>>* PPT::get_PPT()
+unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* PPT::computePPT()
 {
     fillFirstChunck();
     fillFollowChunck();
@@ -45,7 +49,7 @@ void PPT::fillFirstChunck()
             int Ptoduction_Indx = subFirst.first;
 
             //check if slot in table not contain 2 production rule check LL(1) condition
-            map<string, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
+            unordered_map<string, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
             auto it = LL1_checkMap.find((subFirst.second)->getName());
             if (it !=LL1_checkMap.end()) {
                 throw runtime_error("Not LL44(1) grammar");
@@ -120,7 +124,7 @@ int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
 /*
  * This function used to print Predictive parsing table
  * */
-void PPT::print(unordered_map<Definition *, map<string, vector<Definition *>>> *table) {
+void PPT::print(unordered_map<Definition *, unordered_map<string, vector<Definition *>>> *table) {
     for (const auto& pair: *table) {
         std::cout << pair.first->getName() << " --str(NT)=>P-Rule:  ";
         for (const auto& pairSecond: pair.second)

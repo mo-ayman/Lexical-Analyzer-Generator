@@ -9,7 +9,7 @@
 
 using namespace std;
 
-ParseTreeNode::ParseTreeNode(const Definition* definition): content(definition), children() {
+ParseTreeNode::ParseTreeNode(Definition* definition): content(definition), children() {
 }
 
 bool ParseTreeNode::getIsTerminal() const {
@@ -43,7 +43,7 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
         string color = (current.get() == pRoot) ? "hotpink" : "lightblue";
         string name = current->content == Definition::getEpsilon()? "ε": current->content->getName();
         dotFile << "  " << reinterpret_cast<std::uintptr_t>(current.get())
-                << " [style=filled, fillcolor=" + color + ", label=\"" + name + "\"";
+                << " [style=filled, fillcolor=" + color + ", label=\"" << name << "\"";
         if (current->content->getIsTerminal()){
             color = current->content == Definition::getEpsilon()? "gold": "yellow";
             dotFile << ", shape=triangle, style=filled, fillcolor="+color;
@@ -85,10 +85,10 @@ void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os) const{
         if (i >= nodes.size()) {
             break;
         }
-        auto removedNode = nodes[nonTerminalIdx];
+        const auto removedNode = nodes[nonTerminalIdx];
         nodes.erase(nodes.begin() + nonTerminalIdx);
         for (int j = 0; j < removedNode->children.size(); j++) {
-            if (!(removedNode->children[j]->content == Definition::getEpsilon())) {
+            if (removedNode->children[j]->content != Definition::getEpsilon()) {
                 nodes.insert(nodes.begin() + nonTerminalIdx + j, removedNode->children[j]);
             }
         }

@@ -8,12 +8,12 @@ class Definition;
 using namespace std;
 
 class Parser {
-    unordered_map<const Definition *, unordered_map<string, vector<const Definition *>>> table;
+    unordered_map<Definition *, unordered_map<string, vector<Definition *>>> table;
 
 public:
     explicit Parser(
-        const unordered_map<const Definition *, unordered_map<string, vector<const Definition *>>>& parsingTable);
+        const unordered_map<Definition *, unordered_map<string, vector<Definition *>>>& parsingTable);
 
-    std::shared_ptr<const ParseTreeNode> parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol);
+    std::shared_ptr<const ParseTreeNode> parse(LexicalAnalyzer& lexicalAnalyzer, Definition* startSymbol);
 };
 #endif //PARSER_H

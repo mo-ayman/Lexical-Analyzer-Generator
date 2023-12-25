@@ -23,11 +23,11 @@ bool operator==(const Token& lhs, const ParseTreeNode& rhs) {
     return lhs == rhs.content;
 }
 
-Parser::Parser(const unordered_map<const Definition *, unordered_map<string, vector<const Definition *>>>& parsingTable)
+Parser::Parser(const unordered_map< Definition *, unordered_map<string, vector< Definition *>>>& parsingTable)
     : table(parsingTable) {
 }
 
-std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnalyzer, const Definition* startSymbol) {
+std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnalyzer, Definition* startSymbol) {
     // Initialize a stack of parseTree nodes
     stack<std::shared_ptr<ParseTreeNode>> nodeStack;
     Token currentToken;
@@ -64,7 +64,7 @@ std::shared_ptr<const ParseTreeNode> Parser::parse(LexicalAnalyzer& lexicalAnaly
             matchToken();
             continue;
         }
-        const Definition* row = stackTopNode->content;
+        Definition* row = stackTopNode->content;
         if (table.find(row) == table.end()) {
             throw out_of_range("No such row in the parsing table!");
         }

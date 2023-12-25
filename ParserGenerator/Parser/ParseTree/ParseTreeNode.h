@@ -9,12 +9,12 @@ using namespace std;
 
 class ParseTreeNode {
 public:
-    const Definition* content;
+    Definition* content;
     vector<std::shared_ptr<const ParseTreeNode>> children;
 
     [[nodiscard]] bool getIsTerminal() const;
 
-    explicit ParseTreeNode(const Definition* definition);
+    explicit ParseTreeNode(Definition* definition);
 
     void insertLeft(const std::shared_ptr<const ParseTreeNode>& child);
 

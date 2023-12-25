@@ -85,8 +85,6 @@ void LexicalAnalyzer::panicModeRecovery(std::string* error, std::string* lexeme,
     *state = start_state;
 }
 
-LexicalAnalyzer::LexicalAnalyzer() = default;
-
 
 LexicalAnalyzer::LexicalAnalyzer(const std::string& input_path, size_t buffer_size, const std::string& DFA_path) {
     file = std::ifstream(input_path);
