@@ -38,6 +38,8 @@ add_executable(Lexical_Analyzer main_2.cpp
         ParserGenerator/FirstAndFollow/Follow.h
         ParserGenerator/FirstAndFollow/Follow.cpp
         ParserGenerator/FirstAndFollow/First.cpp
+        ParserGenerator/ParsingCFG/AdaptCFG.h
+        ParserGenerator/ParsingCFG/AdaptCFG.cpp
 )
 
 # ParserGenerator/main.cpp
