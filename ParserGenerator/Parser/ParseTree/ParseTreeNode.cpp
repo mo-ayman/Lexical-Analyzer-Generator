@@ -41,12 +41,12 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
         q.pop();
         // Plot the current node
         string color = (current.get() == pRoot) ? "hotpink" : "lightblue";
-        string name = current->content == Definition::getEpsilon()? "ε": current->content->getName();
+        string name = current->content == Definition::getEpsilon() ? "ε" : current->content->getName();
         dotFile << "  " << reinterpret_cast<std::uintptr_t>(current.get())
                 << " [style=filled, fillcolor=" + color + ", label=\"" << name << "\"";
-        if (current->content->getIsTerminal()){
-            color = current->content == Definition::getEpsilon()? "gold": "yellow";
-            dotFile << ", shape=triangle, style=filled, fillcolor="+color;
+        if (current->content->getIsTerminal()) {
+            color = current->content == Definition::getEpsilon() ? "gold" : "yellow";
+            dotFile << ", shape=triangle, style=filled, fillcolor=" + color;
         }
         dotFile << "]" << std::endl;
         // Specify edges to children
@@ -69,7 +69,7 @@ void ParseTreeNode::plotGraph(const std::string& outputPath) const {
 }
 
 
-void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os) const{
+void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os) const {
     std::vector<std::shared_ptr<const ParseTreeNode>> nodes;
     nodes.push_back(std::make_shared<const ParseTreeNode>(*this));
     os << this->content->getName() << " " << std::endl;
@@ -101,7 +101,8 @@ void ParseTreeNode::printLeftmostDerivationSteps(std::ostream& os) const{
         os << std::endl;
     }
 }
-std::ostream& operator<<(std::ostream& os, const ParseTreeNode& node){
+
+std::ostream& operator<<(std::ostream& os, const ParseTreeNode& node) {
     node.printLeftmostDerivationSteps(os);
     return os;
 }

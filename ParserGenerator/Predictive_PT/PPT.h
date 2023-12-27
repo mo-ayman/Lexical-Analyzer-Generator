@@ -25,8 +25,8 @@ public:
     unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* computePPT();
     void fillFirstChunck();
     void fillFollowChunck();
-    int checkEpslon(vector<pair<int, Definition*>> mappingFirst);
-    void print(unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* table);
+    static int checkEpslon(const vector<pair<int, Definition *>>& mappingFirst);
+    static void print(unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* table);
 };
 
 #endif

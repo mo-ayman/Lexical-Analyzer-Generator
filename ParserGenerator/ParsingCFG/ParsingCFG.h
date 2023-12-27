@@ -8,12 +8,12 @@
 #include "../Definition/Definition.h"
 
 namespace ParsingCFG {
-    std::map<Definition*, std::vector<std::vector<Definition *>>> parse(const std::string& input, Definition** start);
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parse(const std::string& input, Definition** start);
 
+    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>>& rules);
 
-    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules);
-    std::map<Definition*, std::vector<std::vector<Definition *>>> parseFromFile(const std::string& filename, Definition** start);
+    std::map<Definition *, std::vector<std::vector<Definition *>>> parseFromFile(
+        const std::string& filename, Definition** start);
 }
-
 
 #endif //PARSER_GENERATOR_PARSINGCFG_H

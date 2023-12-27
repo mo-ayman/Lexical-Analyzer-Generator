@@ -8,7 +8,6 @@ class Definition {
     bool isTerminal;
 
 public:
-
     explicit Definition(std::string newName);
 
     Definition(std::string newName, bool newIsTerminal);
@@ -36,7 +35,6 @@ public:
 template<>
 struct std::hash<Definition> {
     size_t operator()(const Definition& obj) const noexcept;
-
 };
 
 

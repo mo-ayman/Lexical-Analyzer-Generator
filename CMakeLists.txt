@@ -42,7 +42,7 @@ add_executable(Lexical_Analyzer main_2.cpp
 )
 
 #### Phase 2
-add_executable(Parser_Generator ParserGenerator/Main/parserGeneration.cpp
+add_executable(Parser_Generator ParserGenerator/parserGenerator.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
         ParserGenerator/Predictive_PT/PPT.h
@@ -58,7 +58,7 @@ add_executable(Parser_Generator ParserGenerator/Main/parserGeneration.cpp
 
 )
 
-add_executable(Parser ParserGenerator/Main/parsing.cpp
+add_executable(Parser ParserGenerator/parsing.cpp
         ParserGenerator/Definition/Definition.cpp
         ParserGenerator/Definition/Definition.h
         LexicalAnalyzerGenerator/LexicalAnalyzer/LexicalAnalyzer.cpp

@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "../../Definition/Definition.h"
+
 using namespace std;
 
 class ParseTreeNode {

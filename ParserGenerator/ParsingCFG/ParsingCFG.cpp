@@ -230,7 +230,7 @@ namespace ParsingCFG {
         return parse(readRules(filename), start);
     }
 
-    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules) {
+    void print(const std::map<Definition *, std::vector<std::vector<Definition *>>>& rules) {
         for (const auto& rule: rules) {
             std::cout << rule.first->getName() << " -> ";
             for (const auto& alternative: rule.second) {

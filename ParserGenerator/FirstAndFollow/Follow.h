@@ -14,15 +14,16 @@
 
 class Follow {
 public:
-    Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
-           First* first1, Definition* startSymbol);
+    Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>>& rules,
+           First* first, Definition* startSymbol);
 
     void constructFollow();
 
-    std::vector<Definition *> getFollow(Definition *definition);
-    std::map<Definition *, std::vector<Definition *>> getFollow();
-    void print() const;
+    std::vector<Definition *> getFollow(Definition* definition);
 
+    std::map<Definition *, std::vector<Definition *>> getFollow();
+
+    void print() const;
 
 private:
     std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
@@ -31,7 +32,6 @@ private:
     std::unordered_set<Definition *> isFollowCalculated;
     std::unordered_set<Definition *> inStack;
     Definition* startSymbol;
-
 };
 
 

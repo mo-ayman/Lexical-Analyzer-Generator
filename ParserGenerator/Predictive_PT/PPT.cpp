@@ -1,7 +1,9 @@
-#include "PPT.h"
 #include <stdexcept>
 #include <iostream>
 #include <string>
+
+#include "PPT.h"
+
 using namespace std;
 
 /*
@@ -11,68 +13,64 @@ using namespace std;
  * Third pointer follow contain follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals)
  * */
 
-unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* PPT::pp_table() const {
+unordered_map<Definition *, unordered_map<string, vector<Definition *>>>* PPT::pp_table() const {
     return PPTable;
 }
 
 PPT::PPT(const map<Definition *, vector<vector<Definition *>>>& InputRules,
-         map<Definition *, vector<pair<int, Definition*>>>& first, map<Definition *, vector<Definition*>>& follow)
-{
-   this->InputRulesM = InputRules;
-   firstM = first;
-   followM = follow;
+         map<Definition *, vector<pair<int, Definition *>>>& first, map<Definition *, vector<Definition *>>& follow) {
+    this->InputRulesM = InputRules;
+    firstM = first;
+    followM = follow;
 }
 
 /*
  * This function called to return final predictive parsing table as pointer
  * */
-unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* PPT::computePPT()
-{
+unordered_map<Definition *, unordered_map<string, vector<Definition *>>>* PPT::computePPT() {
     fillFirstChunck();
     fillFollowChunck();
-	return PPTable;
+    return PPTable;
 }
+
 /*
  * This function used to fill first production rules in table
  * First get non-terminal that search for it's first non-terminals
  * second loop over all first and add in PPTable equivalent production rule
  * Finally if  slot is empty append in PPTable the production rule
  * */
-void PPT::fillFirstChunck()
-{
-//    cout<<"ooo oo"<<endl;
-	for (auto& pairLoop : firstM) {
+void PPT::fillFirstChunck() {
+    //    cout<<"ooo oo"<<endl;
+    for (auto& pairLoop: firstM) {
         Definition* NonTerminal = pairLoop.first;
-        for(pair<int,Definition*>& subFirst :pairLoop.second) {
-            if((subFirst.second)->getName()=="EPSILON"){continue;}
+        for (const pair<int, Definition *>& subFirst: pairLoop.second) {
+            if ((subFirst.second)->getName() == "EPSILON") { continue; }
             // get index of the production rule T=>FT'|e FT' has index 0
-            int Ptoduction_Indx = subFirst.first;
+            const int Ptoduction_Indx = subFirst.first;
 
             //check if slot in table not contain 2 production rule check LL(1) condition
-            unordered_map<string, vector<Definition*>> LL1_checkMap = (*PPTable)[NonTerminal];
+            unordered_map<string, vector<Definition *>> LL1_checkMap = (*PPTable)[NonTerminal];
             auto it = LL1_checkMap.find((subFirst.second)->getName());
-            if (it !=LL1_checkMap.end()) {
+            if (it != LL1_checkMap.end()) {
                 throw runtime_error("Not LL44(1) grammar");
-            }
-            else {
+            } else {
                 auto& Input_map = (*PPTable)[NonTerminal];
-                Input_map.insert(pair<string,vector<Definition*>>((subFirst.second)->getName(),(InputRulesM)[NonTerminal][Ptoduction_Indx]));
+                Input_map.insert(pair<string, vector<Definition *>>((subFirst.second)->getName(),
+                                                                    (InputRulesM)[NonTerminal][Ptoduction_Indx]));
             }
         }
-
-	}
+    }
 }
+
 /*
  * In this function i loop through all follow map
  * in each follow i check if there is epsilon transition in first then add production rule
  * that result to that in table if there is no conflict in table slot
  * if there is no epsilon in first of the non-terminal then place sync in table
  * */
-void PPT::fillFollowChunck()
-{
+void PPT::fillFollowChunck() {
     // first for loop to iterate over follow map
-	for (auto& pairLoop : followM) {
-
+    for (auto& pairLoop: followM) {
         //get non-terminal key of follow
         Definition* NonTerminal = pairLoop.first;
 
@@ -80,60 +78,56 @@ void PPT::fillFollowChunck()
         auto& Input_map = (*PPTable)[NonTerminal];
 
         //check if first of that non-terminal contain epslon transition
-		int getEpslonIndx = checkEpslon((firstM)[NonTerminal]);
+        const int getEpslonIndx = checkEpslon((firstM)[NonTerminal]);
 
         // loop through all follow of given non-terminal and filling Input_map that represent str->production rule
-        for(auto& subFollow :pairLoop.second){
+        for (const auto& subFollow: pairLoop.second) {
             auto it = Input_map.find(subFollow->getName());
             if (getEpslonIndx > -1) {
                 if (it != Input_map.end()) {
                     throw runtime_error("Not11 LL(1) grammar");
-
                 } else {
                     Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(),
-                                                                             (InputRulesM)[NonTerminal][getEpslonIndx]));
+                                                                        (InputRulesM)[NonTerminal][getEpslonIndx]));
                 }
             } else {
                 if (it != Input_map.end()) {
                     continue;
-
                 } else {
                     Input_map.insert(pair<string, vector<Definition *>>(subFollow->getName(), {}));
                 }
-
             }
         }
-	}
+    }
 }
+
 /*
  * This function used to check if there is epslon in first of given non-terminal vector contail
  * All first of that non-terminals
  * */
-int PPT::checkEpslon(vector<pair<int, Definition*>>mappingFirst)
-{
-    for(pair<int,Definition*> subFirst :mappingFirst) {
+int PPT::checkEpslon(const vector<pair<int, Definition *>>& mappingFirst) {
+    for (const pair<int, Definition *> subFirst: mappingFirst) {
         string T_name = (subFirst.second)->getName();
-        if (T_name==((subFirst.second)->getEpsilon())->getName()) {
-                return subFirst.first;
-            }
-	}
+        if (T_name == (Definition::getEpsilon())->getName()) {
+            return subFirst.first;
+        }
+    }
 
-	return -1;
+    return -1;
 }
 
 /*
  * This function used to print Predictive parsing table
  * */
-void PPT::print(unordered_map<Definition *, unordered_map<string, vector<Definition *>>> *table) {
+void PPT::print(unordered_map<Definition *, unordered_map<string, vector<Definition *>>>* table) {
     for (const auto& pair: *table) {
         std::cout << pair.first->getName() << " --str(NT)=>P-Rule:  ";
-        for (const auto& pairSecond: pair.second)
-        {
-            std::cout <<pairSecond.first<<"=>" ;
-            for (const auto& pairVect: pairSecond.second){
-                cout << pairVect->getName() ;
+        for (const auto& pairSecond: pair.second) {
+            std::cout << pairSecond.first << "=>";
+            for (const auto& pairVect: pairSecond.second) {
+                cout << pairVect->getName();
             }
-            cout<<"  ";
+            cout << "  ";
         }
 
         std::cout << std::endl;

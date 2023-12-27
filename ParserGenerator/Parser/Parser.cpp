@@ -22,7 +22,7 @@ bool operator==(const Token& lhs, const ParseTreeNode& rhs) {
     return lhs == rhs.content;
 }
 
-Parser::Parser(const unordered_map< Definition *, unordered_map<string, vector< Definition *>>>& parsingTable)
+Parser::Parser(const unordered_map<Definition *, unordered_map<string, vector<Definition *>>>& parsingTable)
     : table(parsingTable) {
 }
 

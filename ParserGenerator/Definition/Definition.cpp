@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include <iostream>
 
 #include "Definition.h"
@@ -10,7 +9,6 @@ const std::string Definition::DOLLAR = "$";
 
 // Constructors
 Definition::Definition(std::string newName)
-
     : name(std::move(newName)), isTerminal(true) {
 }
 
@@ -37,12 +35,12 @@ bool Definition::operator==(const Definition& other) const noexcept {
 }
 
 
-Definition * Definition::getEpsilon() {
+Definition* Definition::getEpsilon() {
     static Definition epsilon(Definition::EPSILON, true);
     return &epsilon;
 }
 
-Definition *Definition::getDollar() {
+Definition* Definition::getDollar() {
     static Definition dollar(Definition::DOLLAR, true);
     return &dollar;
 }
@@ -54,6 +52,3 @@ namespace std {
         return obj.hash();
     }
 }
-
-
-
