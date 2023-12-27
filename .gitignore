@@ -17,6 +17,7 @@
 !example_*.txt
 !LexicalAnalyzerGenerator/Results/**
 !LexicalAnalyzerGenerator/Images/**
+!ParserGenerator/Results/**
 !ParserGenerator/input_*.txt
 !ParserGenerator/lexical_analyzer.dat
 

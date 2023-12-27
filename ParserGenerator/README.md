@@ -1,0 +1,215 @@
+# Parser Generator
+
+## Overview
+
+This project is a non-recursive predictive parser generator written in C++. It compiles a set of parsing rules defined in a text file into a parsing table that can be used later by a parser (included here as a separate executable) to parse a given input.
+
+Later, the parser reads the serialized minimized DFA and the serialized parsing table files and uses them to parse the input into a parse tree.
+
+## Rules File
+
+The rules file is a text file that contains the parsing rules. Each rule starts with `#` symbol in a new line. A rule may be written in multiple lines. The syntax of the rules file follows the following rules:
+
+- Rules are in the form # LHS = RHS, where LHS is the name of the rule and RHS is the syntax defined by the rule. LHS can only contain alphanumeric characters and underscores. RHS can also contain references to other rules.
+- Alternatives are separated by `|` symbol.
+- A backslash followed by `L` is used to represent a void character.
+- Tokens are referenced by their names and are enclosed in single quotes.
+- References to other rules are kept without any enclosing characters.
+
+The following is an example of a valid rules file:
+
+```text
+# METHOD_BODY = STATEMENT_LIST
+# STATEMENT_LIST = STATEMENT | STATEMENT_LIST STATEMENT
+# STATEMENT = DECLARATION
+    | IF
+    | WHILE
+    | ASSIGNMENT
+# DECLARATION = PRIMITIVE_TYPE 'id' ';'
+# PRIMITIVE_TYPE = 'int' | 'float'
+# IF = 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
+# WHILE = 'while' '(' EXPRESSION ')' '{' STATEMENT '}'
+# ASSIGNMENT = 'id' 'assign' EXPRESSION ';'
+# EXPRESSION = SIMPLE_EXPRESSION
+    | SIMPLE_EXPRESSION 'relop' SIMPLE_EXPRESSION
+# SIMPLE_EXPRESSION = TERM | SIGN TERM | SIMPLE_EXPRESSION 'addop' TERM
+# TERM = FACTOR | TERM 'mulop' FACTOR
+# FACTOR = 'id' | 'num' | '(' EXPRESSION ')'
+# SIGN = '+' | '-'
+```
+
+## Rules Parser
+
+Our implementation of the rules parser is hard-wired and well optimized for the syntax of the rules file. Parsing is done in a single pass. Thus, complexity of the parser is linear in the size of the input. Each rule is parsed into a 2D array where the first level represents the alternatives. If the rules file is not valid, the parser will throw an exception with a detailed error message.
+
+
+## Usage
+
+### Parser Generator
+
+It takes two arguments which are the path to the rules file and the path to the parsing table output file. The parsing table is serialized into a text file.
+
+```bash
+./<executable> <path-to-rules-file> -o <path-to-output-file>
+```
+
+### Parser
+
+It takes three arguments: the path to the serialized minimized DFA file, the path to the serialized parsing table file and the path to the input source code file.
+
+```bash
+./<executable> <path-to-serialized-minimized-DFA-file> <path-to-serialized-parsing-table-file> <path-to-input-source-code-file>
+```
+
+## Test Case
+
+### Lexical Analyzer Generator
+
+**Rules File**
+
+```text
+# METHOD_BODY = STATEMENT_LIST
+# STATEMENT_LIST = STATEMENT | STATEMENT_LIST STATEMENT
+# STATEMENT = DECLARATION
+    | IF
+    | WHILE
+    | ASSIGNMENT
+# DECLARATION = PRIMITIVE_TYPE 'id' ';'
+# PRIMITIVE_TYPE = 'int' | 'float'
+# IF = 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
+# WHILE = 'while' '(' EXPRESSION ')' '{' STATEMENT '}'
+# ASSIGNMENT = 'id' 'assign' EXPRESSION ';'
+# EXPRESSION = SIMPLE_EXPRESSION
+    | SIMPLE_EXPRESSION 'relop' SIMPLE_EXPRESSION
+# SIMPLE_EXPRESSION = TERM | SIGN TERM | SIMPLE_EXPRESSION 'addop' TERM
+# TERM = FACTOR | TERM 'mulop' FACTOR
+# FACTOR = 'id' | 'num' | '(' EXPRESSION ')'
+# SIGN = '+' | '-'
+```
+
+**LL(1) Rules**
+
+```text
+STATEMENT_LIST -> STATEMENT STATEMENT_LIST'
+METHOD_BODY -> STATEMENT_LIST
+SIMPLE_EXPRESSION' -> 'EPSILON' | 'addop' TERM SIMPLE_EXPRESSION'
+FACTOR -> '(' EXPRESSION ')' | 'id' | 'num'
+TERM -> FACTOR TERM'
+STATEMENT_LIST' -> 'EPSILON' | STATEMENT STATEMENT_LIST'
+TERM' -> 'EPSILON' | 'mulop' FACTOR TERM'
+SIGN -> '+' | '-'
+EXPRESSION' -> 'EPSILON' | 'relop' SIMPLE_EXPRESSION
+STATEMENT -> ASSIGNMENT | DECLARATION | IF | WHILE
+DECLARATION -> PRIMITIVE_TYPE 'id' ';'
+WHILE -> 'while' '(' EXPRESSION ')' '{' STATEMENT '}'
+IF -> 'if' '(' EXPRESSION ')' '{' STATEMENT '}' 'else' '{' STATEMENT '}'
+ASSIGNMENT -> 'id' 'assign' EXPRESSION ';'
+PRIMITIVE_TYPE -> 'float' | 'int'
+SIMPLE_EXPRESSION -> SIGN TERM SIMPLE_EXPRESSION' | TERM SIMPLE_EXPRESSION'
+EXPRESSION -> SIMPLE_EXPRESSION EXPRESSION'
+```
+
+**First Sets**
+
+```text
+STATEMENT_LIST -> 'id' 'float' 'int' 'if' 'while'
+METHOD_BODY -> 'id' 'float' 'int' 'if' 'while'
+SIMPLE_EXPRESSION' -> 'EPSILON' 'addop'
+FACTOR -> '(' 'id' 'num'
+TERM -> '(' 'id' 'num'
+STATEMENT_LIST' -> 'EPSILON' 'id' 'float' 'int' 'if' 'while'
+TERM' -> 'EPSILON' 'mulop'
+SIGN -> '+' '-'
+EXPRESSION' -> 'EPSILON' 'relop'
+STATEMENT -> 'id' 'float' 'int' 'if' 'while'
+DECLARATION -> 'float' 'int'
+WHILE -> 'while'
+IF -> 'if'
+ASSIGNMENT -> 'id'
+PRIMITIVE_TYPE -> 'float' 'int'
+SIMPLE_EXPRESSION -> '+' '-' '(' 'id' 'num'
+EXPRESSION -> '+' '-' '(' 'id' 'num'
+```
+
+**Follow Sets**
+
+```text
+STATEMENT_LIST : '$'
+METHOD_BODY : '$'
+SIMPLE_EXPRESSION' : ')' ';' 'relop'
+FACTOR : 'mulop' 'addop' ')' ';' 'relop'
+TERM : 'addop' ')' ';' 'relop'
+STATEMENT_LIST' : '$'
+TERM' : 'addop' ')' ';' 'relop'
+SIGN : '(' 'id' 'num'
+EXPRESSION' : ')' ';'
+STATEMENT : 'id' 'float' 'int' 'if' 'while' '$' '}'
+DECLARATION : 'id' 'float' 'int' 'if' 'while' '$' '}'
+WHILE : 'id' 'float' 'int' 'if' 'while' '$' '}'
+IF : 'id' 'float' 'int' 'if' 'while' '$' '}'
+ASSIGNMENT : 'id' 'float' 'int' 'if' 'while' '$' '}'
+PRIMITIVE_TYPE : 'id'
+SIMPLE_EXPRESSION : ')' ';' 'relop'
+EXPRESSION : ')' ';'
+```
+
+### Parser
+
+**Input File**
+
+```c
+int x;
+x=5;
+if(x>2){x=0;}
+```
+
+**Left Most Derivation**
+
+```text
+METHOD_BODY 
+STATEMENT_LIST
+STATEMENT STATEMENT_LIST'
+DECLARATION STATEMENT_LIST'
+PRIMITIVE_TYPE id ; STATEMENT_LIST'
+int id ; STATEMENT_LIST'
+int id ; STATEMENT STATEMENT_LIST'
+int id ; ASSIGNMENT STATEMENT_LIST'
+int id ; id assign EXPRESSION ; STATEMENT_LIST'
+int id ; id assign SIMPLE_EXPRESSION EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign TERM SIMPLE_EXPRESSION' EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign FACTOR TERM' SIMPLE_EXPRESSION' EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign num TERM' SIMPLE_EXPRESSION' EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign num SIMPLE_EXPRESSION' EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign num EXPRESSION' ; STATEMENT_LIST'
+int id ; id assign num ; STATEMENT_LIST'
+int id ; id assign num ; STATEMENT STATEMENT_LIST'
+int id ; id assign num ; IF STATEMENT_LIST'
+int id ; id assign num ; if ( EXPRESSION ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( SIMPLE_EXPRESSION EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( TERM SIMPLE_EXPRESSION' EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( FACTOR TERM' SIMPLE_EXPRESSION' EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id TERM' SIMPLE_EXPRESSION' EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id SIMPLE_EXPRESSION' EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop SIMPLE_EXPRESSION ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop TERM SIMPLE_EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop FACTOR TERM' SIMPLE_EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num TERM' SIMPLE_EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num SIMPLE_EXPRESSION' ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { STATEMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { ASSIGNMENT } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign EXPRESSION ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign SIMPLE_EXPRESSION EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign TERM SIMPLE_EXPRESSION' EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign FACTOR TERM' SIMPLE_EXPRESSION' EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num TERM' SIMPLE_EXPRESSION' EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num SIMPLE_EXPRESSION' EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num EXPRESSION' ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num ; } else { STATEMENT } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num ; } else { } STATEMENT_LIST'
+int id ; id assign num ; if ( id relop num ) { id assign num ; } else { }
+```
+
+**Parse Tree**
+
+Check it [here](Results/parser/parse_tree_graph.pdf). Make sure you can open PDF files.
