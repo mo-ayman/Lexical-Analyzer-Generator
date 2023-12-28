@@ -44,6 +44,66 @@ The following is an example of a valid rules file:
 
 Our implementation of the rules parser is hard-wired and well optimized for the syntax of the rules file. Parsing is done in a single pass. Thus, complexity of the parser is linear in the size of the input. Each rule is parsed into a 2D array where the first level represents the alternatives. If the rules file is not valid, the parser will throw an exception with a detailed error message.
 
+### Data Structures
+
+A unique rule reference is represented by a `Definition` object. A `Definition` object has the following structure:
+
+```cpp
+class Definition {
+    std::string name;
+    bool isTerminal;
+
+public:
+    explicit Definition(std::string newName);
+
+    Definition(std::string newName, bool newIsTerminal);
+
+    [[nodiscard]] bool getIsTerminal() const;
+
+    [[nodiscard]] const std::string& getName() const;
+
+    [[nodiscard]] size_t hash() const noexcept;
+
+
+    bool operator==(const Definition& other) const noexcept;
+
+    static Definition* getEpsilon();
+
+    static Definition* getDollar();
+
+    static const std::string EPSILON;
+    static const std::string DOLLAR;
+};
+```
+
+Rules contents are organized in a hashmap where the key is the name of the rule and the value is a vector of vectors of `Definition` pointers. Each vector of `Definition` pointers represents an alternative. The signature of the hashmap is as follows:
+
+```cpp
+std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
+```
+
+### Parsing Algorithm
+
+This section describes the parsing algorithm briefly without going into much detail. The algorithm is implemented in the file [ParsingCFG.cpp](ParsingCFG/ParsingCFG.cpp).
+
+**Main Routine**
+
+1. Rules file is read from the file system.
+2. Rules are extracted from the read content where `#` at the start of a line marks the beginning of a new rule. Each rule is trimmed from both sides, so that no leading or trailing whitespaces are included.
+3. A pool of definitions is created. It's a map that maps the name of the definition to the pointer representing it. This is useful for handling references to other rules and to make sure that each definition is represented by a single instance.
+4. A hashmap is created to map the name of the rule to the possible syntax alternatives. Each alternative is represented by a vector of definitions that may be terminals or non-terminals.
+5. For each rule in order, parse it using **Parse Routine**.
+6. Check if all referenced rules are defined. If not, throw an exception.
+7. The hashmap of parsed rules is returned.
+
+**Parse Routine**
+
+1. Keep reading characters until an equal sign is encountered. The characters read are considered as the name of the rule. Rule name is trimmed from both sides and an exception is thrown if it is empty. Also, a name can only contain alphanumeric characters and underscores. Otherwise, an exception is thrown.
+2. If no equal sign is encountered, an exception is thrown.
+3. Range of characters between the symbol and the next encountered `#` symbol at the first of a line is parsed linearly. An exception is thrown if it is empty.
+4. If no pointer to the rule is found in the pool of definitions, then a new definition is created and added to the pool. Otherwise, the pointer to the existing definition is retrieved.
+5. A new entry is added to the hashmap of rules where the key is the name of the rule and the value is the vector of alternatives parsed from the rule.
+
 ------------
 
 ## Left Recursion-Factoring Elimination 
