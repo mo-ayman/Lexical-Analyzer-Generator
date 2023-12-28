@@ -38,6 +38,258 @@ The following is an example of a valid rules file:
 # SIGN = '+' | '-'
 ```
 
+
+## Left Recursion-Factoring Elimination 
+
+The `AdaptCFG` class is designed to adapt context-free grammars (CFGs) by eliminating left recursion and left factoring. The adaptation process aims to transform a CFG into an equivalent CFG that is more suitable for certain parsing algorithms. The implementation utilizes a set of rules and definitions to perform the necessary transformations.
+
+### Class Structure
+
+The `AdaptCFG` class has the following structure:
+
+### Public Interface
+
+1. **Constructor**: 
+   ```cpp
+   AdaptCFG(const std::map<Definition*, std::vector<std::vector<Definition*>>> &rules);
+   ```
+   - Initializes the `AdaptCFG` object with the input set of rules.
+
+2. **`adaptCFG` Method**:
+   ```cpp
+   void adaptCFG();
+   ```
+   - Executes the adaptation process, which involves eliminating left recursion, achieving consistency, eliminating left factoring, and achieving consistency again.
+
+3. **`getNewRules` Method**:
+   ```cpp
+   [[nodiscard]] std::map<Definition*, std::vector<std::vector<Definition*>>> getNewRules() const;
+   ```
+   - Retrieves the adapted rules after the adaptation process.
+
+### Private Methods
+
+1. **`eliminateLeftRecursion` Method**:
+   ```cpp
+   void eliminateLeftRecursion();
+   ```
+   - Implements the elimination of left recursion in the CFG.
+
+2. **`consistencyAchieve` Method**:
+   ```cpp
+   void consistencyAchieve();
+   ```
+   - Ensures consistency in the representation of definitions within the CFG.
+
+3. **`eliminateLeftFactoring` Method**:
+   ```cpp
+   void eliminateLeftFactoring();
+   ```
+   - Implements the elimination of left factoring in the CFG.
+
+### Private Data Members
+
+1. **`rules` Member**:
+   ```cpp
+   std::map<Definition*, std::vector<std::vector<Definition*>>> rules;
+   ```
+   - Stores the original rules provided during the initialization.
+
+2. **`newRules` Member**:
+   ```cpp
+   std::map<Definition*, std::vector<std::vector<Definition*>>> newRules;
+   ```
+   - Stores the adapted rules after the adaptation process.
+
+### Left Recursion Elimination
+
+The `eliminateLeftRecursion` method identifies left-recursive rules and applies transformations to eliminate the left recursion. The algorithm introduces new definitions to represent the recursive part, achieving a CFG without left recursion.
+
+### Left Factoring Elimination
+
+The `eliminateLeftFactoring` method identifies left-factored rules and introduces new definitions to eliminate left factoring. The resulting CFG is more suitable for predictive parsing algorithms.
+
+### Consistency Achieve
+
+The `consistencyAchieve` method ensures consistency in the representation of definitions within the CFG. It associates each definition with a unique instance to facilitate further processing.
+
+## First Construction
+
+
+The `First` class is responsible for computing the First sets for non-terminals in a context-free grammar (CFG). The First set of a non-terminal is the set of terminals that can appear as the first symbol in any string derived from that non-terminal. This information is crucial for constructing predictive parsing tables.
+
+### Class Structure
+
+### Public Interface
+
+1. **Constructor**:
+   ```cpp
+   First(const std::map<Definition*, std::vector<std::vector<Definition*>>> &rules);
+   ```
+   - Initializes the `First` object with the set of rules provided.
+
+2. **`constructFirst` Method**:
+   ```cpp
+   void constructFirst();
+   ```
+   - Computes the First sets for all non-terminals.
+
+3. **`print` Method**:
+   ```cpp
+   void print() const;
+   ```
+   - Prints the computed First sets for each non-terminal.
+
+4. **`getFirst` Method**:
+   ```cpp
+   std::vector<std::pair<int, Definition*>> getFirst(Definition* definition);
+   ```
+   - Returns the computed First set for a specific non-terminal.
+
+5. **`getFirst` Method**:
+   ```cpp
+   std::map<Definition*, std::vector<std::pair<int, Definition*>>> getFirst();
+   ```
+   - Returns all computed First sets.
+
+### Private Methods
+
+1. **`getFirst` Method**:
+   ```cpp
+   std::vector<std::pair<int, Definition*>> getFirst(Definition* definition);
+   ```
+   - Recursive utility method to compute the First set for a given non-terminal.
+
+### Private Data Members
+
+1. **`rules` Member**:
+   ```cpp
+   std::map<Definition*, std::vector<std::vector<Definition*>>> rules;
+   ```
+   - Stores the set of rules provided during initialization.
+
+2. **`isFirstCalculated` Member**:
+   ```cpp
+   std::unordered_set<Definition*> isFirstCalculated;
+   ```
+   - Tracks non-terminals for which the First set has already been computed.
+
+3. **`first` Member**:
+   ```cpp
+   std::map<Definition*, std::vector<std::pair<int, Definition*>>> first;
+   ```
+   - Stores the computed First sets for each non-terminal.
+
+### First Set Computation
+
+The `constructFirst` method iterates over all rules and calls the `getFirst` method for each non-terminal to compute its First set.
+
+### Recursive First Set Computation
+
+The `getFirst` method is a recursive utility function that computes the First set for a given non-terminal. It checks for terminal symbols and recursively processes rules to compute the First set.
+
+### Printing First Sets
+
+The `print` method prints the computed First sets for each non-terminal in a readable format.
+
+## Follow Construction
+
+The `Follow` class is responsible for computing the Follow sets for non-terminals in a context-free grammar (CFG). The Follow set of a non-terminal is the set of terminals that can appear immediately to the right of that non-terminal in any sentential form. The computed Follow sets are crucial for constructing predictive parsing tables.
+
+### Class Structure
+
+### Public Interface
+
+1. **Constructor**:
+   ```cpp
+   Follow(const std::map<Definition *, std::vector<std::vector<Definition *>>> &rules,
+          First* first, Definition* startSymbol);
+   ```
+   - Initializes the `Follow` object with the set of rules, the `First` sets, and the start symbol provided.
+
+2. **`constructFollow` Method**:
+   ```cpp
+   void constructFollow();
+   ```
+   - Computes the Follow sets for all non-terminals.
+
+3. **`print` Method**:
+   ```cpp
+   void print() const;
+   ```
+   - Prints the computed Follow sets for each non-terminal.
+
+4. **`getFollow` Method**:
+   ```cpp
+   std::vector<Definition *> getFollow(Definition *definition);
+   ```
+   - Returns the computed Follow set for a specific non-terminal.
+
+5. **`getFollow` Method**:
+   ```cpp
+   std::map<Definition *, std::vector<Definition *>> getFollow();
+   ```
+   - Returns all computed Follow sets.
+
+### Private Methods
+
+1. **`getFollow` Method**:
+   ```cpp
+   std::vector<Definition *> getFollow(Definition *definition);
+   ```
+   - Recursive utility method to compute the Follow set for a given non-terminal.
+
+### Private Data Members
+
+1. **`rules` Member**:
+   ```cpp
+   std::map<Definition *, std::vector<std::vector<Definition *>>> rules;
+   ```
+   - Stores the set of rules provided during initialization.
+
+2. **`first` Member**:
+   ```cpp
+   First* first{};
+   ```
+   - Pointer to the `First` object, which is used to access the computed First sets.
+
+3. **`follow` Member**:
+   ```cpp
+   std::map<Definition *, std::vector<Definition *>> follow;
+   ```
+   - Stores the computed Follow sets for each non-terminal.
+
+4. **`isFollowCalculated` Member**:
+   ```cpp
+   std::unordered_set<Definition *> isFollowCalculated;
+   ```
+   - Tracks non-terminals for which the Follow set has already been computed.
+
+5. **`inStack` Member**:
+   ```cpp
+   std::unordered_set<Definition *> inStack;
+   ```
+   - Tracks non-terminals currently in the stack to handle recursive calls.
+
+6. **`startSymbol` Member**:
+   ```cpp
+   Definition* startSymbol;
+   ```
+   - Pointer to the start symbol of the CFG.
+
+### Follow Set Computation
+
+The `constructFollow` method iterates over all rules and calls the `getFollow` method for each non-terminal to compute its Follow set.
+
+### Recursive Follow Set Computation
+
+The `getFollow` method is a recursive utility function that computes the Follow set for a given non-terminal. It checks for terminal symbols and recursively processes rules to compute the Follow set.
+
+### Printing Follow Sets
+
+The `print` method prints the computed Follow sets for each non-terminal in a readable format.
+
+
 ## Rules Parser
 
 Our implementation of the rules parser is hard-wired and well optimized for the syntax of the rules file. Parsing is done in a single pass. Thus, complexity of the parser is linear in the size of the input. Each rule is parsed into a 2D array where the first level represents the alternatives. If the rules file is not valid, the parser will throw an exception with a detailed error message.
