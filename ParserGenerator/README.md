@@ -291,3 +291,50 @@ int id ; id assign num ; if ( id relop num ) { id assign num ; } else { }
 **Parse Tree**
 
 Check it [here](Results/parser/parse_tree_graph.pdf). Make sure you can open PDF files.
+
+## Predictive Parsing Table Generator
+- In this part I take the input Rules, first and follow sets in format of `map<Definition*, vector<vector<Definition*>>>` as set of map 
+T=>FT'|e T is Definition* of nonterminal and map to vector of <FT' and epslon> all as Definition*.
+- Then first set in a format `map<Definition*, vector<pair<int, Definition*>>>` first contains vector of non-terminals also in form of map T=>{(*,1),("+",0)} integer value represent index of
+ production rule in Rules map
+- Also, follow in a fromat `map<Definition*, vector<Definition*>>` 
+contains follow of all non-terminal in form of T=>{"$",")"} all as pointer (terminal and non-terminals) that i used for epsilon production or sync state.
+- Predictive parsing table is in format `unordered_map<Definition*, unordered_map<string, vector<Definition*>>>` as unordered map containing each 
+non terminal as Definition* and it's corresponding map that map each non-terminal input with production rules `unordered_map<string, vector<Definition*>`
+string here represents terminal name.
+
+<!-- Table showing example of predictive parsing table -->
+| Non terminal  | terminal1  | terminal2| $|
+| -------- | -------- | --- | --------- |
+| **E**| E=>ET'| E=>E/D|empty vector as (sync) |
+| **F**| F=>(E)F'| F=>-ED | F=>epsilon|
+| **D**|| D=>*EF| D=>epsilon| D=>epsilon|
+.
+
+
+**Some Methods Definitions in Predictive Parsing Table Generator:**
+
+1. `PPT(const map<Definition*, vector<vector<Definition *>>>& InputRules, map<Definition*, vector<pair<int,Definition*>>>& first, map<Definition*,vector<Definition*>>& follow);` 
+    - This is the constructor part it takes 3 pointers.
+    - First pointer point to InputRules as T=>FT'|e T is Definition* and map to vector of FT' and e all as Definition*.
+    - second, first_set contains vector of non-terminals also in form of map T=>{(*,1),("+",0)} integer value represents index of the production rule.
+    - Third, pointer follow_set contains follow of all non-terminal in form of T=>{"$",")"} all as pointer Definition* (terminal and non-terminals).
+ .
+2. `void fillFirstChunck()`
+    - This function used to fill first production rules in PPTable(Predictive Parsing Table)
+    - First get non-terminal that search for it's first non-terminals
+    - second loop over all first and add in PPTable equivalent production rule
+    - Finally if slot in table is empty append in PPTable the production rule else give error Not LL(1) grammar.
+3. `void fillFollowChunck()`
+    - In this function i loop through all follow map
+    - In each follow i check if there is epsilon transition in first then add production rule That result to that in table if there is no conflict in table slot
+    - If there is no epsilon in first of the non-terminal then place sync in table
+4. `checkEpslon(vector<pair<int, Definition*>> mappingFirst)`
+    - This function used to check if there is epslon in first of given non-terminal vector contains all first of that non-terminals.
+5. `print(unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* table)`
+    - This function used to print Predictive parsing table.
+6. `unordered_map<Definition*, unordered_map<string, vector<Definition*>>>* PPT::computePPT()` 
+    - This method first call fillFirstChunck() method to fill first production rules in PPtable.
+    - Then call fillFollowChunck() method to fill follow production (epslon or sync) i represet sync state as empty vector in PPTable map.
+    - Finally, return unordered_map PPTable. 
+
